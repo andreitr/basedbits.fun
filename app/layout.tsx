@@ -1,7 +1,10 @@
 import type {Metadata} from "next";
 import {Roboto} from "next/font/google";
 import "./globals.css";
-
+import {config} from '@/config'
+import Web3ModalProvider from '@/context'
+import {headers} from 'next/headers'
+import {cookieToInitialState} from 'wagmi'
 
 const roboto = Roboto({
     weight: ['400', '700'],
@@ -15,14 +18,21 @@ export const metadata: Metadata = {
     description: "8000 Based Bits causing byte-sized mischief on the BASE chain, a nerdy collection by andreitr.eth and gretegremplin.eth",
 };
 
+
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+    const initialState = cookieToInitialState(config, headers().get('cookie'))
     return (
         <html lang="en">
-        <body className="font-mono">{children}</body>
+        <body className="font-mono">
+        <Web3ModalProvider initialState={initialState}>
+            {children}
+        </Web3ModalProvider>
+        </body>
         </html>
     );
 }
