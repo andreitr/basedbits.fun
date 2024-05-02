@@ -1,17 +1,11 @@
 import type {Metadata} from "next";
-import {Roboto} from "next/font/google";
 import "./globals.css";
 import {config} from '@/config'
 import Web3ModalProvider from '@/context'
 import {headers} from 'next/headers'
-import {cookieToInitialState} from 'wagmi'
 
-const roboto = Roboto({
-    weight: ['400', '700'],
-    style: ['normal'],
-    subsets: ['latin'],
-    display: 'swap',
-})
+
+import {cookieToInitialState} from 'wagmi'
 
 export const metadata: Metadata = {
     title: "Based Bits",

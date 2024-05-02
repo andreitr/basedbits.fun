@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import {MyStreak} from "@/app/lib/components/MyStreak";
 
 export default async function Home() {
 
@@ -8,7 +9,8 @@ export default async function Home() {
             <div className="flex flex-col items-center">
                 <Image src={'/images/developer.png'} alt={'based bits'} width={200} height={200}/>
             </div>
-            {/*<w3m-button/>*/}
+
+            <MyStreak/>
             <div className="flex items-center justify-center">
                 <div className="flex-col bg-white p-5">
                     <div className="mb-2">Based Bits</div>
