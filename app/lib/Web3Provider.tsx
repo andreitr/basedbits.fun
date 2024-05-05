@@ -1,15 +1,18 @@
 "use client";
-
-import {http, createConfig, WagmiProvider} from 'wagmi'
+import {ReactNode} from "react";
+import {http, createConfig, WagmiProvider, createStorage, cookieStorage, State, cookieToInitialState} from 'wagmi'
 import {base} from 'wagmi/chains'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {metaMask} from "@wagmi/connectors";
+import {ReadonlyHeaders} from "next/dist/server/web/spec-extension/adapters/headers";
 
-const config = createConfig({
+export const config = createConfig({
     chains: [base],
-    connectors: [
-        metaMask(),
-    ],
+    ssr: true,
+    storage: createStorage({
+        storage: cookieStorage,
+    }),
+    connectors: [metaMask()],
     transports: {
         [base.id]: http(),
     },
@@ -19,10 +22,18 @@ const queryClient = new QueryClient()
 
 export const Web3Provider = ({
                                  children,
+                                 cookie
                              }: Readonly<{
-    children: React.ReactNode;
+    cookie?: string | null,
+    children: ReactNode;
 }>) => {
-    return <WagmiProvider config={config}>
+
+    const initialState = cookieToInitialState(
+        config,
+        cookie
+    )
+
+    return <WagmiProvider initialState={initialState} config={config}>
         <QueryClientProvider client={queryClient}>
             {children}
         </QueryClientProvider>

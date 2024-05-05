@@ -13,12 +13,10 @@ export const CheckInButton = () => {
         })
     }
 
+    return <button onClick={checkIn}
+                   disabled={isPending}
+                   className="bg-[#303730] hover:bg-[#677467] text-white py-2 px-4 rounded">
+        {isPending ? "Checking In..." : "Check In"}
+    </button>
 
-    return <div>
-        <button onClick={checkIn}
-                disabled={isPending}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            {isPending ? "Check In" : "Checking In..."}
-        </button>
-    </div>
 }

@@ -10,7 +10,6 @@ export function Account() {
     const {data: ensName} = useEnsName({address})
     const {data: ensAvatar} = useEnsAvatar({name: ensName!})
 
-
     if (isConnected) {
         return <div>
             {ensAvatar && <img alt="ENS Avatar" src={ensAvatar}/>}
