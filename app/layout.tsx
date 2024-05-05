@@ -1,11 +1,7 @@
 import type {Metadata} from "next";
 import "./globals.css";
-import {config} from '@/config'
-import Web3ModalProvider from '@/context'
-import {headers} from 'next/headers'
+import {Web3Provider} from "@/app/lib/Web3Provider";
 
-
-import {cookieToInitialState} from 'wagmi'
 
 export const metadata: Metadata = {
     title: "Based Bits",
@@ -19,13 +15,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
 
-    const initialState = cookieToInitialState(config, headers().get('cookie'))
     return (
         <html lang="en">
         <body className="font-mono">
-        <Web3ModalProvider initialState={initialState}>
-            {children}
-        </Web3ModalProvider>
+        <Web3Provider>{children}</Web3Provider>
         </body>
         </html>
     );

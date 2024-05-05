@@ -1,28 +1,22 @@
 "use client";
 
 import {abi} from "@/app/lib/abi/basedbits.abi";
-import {useReadContract} from "wagmi";
-import {createConfig, http} from '@wagmi/core'
-import {base} from "wagmi/chains";
+import {useAccount, useReadContract} from "wagmi";
 import BigNumber from "bignumber.js";
 
 export const MyStreak = () => {
 
-    const config = createConfig({
-        chains: [base],
-        transports: {
-            [base.id]: http(),
-        },
-    })
-
+    const {address, isConnected} = useAccount();
     const {data, isFetched, isFetching} = useReadContract({
-        config: config,
         abi: abi,
-        address: '0x255a67BA626DB57C766eF4D010a9a11810edCC98',
+        address: '0x7822465cD6F5A553F464F82ADA1b2ea33bCB2634',
         functionName: 'userData',
-        args: ['0x1d671d1B191323A38490972D58354971E5c1cd2A'],
-    })
+        args: [address],
+    });
 
+    if(!isConnected){
+        return "Connect your wallet to see your streak data";
+    }
 
     if (isFetching) {
         console.log("Fetching...");
@@ -30,10 +24,8 @@ export const MyStreak = () => {
     }
 
     if (data) {
-        let lastCheckin = new BigNumber(data[0]).toNumber();
-        let streak = new BigNumber(data[1]).toNumber();
-        let checkin = new BigNumber(data[2]).toNumber();
-        return `Current streak: ${streak}. Checkin ${checkin} times. Last check-in ${new Date(lastCheckin * 1000).toLocaleString()}`;
+        let [lastCheckin, streak, checkin] = data as [BigNumber, BigNumber, BigNumber];
+        return `Current streak: ${new BigNumber(streak).toNumber()}. Checkin ${new BigNumber(checkin).toNumber()} times. Last check-in ${new Date(new BigNumber(lastCheckin).toNumber() * 1000).toLocaleString()}`;
     }
 
     return "No streak data yet"
