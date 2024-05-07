@@ -23,7 +23,6 @@ export default function RootLayout({
             <Web3Provider cookie={cookie}>
                 {children}
             </Web3Provider>
-
         </div>
         </body>
         </html>

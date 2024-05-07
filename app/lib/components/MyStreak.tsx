@@ -1,36 +1,40 @@
 "use client";
 
-import {abi} from "@/app/lib/abi/basedbits.abi";
-import {useAccount, useConnect, useReadContract} from "wagmi";
+import {BBitsCheckInABI} from "@/app/lib/abi/BBitsCheckIn.abi";
+import {useAccount, useReadContract} from "wagmi";
 import BigNumber from "bignumber.js";
-import {injected} from "@wagmi/connectors";
-import {CheckInButton} from "@/app/lib/components/CheckIn";
+import {CheckInTimer} from "@/app/lib/components/CheckInTimer";
 
 export const MyStreak = () => {
 
     const {address, isConnected} = useAccount();
-    const {connect, connectors} = useConnect()
 
     const {data, isFetched, isFetching} = useReadContract({
-        abi: abi,
-        address: '0x7822465cD6F5A553F464F82ADA1b2ea33bCB2634',
-        functionName: 'userData',
+        abi: BBitsCheckInABI,
+        address: '0xE842537260634175891925F058498F9099C102eB',
+        functionName: 'checkIns',
         args: [address],
     });
 
-    if (!isConnected) {
-        return <button onClick={() => connect({connector: injected()})}>Connect to Check-in</button>;
+    if (!data) {
+        return;
     }
 
-    if (data) {
-        let [lastCheckin, streak, checkin] = data as [BigNumber, BigNumber, BigNumber];
+    let [lastCheckin, streak, count] = data as [0, 0, 0];
 
+    if (count === 0) {
         return <div>
-            <div>streak: {new BigNumber(streak).toNumber()}</div>
-            <div>checkins: {new BigNumber(checkin).toNumber()}</div>
-            <div>last check-in: {new Date(new BigNumber(lastCheckin).toNumber() * 1000).toLocaleString()}</div>
+            <div className="text-gray-600">no check-ins is sad :(</div>
+        </div>
+    }
+
+    if (count > 0) {
+        return <div>
+            <div className="text-xl font-semibold">🔥 {new BigNumber(streak).toNumber()}-day streak 🔥</div>
+            <div className="text-gray-600">Check-in score: {count}/{streak}</div>
+
             <div className="mt-5">
-                <CheckInButton/>
+                <CheckInTimer time={lastCheckin}/>
             </div>
         </div>
     }

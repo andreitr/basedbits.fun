@@ -1,4 +1,4 @@
-export const abi = [{
+export const BBitsCheckInABI = [{
     "inputs": [{
         "internalType": "address",
         "name": "_collection",
@@ -61,19 +61,25 @@ export const abi = [{
     "stateMutability": "view",
     "type": "function"
 }, {
+    "inputs": [{"internalType": "address", "name": "_address", "type": "address"}],
+    "name": "canCheckIn",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
     "inputs": [],
     "name": "checkIn",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
 }, {
-    "inputs": [{"internalType": "address", "name": "_address", "type": "address"}],
-    "name": "checkInStats",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {
+    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "name": "checkIns",
+    "outputs": [{"internalType": "uint256", "name": "lastCheckIn", "type": "uint256"}, {
         "internalType": "uint16",
-        "name": "",
+        "name": "streak",
         "type": "uint16"
-    }, {"internalType": "uint16", "name": "", "type": "uint16"}],
+    }, {"internalType": "uint16", "name": "count", "type": "uint16"}],
     "stateMutability": "view",
     "type": "function"
 }, {
@@ -129,15 +135,5 @@ export const abi = [{
     "name": "updateCollection",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-}, {
-    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
-    "name": "userData",
-    "outputs": [{"internalType": "uint256", "name": "lastCheckIn", "type": "uint256"}, {
-        "internalType": "uint16",
-        "name": "streak",
-        "type": "uint16"
-    }, {"internalType": "uint16", "name": "count", "type": "uint16"}],
-    "stateMutability": "view",
     "type": "function"
 }]

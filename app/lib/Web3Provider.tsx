@@ -1,10 +1,9 @@
 "use client";
 import {ReactNode} from "react";
-import {http, createConfig, WagmiProvider, createStorage, cookieStorage, State, cookieToInitialState} from 'wagmi'
+import {cookieStorage, cookieToInitialState, createConfig, createStorage, http, WagmiProvider} from 'wagmi'
 import {base} from 'wagmi/chains'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {metaMask} from "@wagmi/connectors";
-import {ReadonlyHeaders} from "next/dist/server/web/spec-extension/adapters/headers";
 
 export const config = createConfig({
     chains: [base],
@@ -12,7 +11,14 @@ export const config = createConfig({
     storage: createStorage({
         storage: cookieStorage,
     }),
-    connectors: [metaMask()],
+    connectors: [metaMask(
+        {
+            dappMetadata: {
+                name: "Based Bits",
+                url: "https://basedbits.fun",
+            }
+        }
+    )],
     transports: {
         [base.id]: http(),
     },
