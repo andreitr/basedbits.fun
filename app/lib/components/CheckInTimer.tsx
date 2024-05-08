@@ -27,9 +27,8 @@ export const CheckInTimer = ({time}: CheckInTimerProps) => {
 
     return <div>
         {remainingTime.as('milliseconds') > 0 ? (
-            <div>Next checkin in <span className="font-bold">{remainingTimeString}</span></div>) : (
+            <div>Next checkin-in window opens in <span className="font-bold">{remainingTimeString}</span></div>) : (
             <div>Check in now!</div>
         )}
-
     </div>
 }

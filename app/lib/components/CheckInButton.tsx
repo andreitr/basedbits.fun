@@ -1,59 +1,50 @@
 "use client";
 
-import {useAccount, useConnect, useReadContract, useWaitForTransactionReceipt, useWriteContract} from "wagmi";
+import {useAccount, useConnect, useDisconnect, useWaitForTransactionReceipt, useWriteContract} from "wagmi";
 import {BBitsCheckInABI} from "@/app/lib/abi/BBitsCheckIn.abi";
-import {injected} from "@wagmi/connectors";
-import {DateTime, Interval} from "luxon";
+import {injected, metaMask} from "@wagmi/connectors";
 
-export const CheckInButton = () => {
+import {useEffect} from "react";
 
-    const {connect, connectors} = useConnect();
-    const {address} = useAccount();
+interface CheckInButtonProps {
+    onSuccess: () => void;
+}
+
+export const CheckInButton = ({onSuccess}: CheckInButtonProps) => {
+
+    const {connect} = useConnect();
+    const {disconnect} = useDisconnect();
+
+    const {address,} = useAccount();
     const {isConnected} = useAccount();
 
-    const {data, isSuccess, writeContract} = useWriteContract();
-    const {isFetching} = useWaitForTransactionReceipt({hash: data});
+    const {data, writeContract} = useWriteContract();
+    const {isFetching, isSuccess} = useWaitForTransactionReceipt({hash: data});
 
-
-    const {data: checkIns} = useReadContract({
-        abi: BBitsCheckInABI,
-        address: '0xE842537260634175891925F058498F9099C102eB',
-        functionName: 'checkIns',
-        args: [address],
-    });
+    useEffect(() => {
+        if (isSuccess) {
+            onSuccess();
+        }
+    }, [isSuccess, isSuccess]);
 
     if (!isConnected) {
-        return <button onClick={() => connect({connector: injected()})}
+        return <button onClick={() => connect({connector: metaMask()})}
                        className="bg-[#303730] hover:bg-[#677467] text-white py-2 px-4 rounded">Connect Wallet</button>;
     }
-
-    // if (checkIns) {
-    //     let [lastCheckin, count] = checkIns as [0, 0];
-    //
-    //
-    //     const lastCheckinTime = DateTime.fromMillis(lastCheckin);
-    //     const elapsedTime = Interval.fromDateTimes(lastCheckinTime, DateTime.now());
-    //
-    //     const canCheckIn = elapsedTime.toDuration('hours').hours >= 24;
-    //
-    //     if (!canCheckIn) {
-    //         return ""
-    //     }
-    // }
-
 
     const checkIn = () => {
         writeContract({
             abi: BBitsCheckInABI,
             address: '0xE842537260634175891925F058498F9099C102eB',
-            functionName: 'checkIn'
+            functionName: 'checkIn',
+            args: [address],
         })
     }
+
 
     return <button onClick={checkIn}
                    disabled={isFetching}
                    className="bg-[#303730] hover:bg-[#677467] text-white py-2 px-4 rounded">
         {isFetching ? "Checking In..." : "Check In"}
     </button>
-
 }
