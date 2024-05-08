@@ -3,7 +3,7 @@ import {DateTime, Duration, Interval} from 'luxon';
 import {useEffect, useState} from "react";
 
 interface CheckInTimerProps {
-    time: number;
+    time: BigNumber;
 }
 
 export const CheckInTimer = ({time}: CheckInTimerProps) => {
@@ -18,7 +18,7 @@ export const CheckInTimer = ({time}: CheckInTimerProps) => {
         return () => clearInterval(interval);
     }, []);
 
-    const lastCheckinTime = DateTime.fromMillis(new BigNumber(time).toNumber() * 1000);
+    const lastCheckinTime = DateTime.fromMillis(BigNumber(time).toNumber() * 1000);
     const elapsedTime = Interval.fromDateTimes(lastCheckinTime, DateTime.now());
 
     const remainingTime = Duration.fromObject({hours: 24}).minus(elapsedTime.toDuration('hours'));

@@ -2,54 +2,51 @@
 
 import {BBitsCheckInABI} from "@/app/lib/abi/BBitsCheckIn.abi";
 import {useAccount, useReadContract} from "wagmi";
-import BigNumber from "bignumber.js";
 import {CheckInTimer} from "@/app/lib/components/CheckInTimer";
 import {CheckInButton} from "@/app/lib/components/CheckInButton";
 import {useQueryClient} from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
 
 export const MyStreak = () => {
 
     const {address, isConnected} = useAccount();
     const queryClient = useQueryClient();
 
-    const {data, queryKey} = useReadContract({
+    const {data, queryKey, isFetched, isFetching} = useReadContract({
         abi: BBitsCheckInABI,
         address: '0xE842537260634175891925F058498F9099C102eB',
         functionName: 'checkIns',
         args: [address],
+        query: {
+            enabled: isConnected
+        }
     });
 
     const invalidate = () => {
         queryClient.invalidateQueries({queryKey});
     }
 
-    if (!data) {
-        return <div>
-            <div className="text-gray-600">loading...</div>
-        </div>
+    if (!isConnected) {
+        return <div className="text-gray-600 mb-5">connect wallet → check-in</div>
     }
 
-    let [lastCheckin, streak, count] = data as [0, 0, 0];
+    if (isFetched && data) {
 
-    if (count === 0) {
-        return <div>
-            <div className="text-gray-600 mb-5">no check-ins is sad :(</div>
-            <CheckInButton onSuccess={invalidate}/>
-        </div>
-    }
+        let [lastCheckin, streak, count] = data as [BigNumber, number, number];
 
-
-    if (count > 0) {
         return <div>
             <div
-                className="text-xl font-semibold">{count} checkin{count === 1 ? "" : "s"} 🔥 {new BigNumber(streak).toNumber()}-day
+                className="text-xl font-semibold">{count} check-in{count === 1 ? "" : "s"} 🔥 {streak}-day
                 streak
             </div>
             <div className="text-gray-600"></div>
 
-            <div className="mt-5">
+            <div className="py-5">
                 <CheckInTimer time={lastCheckin}/>
             </div>
+
+            <CheckInButton time={lastCheckin} onSuccess={invalidate}/>
         </div>
     }
+
 }

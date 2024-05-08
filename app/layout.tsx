@@ -19,8 +19,8 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body className="flex justify-center font-mono">
-        <div className="container">
-            <Web3Provider cookie={cookie}>
+        <div className="container max-w-screen-lg">
+            <Web3Provider>
                 {children}
             </Web3Provider>
         </div>
