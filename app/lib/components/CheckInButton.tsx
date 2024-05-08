@@ -28,14 +28,11 @@ export const CheckInButton = ({onSuccess, time}: CheckInButtonProps) => {
     const elapsedTime = Interval.fromDateTimes(lastCheckinTime, DateTime.now());
     const remainingTime = Duration.fromObject({hours: 24}).minus(elapsedTime.toDuration('hours'));
 
-
     const checkIn = () => {
         writeContract({
             abi: BBitsCheckInABI,
             address: '0xE842537260634175891925F058498F9099C102eB',
             functionName: 'checkIn',
-            args: [address],
-
         })
     }
 
