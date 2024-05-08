@@ -23,11 +23,7 @@ export const MyStreak = () => {
         queryClient.invalidateQueries({queryKey});
     }
 
-    if (!isConnected) {
-        return <CheckInButton onSuccess={invalidate}/>;
-    }
-
-    if(!data) {
+    if (!data) {
         return <div>
             <div className="text-gray-600">loading...</div>
         </div>
@@ -37,13 +33,18 @@ export const MyStreak = () => {
 
     if (count === 0) {
         return <div>
-            <div className="text-gray-600">no check-ins is sad :(</div>
+            <div className="text-gray-600 mb-5">no check-ins is sad :(</div>
+            <CheckInButton onSuccess={invalidate}/>
         </div>
     }
 
+
     if (count > 0) {
         return <div>
-            <div className="text-xl font-semibold">{count} checkin{count === 1 ? "" : "s"} 🔥 {new BigNumber(streak).toNumber()}-day streak</div>
+            <div
+                className="text-xl font-semibold">{count} checkin{count === 1 ? "" : "s"} 🔥 {new BigNumber(streak).toNumber()}-day
+                streak
+            </div>
             <div className="text-gray-600"></div>
 
             <div className="mt-5">
