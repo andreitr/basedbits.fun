@@ -16,7 +16,7 @@ export default async function Home() {
             </div>
 
             <div className="flex justify-center items-center w-full">
-                <div className="container max-w-screen-lg mt-16">
+                <div className="container max-w-screen-lg mt-16 mb-24">
                     <div className="text-5xl text-[#363E36]">Based Bits</div>
                     <div className="mt-4 text-[#677467]">8000 Based Bits causing byte-sized mischief on the BASE chain,
                         a
@@ -50,8 +50,7 @@ export default async function Home() {
                                        target="_blank">Check-in contract on BASE</Link></div>
                             <div><Link className="hover:underline"
                                        href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
-                                       target="_blank">NFT contract on BASE
-                                on x</Link></div>
+                                       target="_blank">NFT contract on BASE</Link></div>
                         </div>
                     </div>
                 </div>
