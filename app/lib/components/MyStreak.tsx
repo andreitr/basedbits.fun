@@ -27,7 +27,7 @@ export const MyStreak = () => {
     }
 
     if (!isConnected) {
-        return <div className="text-gray-600 mb-5">connect wallet → check-in</div>
+        return <div className="text-[#677467] mb-5">connect wallet → check-in</div>
     }
 
     if (isFetched && data) {
@@ -36,10 +36,9 @@ export const MyStreak = () => {
 
         return <div>
             <div
-                className="text-xl font-semibold">{count} check-in{count === 1 ? "" : "s"} 🔥 {streak}-day
+                className="text-[#363E36] text-xl font-semibold">{count} check-in{count === 1 ? "" : "s"} 🔥 {streak}-day
                 streak
             </div>
-            <div className="text-gray-600"></div>
 
             <div className="py-5">
                 <CheckInTimer time={lastCheckin}/>

@@ -12,8 +12,8 @@ export const CheckIn = () => {
                priority={true}/>
 
         <div className="flex flex-col justify-center">
-            <div className="text-6xl font-bold mb-2">Are you here?</div>
-            <div className="text-gray-600"><p>Based Bits holder - it is time to check-in into the home base!</p>
+            <div className="text-5xl font-semibold text-[#363E36] mb-2">Are you here?</div>
+            <div className="text-[#677467]"><p>Based Bits holder - it is time to check-in into the home base!</p>
             </div>
 
             <div className="mt-8">
