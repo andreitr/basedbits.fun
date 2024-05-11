@@ -15,7 +15,7 @@ export const CheckIn = () => {
                 priority={true}
             />
 
-            <div className="flex flex-col justify-center mt-8 sm:mt-0">
+            <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
                 <div className="text-5xl font-semibold text-[#363E36] mb-4">
                     Are you here?
                 </div>
