@@ -5,7 +5,7 @@ import "./global.css";
 
 export const metadata: Metadata = {
     title: "Based Bits",
-    description: "8000 Based Bits causing byte-sized mischief on the BASE chain, a nerdy collection by andreitr.eth and gretegremplin.eth",
+    description: "8000 Based Bits causing byte-sized mischief on the BASE chain, a nerdy collection by andreitr.eth and gretagremplin.eth",
 };
 
 export default function RootLayout({
