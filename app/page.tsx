@@ -33,7 +33,7 @@ export default async function Home() {
                             target="_blank"
                             title="gretagremplin on Farcaster"
                         >
-                            gratagremplin.eth
+                            gretagremplin.eth
                         </a>
                         . All art is CC0
                     </div>

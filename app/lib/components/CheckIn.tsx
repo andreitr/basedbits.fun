@@ -20,7 +20,7 @@ export const CheckIn = () => {
                     Are you here?
                 </div>
                 <div className="text-[#677467]">
-                    <p>Based Bits holder - it is time to check-in into the home base!</p>
+                    <p>Based Bits holder - it's time to check-in to the home base!</p>
                 </div>
 
                 <div className="mt-8">
