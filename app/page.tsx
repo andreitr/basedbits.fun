@@ -45,7 +45,7 @@ export default async function Home() {
                             </div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://rarible.com/BasedBits/items"
                                     target="_blank"
                                 >
@@ -54,7 +54,7 @@ export default async function Home() {
                             </div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://opensea.io/collection/based-bits"
                                     target="_blank"
                                 >
@@ -66,7 +66,7 @@ export default async function Home() {
                             <div className="text-xl text-[#363E36] mb-2">Socials</div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://warpcast.com/basedbits"
                                     target="_blank"
                                 >
@@ -75,7 +75,7 @@ export default async function Home() {
                             </div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://x.com/andreitr"
                                     target="_blank"
                                 >
@@ -88,7 +88,7 @@ export default async function Home() {
                             <div className="text-xl text-[#363E36] mb-2">Code</div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://basescan.org/address/0xe842537260634175891925f058498f9099c102eb"
                                     target="_blank"
                                 >
@@ -97,7 +97,7 @@ export default async function Home() {
                             </div>
                             <div>
                                 <Link
-                                    className="hover:underline"
+                                    className="hover:underline text-sm"
                                     href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
                                     target="_blank"
                                 >
