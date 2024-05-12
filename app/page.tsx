@@ -19,15 +19,15 @@ export default async function Home() {
           <div className="text-5xl text-[#363E36] mb-4">Based Bits</div>
           <div className="text-[#677467]">
             8000 Based Bits causing byte-sized mischief on the BASE chain, a
-            nerdy collection by
+            nerdy collection by {" "}
             <a
               href="https://warpcast.com/andreitr"
               target="_blank"
               title="andreitr.eth on Farcaster"
             >
               andreitr.eth
-            </a>{" "}
-            and{" "}
+            </a>
+            {" "}and{" "}
             <a
               href="https://warpcast.com/gretagremplin"
               target="_blank"
@@ -35,7 +35,7 @@ export default async function Home() {
             >
               gretagremplin.eth
             </a>
-            . All art is CC0
+            . All art is CC0.
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mt-16 text-[#677467]">
