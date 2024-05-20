@@ -4,10 +4,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
         {
-            name: "Based Bits OG",
-            description: "This badge is awarded for checking into the home base during the first week! You are a true Based Bits OG!",
+            name: "Bear Punk",
+            description: "Do you hold a Bear Punk and you have a 7 Day Streak? Then this badge is yours! Welcome to the home base, fren.",
             image: "https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/5709.png",
-            tokenId: "1",
+            tokenId: "3",
             attributes: [
                 {
                     trait_type: "artist",
