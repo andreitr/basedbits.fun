@@ -11,13 +11,14 @@ export const MyStreak = () => {
     const {address, isConnected} = useAccount();
     const queryClient = useQueryClient();
 
-    const {data, queryKey, isFetched, isFetching} = useReadContract({
+    const {data, queryKey, isFetched} = useReadContract({
         abi: BBitsCheckInABI,
-        address: process.env.BB_CHECKINS_ADDRESS as `0x${string}`,
+        address: process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS as `0x${string}`,
         functionName: "checkIns",
         args: [address],
         query: {
             enabled: isConnected,
+            staleTime: 3600000,
         },
     });
 
