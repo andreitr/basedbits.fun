@@ -4,15 +4,15 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
         {
-            name: "Based Bits OG",
-            description: "This badge is awarded for checking into the home base during the first week! You are a true Based Bits OG!",
-            image: "https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/5709.png",
+            name: "First Click OG",
+            description: "This badge is awarded for checking into the Based Bits home base during the first week of the check-ins release. If you can mint this badge, you are a true check-in OG!",
+            image: "https://www.basedbits.fun/images/badges/001.png",
             tokenId: "1",
             attributes: [
                 {
                     trait_type: "artist",
                     value: "numo.eth"
-                },
+                }
             ]
         });
 };
