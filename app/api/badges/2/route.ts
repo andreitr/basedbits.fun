@@ -6,7 +6,7 @@ export async function GET(request: Request) {
         {
             name: "7 Day Streak",
             description: "This badge is awarded for checking into basedbits.fun for 7 days in a row.",
-            image: "https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/5709.png",
+            image: "/images/badges/002.png",
             tokenId: "2",
             attributes: [
                 {
