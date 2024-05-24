@@ -6,7 +6,7 @@ export async function GET(request: Request) {
         {
             name: "Based Bits OG",
             description: "This badge is awarded for checking into the home base during the first week! You are a true Based Bits OG!",
-            image: "/images/badges/001.png",
+            image: "https://www.basedbits.fun/images/badges/001.png",
             tokenId: "1",
             attributes: [
                 {
