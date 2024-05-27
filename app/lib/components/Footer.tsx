@@ -56,7 +56,16 @@ export const Footer = () => {
                         href="https://basescan.org/address/0xe842537260634175891925f058498f9099c102eb"
                         target="_blank"
                     >
-                        Check-in contract on BASE
+                        Check-in Contract
+                    </Link>
+                </div>
+                <div>
+                    <Link
+                        className="hover:underline text-sm"
+                        href="https://basescan.org/address/0xe0e68930a8cc0c066bb96183870c9949f5396ea8"
+                        target="_blank"
+                    >
+                        Social Contract
                     </Link>
                 </div>
                 <div>
@@ -65,7 +74,7 @@ export const Footer = () => {
                         href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
                         target="_blank"
                     >
-                        NFT contract on BASE
+                        NFT Contract
                     </Link>
                 </div>
             </div>
