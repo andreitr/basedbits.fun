@@ -98,6 +98,15 @@ export default async function Home() {
                             <div>
                                 <Link
                                     className="hover:underline text-sm"
+                                    href="https://basescan.org/address/0x267704932f32875b28edd997050a5bbe8e036fc2"
+                                    target="_blank"
+                                >
+                                    Check-in Badges Contract
+                                </Link>
+                            </div>
+                            <div>
+                                <Link
+                                    className="hover:underline text-sm"
                                     href="https://basescan.org/address/0xe0e68930a8cc0c066bb96183870c9949f5396ea8"
                                     target="_blank"
                                 >
