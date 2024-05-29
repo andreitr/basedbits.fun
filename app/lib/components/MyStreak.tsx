@@ -22,6 +22,7 @@ export const MyStreak = () => {
         },
     });
 
+
     const invalidate = () => {
         queryClient.invalidateQueries({queryKey});
     };
@@ -39,7 +40,7 @@ export const MyStreak = () => {
                     {count} check-in{count === 1 ? "" : "s"} 🔥 {streak}-day streak
                 </div>
 
-                <div className="py-5">
+                <div className="py-2">
                     <CheckInTimer time={lastCheckin}/>
                 </div>
 
