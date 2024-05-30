@@ -15,7 +15,7 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full bg-[#96A896] px-10 lg:px-0 pb-8 sm:pb-0">
+      <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Social />
         </div>

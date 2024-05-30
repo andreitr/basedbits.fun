@@ -105,7 +105,7 @@ export const Social = () => {
 
             <Image
                 className="w-auto max-w-72 scale-x-[-1] hidden sm:block"
-                src="/images/walkman.png"
+                src="/images/notepad.png"
                 alt="Are you here?"
                 width={250}
                 height={250}
