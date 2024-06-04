@@ -43,10 +43,14 @@ export const Social = () => {
 
     useEffect(() => {
         if (posted) {
-            setTimeout(() => {
-                setPosted(false);
+            const timeoutId = setTimeout(() => {
                 setMessage("");
+                setPosted(false);
             }, 5000);
+
+            return () => {
+                clearTimeout(timeoutId);
+            };
         }
     }, [posted]);
 
@@ -57,44 +61,45 @@ export const Social = () => {
                     Shill Based Bits!
                 </div>
                 <div className="text-[#373D37] mb-6">
-                    Have a 7-day streak? Post a message to{" "}
-                    <Link
-                        href="https://warpcast.com/basedbits"
-                        target="_blank"
-                        className="underline"
-                    >
-                        @basedbits
-                    </Link>{" "}
-                    on Warpcast!
+                    Have a 7-day streak? Post a message to our socials on <Link
+                    href="https://warpcast.com/basedbits"
+                    target="_blank"
+                    className="underline font-semibold"
+                >Farcaster</Link> and <Link
+                    href="https://x.com/basedbits_fun"
+                    target="_blank"
+                    className="underline font-semibold"
+                >X</Link>!
                 </div>
                 <textarea
                     className="mt-6 rounded-lg p-2 bg-[#DDF5DD] shadow-sm focus:outline-none"
                     rows={4}
                     placeholder="something based, no links, no spam — or else banhammer!"
+                    value={message}
                     onChange={(e) => setMessage(e.target.value)}
                 ></textarea>
                 {isAboveLimit && (
-                    <div className="text-red-500 text-sm mt-2">
+                    <div className="text-red-200 text-sm mt-2">
                         Slow down, Shakespeare! This message is too long - keep it under{" "}
                         {characterLimit as string} characters.
                     </div>
                 )}
 
                 {hasUrl && (
-                    <div className="text-red-500 text-sm mt-2">
+                    <div className="text-yellow-200 text-sm mt-2">
                         Links are not allowed, just words please!
                     </div>
                 )}
 
                 {posted && (
                     <div className="mt-4">
-                        Posted! Your message will show up on Farcaster in a bit!
+                        Posted! Your message will show up on socials in a bit!
                     </div>
                 )}
 
                 {Boolean(isAllowed) && isValid && (
                     <div className="mt-4">
-                        <PostButton message={message} onSuccess={() => setPosted(true)}/>
+                        <PostButton message={message} disabled={posted} onSuccess={() => setPosted(true)}/>
                     </div>
                 )}
 
