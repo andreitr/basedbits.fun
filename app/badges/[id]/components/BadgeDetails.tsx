@@ -9,8 +9,8 @@ interface BadgeProps {
 export const BadgeDetails = ({id}: BadgeProps) => {
     return <div className="flex flex-col justify-between mt-8 sm:flex-row gap-8">
         <Image
-            className="w-auto max-w-72 m-auto sm:m-0 grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition duration-300 ease-in-out"
-            src="/images/badges/003.png"
+            className="w-auto max-w-72 m-auto sm:m-0 opacity-60 hover:opacity-100 transition duration-300 ease-in-out"
+            src="/images/badges/1.png"
             alt="Are you here?"
             width={250}
             height={250}

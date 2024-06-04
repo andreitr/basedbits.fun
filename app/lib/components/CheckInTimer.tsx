@@ -30,7 +30,7 @@ export const CheckInTimer = ({ time }: CheckInTimerProps) => {
   return (
     <div>
       {remainingTime.as("milliseconds") > 0 && (
-        <div className="text-[#677467]">
+        <div className=" text-sm text-[#677467]">
           Next checkin-in window opens in{" "}
           <span className="font-bold">{remainingTimeString}</span>
         </div>

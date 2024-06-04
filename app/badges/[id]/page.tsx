@@ -7,7 +7,6 @@ import {Footer} from "@/app/lib/components/Footer";
 interface UserProps {
     params: {
         id: number
-
     }
 }
 
@@ -23,7 +22,6 @@ export default async function Badge({params: {id}}: UserProps) {
 
 
         <Footer/>
-        <div>Holders..</div>
 
     </div>
 }

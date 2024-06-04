@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BBitsCheckInABI } from "@/app/lib/abi/BBitsCheckIn.abi";
 
 import { useEffect } from "react";
@@ -17,7 +13,6 @@ interface CheckInButtonProps {
 }
 
 export const CheckInButton = ({ onSuccess, time }: CheckInButtonProps) => {
-  const { address } = useAccount();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
@@ -40,7 +35,7 @@ export const CheckInButton = ({ onSuccess, time }: CheckInButtonProps) => {
   const checkIn = () => {
     writeContract({
       abi: BBitsCheckInABI,
-      address: "0xE842537260634175891925F058498F9099C102eB",
+      address: process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS as `0x${string}`,
       functionName: "checkIn",
     });
   };
@@ -51,7 +46,7 @@ export const CheckInButton = ({ onSuccess, time }: CheckInButtonProps) => {
         <button
           onClick={checkIn}
           disabled={isFetching}
-          className="bg-[#303730] hover:bg-[#677467] text-white py-2 px-4 rounded"
+          className="bg-[#303730] hover:bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded"
         >
           {isFetching ? "Checking In..." : "Check In"}
         </button>
