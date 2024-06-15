@@ -10,6 +10,7 @@ export const Header = () => {
             <Link href={"/"} title="Home">
                 <div className="bg-[#ABBEAC] px-5 py-2 rounded-lg cursor-pointer">
                     <Image
+                        className="width-auto"
                         src="/images/noggles.png"
                         alt="Nerd Noggles"
                         width={65}

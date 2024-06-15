@@ -56,14 +56,14 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
 
     if (eligibitlityFetched && hasEligibility) {
 
-        // if (existingEntryFetched && hasExistingEntry) {
-        //     return <button
-        //         disabled={true}
-        //         className="bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded w-full"
-        //     >
-        //         Entry is recorded! Good luck
-        //     </button>
-        // }
+        if (existingEntryFetched && hasExistingEntry) {
+            return <button
+                disabled={true}
+                className="bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded w-full"
+            >
+                Entry is recorded! Good luck
+            </button>
+        }
 
         return <button
             onClick={freeEntry}
