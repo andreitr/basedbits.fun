@@ -1,9 +1,9 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
-import { CheckIn } from "@/app/lib/components/CheckIn";
-import { Footer } from "@/app/lib/components/Footer";
-import { Social } from "@/app/lib/components/Social";
+import {Header} from "@/app/lib/components/Header";
+import {CheckIn} from "@/app/lib/components/CheckIn";
+import {Footer} from "@/app/lib/components/Footer";
+import {Social} from "@/app/lib/components/Social";
 
 export default async function Home() {
   return (
