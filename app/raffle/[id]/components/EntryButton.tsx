@@ -3,6 +3,7 @@
 import {useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract} from "wagmi";
 import {useEffect} from "react";
 import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
+import {parseUnits} from "viem";
 
 interface FreeEntryButtonProps {
     id: number;
@@ -12,10 +13,12 @@ interface FreeEntryButtonProps {
 export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
     const {address, isConnected} = useAccount();
 
-    const {data, writeContract} = useWriteContract();
+    const {data, error, writeContract} = useWriteContract();
     const {isFetching, isSuccess} = useWaitForTransactionReceipt({
         hash: data,
     });
+
+    console.log(error?.message);
 
     useEffect(() => {
         if (isSuccess && onSuccess) {
@@ -49,6 +52,15 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
         });
     };
 
+    const paidEntry = () => {
+        writeContract({
+            abi: BBitsRaffleABI,
+            address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
+            functionName: "newPaidEntry",
+            value: BigInt(800000000000),
+        });
+    }
+
 
     if (!eligibitlityFetched) {
         return "Fetching eligibility...";
@@ -75,10 +87,10 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
 
     if (eligibitlityFetched && !hasEligibility) {
         return <button
-            disabled={true}
-            className="bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded w-full"
-        >
-            Paid Entry not working yet
+            onClick={paidEntry}
+            disabled={isFetching}
+            className="bg-[#303730] hover:bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded w-full">
+            {isFetching ? "Posting..." : "Enter Raffle for 0.0000008Ξ"}
         </button>
     }
 };
