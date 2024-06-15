@@ -5,9 +5,10 @@ import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
 import BigNumber from "bignumber.js";
 import {RaffleTimer} from "@/app/raffle/[id]/components/RaffleTimer";
 import Image from "next/image";
-import {DateTime} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {RaffleEntries} from "@/app/raffle/[id]/components/RaffleEntries";
 import {EntryButton} from "@/app/raffle/[id]/components/EntryButton";
+import {RaffleWinner} from "@/app/raffle/[id]/components/RaffleWinner";
 
 interface RaffleProps {
     id: number
@@ -34,10 +35,17 @@ export const Raffle = ({id}: RaffleProps) => {
     if (isFetched && data) {
 
         let [startedAt, settledAt, winner, sponsor] = data as [BigNumber, BigNumber, `0x${string}`, RaffleSponsor];
-        // const isSettled = Boolean(settledAt.toNumber() > 0);
 
         const startTime = DateTime.fromMillis(
             BigNumber(startedAt).toNumber() * 1000);
+
+        const elapsedTime = Interval.fromDateTimes(startTime, DateTime.now());
+        const remainingTime = Duration.fromObject({hours: 24}).minus(elapsedTime.toDuration("hours"));
+
+
+        const isEnded = remainingTime.as("milliseconds") <= 0;
+        // const isSettled = Boolean(settledAt.toNumber() > 0);
+        const hasWinner = winner !== `0x${"0".repeat(40)}`;
 
 
         return (
@@ -63,16 +71,31 @@ export const Raffle = ({id}: RaffleProps) => {
                         <RaffleTimer startTime={startedAt} endTime={settledAt}/>
                     </div>
 
-
-                    <div className="mt-8">
-                        {isConnected ?
-                            (
-                                <EntryButton id={id}/>
+                    {isEnded ? (
+                        <>
+                            {hasWinner ? (
+                                <div className="mt-8">
+                                    <RaffleWinner address={winner}/>
+                                </div>
                             ) : (
-                                <div className="text-[#677467] mt-4">connect wallet → enter</div>
-                            )
-                        }
-                    </div>
+                                <div className="mt-8">
+                                    Raffle ended... Awaiting settlement
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="mt-8">
+                            {isConnected ?
+                                (
+                                    <EntryButton id={id}/>
+                                ) : (
+                                    <div className="text-[#677467] mt-4">connect wallet → enter</div>
+                                )
+                            }
+                        </div>
+                    )}
+
+
                     <div className="text-sm mt-10 text-[#677467] font">
                         <div><span className="mt-2 font-semibold">Free entry</span>: Fresh check-in and one Based Bit
                         </div>
