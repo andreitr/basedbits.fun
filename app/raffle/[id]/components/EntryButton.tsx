@@ -18,7 +18,6 @@ export const EntryButton = ({id}: FreeEntryButtonProps) => {
         hash: data,
     });
 
-
     const {data: hasEligibility, isFetched: eligibitlityFetched} = useReadContract({
         abi: BBitsRaffleABI,
         address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
