@@ -83,10 +83,10 @@ export const Footer = () => {
                     <div>
                         <Link
                             className="hover:underline text-sm"
-                            href="https://basescan.org/address/0x267704932f32875b28edd997050a5bbe8e036fc2"
+                            href="https://basescan.org/address/0x8b9ef77160bb4da3ce32805d6833b395d63a4a94"
                             target="_blank"
                         >
-                            Check-in Badges Contract
+                            Raffle Contract
                         </Link>
                     </div>
                     <div>

@@ -7,7 +7,7 @@ interface RaffleEntriesProps {
 
 export const RaffleEntries = ({id}: RaffleEntriesProps) => {
 
-    const {data, queryKey, isFetched} = useReadContract({
+    const {data, isFetched} = useReadContract({
         abi: BBitsRaffleABI,
         address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
         functionName: "getRaffleEntryNumber",

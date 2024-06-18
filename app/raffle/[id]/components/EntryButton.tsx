@@ -3,27 +3,20 @@
 import {useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract} from "wagmi";
 import {useEffect} from "react";
 import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
-import {parseUnits} from "viem";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface FreeEntryButtonProps {
     id: number;
-    onSuccess?: () => void;
 }
 
-export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
+export const EntryButton = ({id}: FreeEntryButtonProps) => {
     const {address, isConnected} = useAccount();
+    const queryClient = useQueryClient();
 
     const {data, error, writeContract} = useWriteContract();
     const {isFetching, isSuccess} = useWaitForTransactionReceipt({
         hash: data,
     });
-
-
-    useEffect(() => {
-        if (isSuccess && onSuccess) {
-            onSuccess();
-        }
-    }, [isSuccess, onSuccess]);
 
 
     const {data: hasEligibility, isFetched: eligibitlityFetched} = useReadContract({
@@ -34,13 +27,20 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
     });
 
 
-    const {data: hasExistingEntry, isFetched: existingEntryFetched} = useReadContract({
+    const {data: hasExistingEntry, isFetched: existingEntryFetched, queryKey} = useReadContract({
         abi: BBitsRaffleABI,
         address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
         functionName: "hasEnteredRaffle",
-        args: [id, address]
+        args: [id, address],
+
     });
 
+
+    useEffect(() => {
+        if (isSuccess) {
+            queryClient.invalidateQueries({queryKey});
+        }
+    }, [queryClient, isSuccess]);
 
     const freeEntry = () => {
 
@@ -73,7 +73,7 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
             Entry recorded! Good luck
         </button>
     }
-    
+
     if (eligibitlityFetched && hasEligibility) {
 
 

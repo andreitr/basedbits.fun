@@ -49,15 +49,14 @@ export const Raffle = ({id}: RaffleProps) => {
 
 
         return (
-            <div className="flex flex-row justify-between mt-4">
-                <div>
-                    <div className="p-6 bg-[#ABBEAC] rounded-lg mb-7">
-                        <Image
-                            className="rounded-lg"
-                            width={350} height={350} alt={`Based Bit ${sponsor.tokenId}`}
-                            src={`https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${sponsor.tokenId}.png`}
-                        />
-                    </div>
+            <div className="flex flex-col justify-between mt-2 sm:mt-4 sm:flex-row gap-8">
+
+                <div className="flex p-6 bg-[#ABBEAC] rounded-lg sm:mb-7">
+                    <Image
+                        className="rounded-lg m-auto"
+                        width={350} height={350} alt={`Based Bit ${sponsor.tokenId}`}
+                        src={`https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${sponsor.tokenId}.png`}
+                    />
                 </div>
                 <div>
                     <div
