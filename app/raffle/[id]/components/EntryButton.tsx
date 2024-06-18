@@ -57,7 +57,7 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
             abi: BBitsRaffleABI,
             address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
             functionName: "newPaidEntry",
-            value: BigInt(800000000000),
+            value: BigInt(100000000000000),
         });
     }
 
@@ -90,7 +90,7 @@ export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
             onClick={paidEntry}
             disabled={isFetching}
             className="bg-[#303730] hover:bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded w-full">
-            {isFetching ? "Posting..." : "Enter Raffle for 0.0000008Ξ"}
+            {isFetching ? "Posting..." : "Enter Raffle for 0.0001Ξ"}
         </button>
     }
 };

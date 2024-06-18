@@ -99,8 +99,7 @@ export const Raffle = ({id}: RaffleProps) => {
                     <div className="text-sm mt-10 text-[#677467] font">
                         <div><span className="mt-2 font-semibold">Free entry</span>: Fresh check-in and one Based Bit
                         </div>
-                        <div><span className="font-semibold">Paid entry</span>: A tiny fee of 0.0000008Ξ to discourage
-                            bots
+                        <div><span className="font-semibold">Paid entry</span>: A tiny fee of 0.0001Ξ to discourage bots
                         </div>
                     </div>
                 </div>
