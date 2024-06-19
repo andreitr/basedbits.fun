@@ -27,7 +27,7 @@ export const SettleButton = ({onSuccess}: FreeEntryButtonProps) => {
         writeContract({
             abi: BBitsRaffleABI,
             address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
-            functionName: "newFreeEntry",
+            functionName: "settleRaffle",
         });
     };
 
