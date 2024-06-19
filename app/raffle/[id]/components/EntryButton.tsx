@@ -7,9 +7,10 @@ import {useQueryClient} from "@tanstack/react-query";
 
 interface FreeEntryButtonProps {
     id: number;
+    onSuccess?: () => void;
 }
 
-export const EntryButton = ({id}: FreeEntryButtonProps) => {
+export const EntryButton = ({id, onSuccess}: FreeEntryButtonProps) => {
     const {address, isConnected} = useAccount();
     const queryClient = useQueryClient();
 
@@ -36,8 +37,9 @@ export const EntryButton = ({id}: FreeEntryButtonProps) => {
 
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess && onSuccess) {
             queryClient.invalidateQueries({queryKey});
+            onSuccess();
         }
     }, [queryClient, isSuccess]);
 

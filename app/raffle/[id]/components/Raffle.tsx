@@ -45,10 +45,9 @@ export const Raffle = ({id}: RaffleProps) => {
         const isEnded = remainingTime.as("milliseconds") <= 0;
         const hasWinner = winner !== `0x${"0".repeat(40)}`;
 
-        const onSettle = () => {
+        const reloadRaffle = () => {
             queryClient.invalidateQueries({queryKey});
         };
-
 
         return (
             <div className="flex flex-col justify-between mt-2 sm:mt-4 sm:flex-row gap-8">
@@ -80,13 +79,13 @@ export const Raffle = ({id}: RaffleProps) => {
                                 </div>
                             ) : (
                                 <div className="mt-8">
-                                    <SettleButton onSuccess={onSettle}/>
+                                    <SettleButton onSuccess={reloadRaffle}/>
                                 </div>
                             )}
                         </>
                     ) : (
                         <div className="mt-8">
-                            <EntryButton id={id}/>
+                            <EntryButton id={id} onSuccess={reloadRaffle}/>
                         </div>
                     )}
 
