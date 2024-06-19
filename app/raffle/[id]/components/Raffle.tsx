@@ -1,6 +1,6 @@
 "use client";
 
-import {useAccount, useReadContract} from "wagmi";
+import {useReadContract} from "wagmi";
 import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
 import BigNumber from "bignumber.js";
 import {RaffleTimer} from "@/app/raffle/[id]/components/RaffleTimer";
@@ -9,6 +9,8 @@ import {DateTime, Duration, Interval} from "luxon";
 import {RaffleEntries} from "@/app/raffle/[id]/components/RaffleEntries";
 import {EntryButton} from "@/app/raffle/[id]/components/EntryButton";
 import {RaffleWinner} from "@/app/raffle/[id]/components/RaffleWinner";
+import {SettleButton} from "@/app/raffle/[id]/components/SettleButton";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface RaffleProps {
     id: number
@@ -21,8 +23,7 @@ type RaffleSponsor = {
 
 export const Raffle = ({id}: RaffleProps) => {
 
-
-    const {isConnected} = useAccount();
+    const queryClient = useQueryClient();
 
     const {data, queryKey, isFetched} = useReadContract({
         abi: BBitsRaffleABI,
@@ -30,7 +31,6 @@ export const Raffle = ({id}: RaffleProps) => {
         functionName: "idToRaffle",
         args: [id],
     });
-
 
     if (isFetched && data) {
 
@@ -42,10 +42,12 @@ export const Raffle = ({id}: RaffleProps) => {
         const elapsedTime = Interval.fromDateTimes(startTime, DateTime.now());
         const remainingTime = Duration.fromObject({hours: 24}).minus(elapsedTime.toDuration("hours"));
 
-
         const isEnded = remainingTime.as("milliseconds") <= 0;
-        // const isSettled = Boolean(settledAt.toNumber() > 0);
         const hasWinner = winner !== `0x${"0".repeat(40)}`;
+
+        const onSettle = () => {
+            queryClient.invalidateQueries({queryKey});
+        };
 
 
         return (
@@ -78,19 +80,13 @@ export const Raffle = ({id}: RaffleProps) => {
                                 </div>
                             ) : (
                                 <div className="mt-8">
-                                    Raffle ended... Awaiting settlement
+                                    <SettleButton onSuccess={onSettle}/>
                                 </div>
                             )}
                         </>
                     ) : (
                         <div className="mt-8">
-                            {isConnected ?
-                                (
-                                    <EntryButton id={id}/>
-                                ) : (
-                                    <div className="text-[#677467] mt-4">connect wallet → enter</div>
-                                )
-                            }
+                            <EntryButton id={id}/>
                         </div>
                     )}
 

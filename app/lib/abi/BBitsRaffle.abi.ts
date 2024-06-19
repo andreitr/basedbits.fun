@@ -37,13 +37,9 @@ export const BBitsRaffleABI = [
         "type": "error"
     }, {"inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error"}, {
         "inputs": [],
-        "name": "SeedMustBeReset",
+        "name": "TransferFailed",
         "type": "error"
-    }, {"inputs": [], "name": "TransferFailed", "type": "error"}, {
-        "inputs": [],
-        "name": "WrongStatus",
-        "type": "error"
-    }, {
+    }, {"inputs": [], "name": "WrongStatus", "type": "error"}, {
         "anonymous": false,
         "inputs": [{
             "indexed": false,
@@ -97,16 +93,6 @@ export const BBitsRaffleABI = [
             "type": "uint256"
         }],
         "name": "RaffleSettled",
-        "type": "event"
-    }, {
-        "anonymous": false,
-        "inputs": [{
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "_raffleId",
-            "type": "uint256"
-        }, {"indexed": false, "internalType": "uint256", "name": "_seed", "type": "uint256"}],
-        "name": "RandomSeedSet",
         "type": "event"
     }, {
         "anonymous": false,
@@ -241,12 +227,6 @@ export const BBitsRaffleABI = [
         "stateMutability": "view",
         "type": "function"
     }, {
-        "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "name": "raffleFreeEntryCount",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    }, {
         "inputs": [],
         "name": "renounceOwnership",
         "outputs": [],
@@ -278,12 +258,6 @@ export const BBitsRaffleABI = [
         "type": "function"
     }, {
         "inputs": [],
-        "name": "setRandomSeed",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    }, {
-        "inputs": [],
         "name": "settleRaffle",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -306,5 +280,4 @@ export const BBitsRaffleABI = [
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
-    }, {"stateMutability": "payable", "type": "receive"}
-]
+    }, {"stateMutability": "payable", "type": "receive"}];

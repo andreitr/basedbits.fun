@@ -13,7 +13,7 @@ export const EntryButton = ({id}: FreeEntryButtonProps) => {
     const {address, isConnected} = useAccount();
     const queryClient = useQueryClient();
 
-    const {data, error, writeContract} = useWriteContract();
+    const {data, writeContract} = useWriteContract();
     const {isFetching, isSuccess} = useWaitForTransactionReceipt({
         hash: data,
     });
@@ -73,9 +73,11 @@ export const EntryButton = ({id}: FreeEntryButtonProps) => {
         </button>
     }
 
+    if (!isConnected) {
+        return <div className="text-[#677467] mt-4">connect wallet → enter</div>
+    }
+
     if (eligibitlityFetched && hasEligibility) {
-
-
         return <button
             onClick={freeEntry}
             disabled={isFetching}
