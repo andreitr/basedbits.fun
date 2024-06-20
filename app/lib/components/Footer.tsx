@@ -61,7 +61,7 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://x.com/andreitr"
+              href="https://x.com/basedbits_fun"
               target="_blank"
             >
               @basedbits_fun on x
