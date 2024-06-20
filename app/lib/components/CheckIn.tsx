@@ -17,10 +17,10 @@ export const CheckIn = () => {
 
       <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
         <div className="text-4xl font-semibold text-[#363E36] mb-4">
-          Hold Based Bits? Check-in!
+          Daily Check-In
         </div>
         <div className="text-[#677467]">
-          <p>Check-ins unlock stuff! More details soon...</p>
+          <p>Check-ins unlock free raffle entries and other goodies.</p>
         </div>
 
         <div className="mt-8">
