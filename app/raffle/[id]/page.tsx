@@ -3,7 +3,11 @@
 import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
 import {Raffle} from "@/app/raffle/[id]/components/Raffle";
-
+import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
+import {readContract} from "@wagmi/core";
+import BigNumber from "bignumber.js";
+import {createConfig, webSocket} from "wagmi";
+import {base} from "wagmi/chains";
 
 interface PageProps {
     params: {
@@ -11,15 +15,43 @@ interface PageProps {
     };
 }
 
+async function getRaffleId(id: number) {
+
+    const ethConfig = createConfig({
+        chains: [base],
+        transports: {
+            [base.id]: webSocket(
+                `wss://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
+            ),
+        },
+    });
+
+    const raffle = await readContract(ethConfig, {
+        abi: BBitsRaffleABI,
+        address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
+        functionName: "idToRaffle",
+        args: [id],
+    });
+
+    let [startedAt, settledAt, winner, sponsor] = raffle as [
+        BigNumber,
+        BigNumber,
+        `0x${string}`,
+        {
+            sponsor: `0x${string}`;
+            tokenId: BigNumber;
+        },
+    ];
+    return {startedAt, settledAt, winner, sponsor};
+}
+
 export async function generateMetadata({params: {id}}: PageProps) {
 
-    const title = `Based Bits Raffle #${id}`;
-    const description = "A Based Bit NFT is raffled off to a lucky winner every 24 hours."
-    const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/0.png`
+    const raffle = await getRaffleId(id);
+    const title = `Raffle #${id}`;
+    let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`
 
-    // const preview = `/api/images/og/proposals?title=${encodeURIComponent(
-    //     title
-    // )}&description=${encodeURIComponent(description)}`;
+    const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${raffle.sponsor.tokenId}.png`
 
     return {
         title: title,

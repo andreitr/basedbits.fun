@@ -1,17 +1,10 @@
 "use client";
-import { ReactNode } from "react";
-import {
-  cookieStorage,
-  cookieToInitialState,
-  createConfig,
-  createStorage,
-  http,
-  WagmiProvider,
-  webSocket,
-} from "wagmi";
-import { base, mainnet } from "wagmi/chains";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+
+import {ReactNode} from "react";
+import {cookieStorage, cookieToInitialState, createConfig, createStorage, WagmiProvider, webSocket,} from "wagmi";
+import {base, mainnet} from "wagmi/chains";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {ConnectKitProvider, getDefaultConfig} from "connectkit";
 
 export const ethConfig = createConfig({
   chains: [mainnet],
