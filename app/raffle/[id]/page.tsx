@@ -2,12 +2,12 @@
 
 import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
-import {Raffle} from "@/app/raffle/[id]/components/Raffle";
+import {RaffleComponent} from "@/app/raffle/[id]/components/RaffleComponent";
 import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
 import {readContract} from "@wagmi/core";
-import BigNumber from "bignumber.js";
 import {createConfig, webSocket} from "wagmi";
 import {base} from "wagmi/chains";
+import {type Raffle} from "@/app/lib/types/types";
 
 interface PageProps {
     params: {
@@ -15,7 +15,7 @@ interface PageProps {
     };
 }
 
-async function getRaffleId(id: number) {
+async function getRaffleById(id: number) {
 
     const ethConfig = createConfig({
         chains: [base],
@@ -26,28 +26,26 @@ async function getRaffleId(id: number) {
         },
     });
 
-    const raffle = await readContract(ethConfig, {
+    const data: any = await readContract(ethConfig, {
         abi: BBitsRaffleABI,
         address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
         functionName: "idToRaffle",
         args: [id],
     });
 
-    let [startedAt, settledAt, winner, sponsor] = raffle as [
-        BigNumber,
-        BigNumber,
-        `0x${string}`,
-        {
-            sponsor: `0x${string}`;
-            tokenId: BigNumber;
-        },
-    ];
-    return {startedAt, settledAt, winner, sponsor};
+    const raffle: Raffle = {
+        startedAt: data[0],
+        settledAt: data[1],
+        winner: data[2],
+        sponsor: {...data[3]}
+    }
+
+    return raffle;
 }
 
 export async function generateMetadata({params: {id}}: PageProps) {
 
-    const raffle = await getRaffleId(id);
+    const raffle = await getRaffleById(id);
     const title = `Raffle #${id}`;
     let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`
 
@@ -74,12 +72,15 @@ export async function generateMetadata({params: {id}}: PageProps) {
 }
 
 export default async function Page({params: {id}}: PageProps) {
+
+    const raffle = await getRaffleById(id);
+
     return (
         <div className="flex flex-col justify-center items-center w-full">
             <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
                 <div className="container max-w-screen-lg">
                     <Header/>
-                    <Raffle id={id}/>
+                    <RaffleComponent id={id} raffle={raffle}/>
                 </div>
             </div>
 
