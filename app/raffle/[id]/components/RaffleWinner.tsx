@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {getEnsName} from "@wagmi/core";
-import {ethConfig} from "@/app/lib/Web3Provider";
+
 import {rainbowURI, truncateAddress} from "@/app/lib/utils/addressUtils";
 import Link from "next/link";
+import {ethConfig} from "@/app/lib/Web3Configs";
 
 interface RaffleWinnerProps {
     address: `0x${string}`;

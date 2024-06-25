@@ -3,11 +3,8 @@
 import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
 import {RaffleComponent} from "@/app/raffle/[id]/components/RaffleComponent";
-import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
-import {readContract} from "@wagmi/core";
-import {createConfig, webSocket} from "wagmi";
-import {base} from "wagmi/chains";
-import {type Raffle} from "@/app/lib/types/types";
+import {getRaffleById} from "@/app/lib/api/getRaffleById";
+
 
 interface PageProps {
     params: {
@@ -15,38 +12,10 @@ interface PageProps {
     };
 }
 
-async function getRaffleById(id: number) {
-
-    const ethConfig = createConfig({
-        chains: [base],
-        transports: {
-            [base.id]: webSocket(
-                `wss://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-            ),
-        },
-    });
-
-    const data: any = await readContract(ethConfig, {
-        abi: BBitsRaffleABI,
-        address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
-        functionName: "idToRaffle",
-        args: [id],
-    });
-
-    const raffle: Raffle = {
-        startedAt: data[0],
-        settledAt: data[1],
-        winner: data[2],
-        sponsor: {...data[3]}
-    }
-
-    return raffle;
-}
-
 export async function generateMetadata({params: {id}}: PageProps) {
 
     const raffle = await getRaffleById(id);
-    const title = `Raffle #${id}`;
+    const title = `Raffle for Based Bit #${raffle.sponsor.tokenId}`;
     let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`
 
     const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${raffle.sponsor.tokenId}.png`
@@ -59,7 +28,7 @@ export async function generateMetadata({params: {id}}: PageProps) {
                 {
                     url: preview,
                     width: 1200,
-                    height: 630,
+                    height: 1200,
                 },
             ],
         },

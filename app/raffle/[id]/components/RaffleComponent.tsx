@@ -11,10 +11,8 @@ import {EntryButton} from "@/app/raffle/[id]/components/EntryButton";
 import {RaffleWinner} from "@/app/raffle/[id]/components/RaffleWinner";
 import {SettleButton} from "@/app/raffle/[id]/components/SettleButton";
 import {type Raffle} from "@/app/lib/types/types";
-import Link from "next/link";
-import leftArrow from "@/app/lib/icons/arrow-left.svg";
-import rightArrow from "@/app/lib/icons/arrow-right.svg";
 import {RaffleNav} from "@/app/raffle/[id]/components/RaffleNav";
+import Link from "next/link";
 
 interface RaffleProps {
     id: number;
@@ -22,40 +20,6 @@ interface RaffleProps {
 }
 
 export const RaffleComponent = ({id, raffle}: RaffleProps) => {
-    // const queryClient = useQueryClient();
-
-    const {data: latestRaffleId, isFetched: isFetchedRaffleId} =
-        useReadContract({
-            abi: BBitsRaffleABI,
-            address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
-            functionName: "getCurrentRaffleId",
-            query: {
-                enabled: !id,
-            },
-        });
-
-    const raffleId = id || latestRaffleId;
-
-    // const { data, queryKey, isFetched } = useReadContract({
-    //   abi: BBitsRaffleABI,
-    //   address: process.env.NEXT_PUBLIC_BB_RAFFLE_ADDRESS as `0x${string}`,
-    //   functionName: "idToRaffle",
-    //   args: [Number(raffleId)],
-    //   query: {
-    //     enabled: !!raffle,
-    //   },
-    // });
-
-
-    // if (isFetched && data && raffleId) {
-    //   let [startedAt, settledAt, winner, sponsor] = data as [
-    //     BigNumber,
-    //     BigNumber,
-    //     `0x${string}`,
-    //     RaffleSponsor,
-    //   ];
-    //
-    // }
 
     const startTime = DateTime.fromMillis(
         BigNumber(raffle.startedAt).toNumber() * 1000,
@@ -69,9 +33,6 @@ export const RaffleComponent = ({id, raffle}: RaffleProps) => {
     const isEnded = remainingTime.as("milliseconds") <= 0;
     const hasWinner = raffle.winner !== `0x${"0".repeat(40)}`;
 
-    // const reloadRaffle = () => {
-    //   queryClient.invalidateQueries({ queryKey });
-    // };
 
     return (
         <div className="flex flex-col justify-between mt-2 sm:mt-4 sm:flex-row gap-8">
@@ -92,11 +53,11 @@ export const RaffleComponent = ({id, raffle}: RaffleProps) => {
                     </div>
                 </div>
                 <div className="text-[#363E36] text-4xl font-semibold mb-4">
-                    Raffle #{Number(raffleId)}
+                    Raffle #{Number(id)}
                 </div>
 
                 <div className="flex flex-row py-2 w-full justify-start gap-16">
-                    <RaffleEntries id={Number(raffleId)}/>
+                    <RaffleEntries id={Number(id)}/>
                     <RaffleTimer startTime={raffle.startedAt} endTime={raffle.settledAt}/>
                 </div>
 
@@ -122,9 +83,12 @@ export const RaffleComponent = ({id, raffle}: RaffleProps) => {
 
                 <div className="mt-10 text-[#677467]">
                     <div className="mb-3">
-                        Want to win{" "}
-                        <span className="mt-2 font-semibold">{`Based Bit #${raffle.sponsor.tokenId}`}</span>
-                        ?
+                        Here's how to win{" "}
+                        <Link
+                            className="mt-2 font-semibold hover:underline"
+                            target="_blank"
+                            href={`https://opensea.io/assets/base/0x617978b8af11570c2dab7c39163a8bde1d282407/${raffle.sponsor.tokenId}`}>{`Based Bit #${raffle.sponsor.tokenId}`}</Link>
+
                     </div>
                     <div className="text-sm">
                         <span className="mt-2 font-semibold">Free Entry</span>: A Based
