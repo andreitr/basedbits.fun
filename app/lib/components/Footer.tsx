@@ -27,7 +27,7 @@ export const Footer = () => {
 
             <div className="flex sm:flex-row gap-8 flex-col justify-between mt-16 text-[#677467]">
                 <div>
-                    <div className="text-xl text-[#363E36] mb-2">Buy Based Bits</div>
+                    <div className="text-xl text-[#363E36] mb-2">Marketplaces</div>
                     <div>
                         <Link
                             className="hover:underline text-sm"
@@ -48,7 +48,7 @@ export const Footer = () => {
                     </div>
                 </div>
                 <div>
-                    <div className="text-xl text-[#363E36] mb-2">Follow Based Bits</div>
+                    <div className="text-xl text-[#363E36] mb-2">Socials</div>
                     <div>
                         <Link
                             className="hover:underline text-sm"
@@ -70,14 +70,14 @@ export const Footer = () => {
                 </div>
 
                 <div>
-                    <div className="text-xl text-[#363E36] mb-2">Code Based Bits</div>
+                    <div className="text-xl text-[#363E36] mb-2">Contracts</div>
                     <div>
                         <Link
                             className="hover:underline text-sm"
-                            href="https://basescan.org/address/0xe842537260634175891925f058498f9099c102eb"
+                            href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
                             target="_blank"
                         >
-                            Check-in Contract
+                            NFT Contract
                         </Link>
                     </div>
                     <div>
@@ -101,19 +101,51 @@ export const Footer = () => {
                     <div>
                         <Link
                             className="hover:underline text-sm"
+                            href="https://basescan.org/address/0xe842537260634175891925f058498f9099c102eb"
+                            target="_blank"
+                        >
+                            Check-in Contract
+                        </Link>
+                    </div>
+
+
+                    <div>
+                        <Link
+                            className="hover:underline text-sm"
                             href="https://basescan.org/address/0xe0e68930a8cc0c066bb96183870c9949f5396ea8"
                             target="_blank"
                         >
                             Social Contract
                         </Link>
                     </div>
+                </div>
+                <div>
+                    <div className="text-xl text-[#363E36] mb-2">Builders</div>
                     <div>
                         <Link
                             className="hover:underline text-sm"
-                            href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
+                            href="mailto:andrei.taraschuk@gmail.com"
                             target="_blank"
                         >
-                            NFT Contract
+                            Email @andreitr
+                        </Link>
+                    </div>
+                    <div>
+                        <Link
+                            className="hover:underline text-sm"
+                            href="https://warpcast.com/andreitr.eth"
+                            target="_blank"
+                        >
+                            DM @andreitr on warpcast
+                        </Link>
+                    </div>
+                    <div>
+                        <Link
+                            className="hover:underline text-sm"
+                            href="https://x.com/andreitr"
+                            target="_blank"
+                        >
+                            DM @andreitr on x
                         </Link>
                     </div>
                 </div>
