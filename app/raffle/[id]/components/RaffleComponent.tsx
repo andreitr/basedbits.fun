@@ -1,7 +1,5 @@
 "use client";
 
-import {useReadContract} from "wagmi";
-import {BBitsRaffleABI} from "@/app/lib/abi/BBitsRaffle.abi";
 import BigNumber from "bignumber.js";
 import {RaffleTimer} from "@/app/raffle/[id]/components/RaffleTimer";
 import Image from "next/image";
@@ -12,14 +10,15 @@ import {RaffleWinner} from "@/app/raffle/[id]/components/RaffleWinner";
 import {SettleButton} from "@/app/raffle/[id]/components/SettleButton";
 import {type Raffle} from "@/app/lib/types/types";
 import {RaffleNav} from "@/app/raffle/[id]/components/RaffleNav";
-import Link from "next/link";
+import {RaffleRules} from "@/app/raffle/[id]/components/RaffleRules";
 
 interface RaffleProps {
     id: number;
     raffle: Raffle;
+    revalidate: () => void;
 }
 
-export const RaffleComponent = ({id, raffle}: RaffleProps) => {
+export const RaffleComponent = ({id, raffle, revalidate}: RaffleProps) => {
 
     const startTime = DateTime.fromMillis(
         BigNumber(raffle.startedAt).toNumber() * 1000,
@@ -69,36 +68,18 @@ export const RaffleComponent = ({id, raffle}: RaffleProps) => {
                             </div>
                         ) : (
                             <div className="mt-8">
-                                <SettleButton onSuccess={() => {
-                                }}/>
+                                <SettleButton onSuccess={() => revalidate()}/>
                             </div>
                         )}
                     </>
                 ) : (
                     <div className="mt-8">
-                        <EntryButton id={Number(id)} onSuccess={() => {
-                        }}/>
+                        <EntryButton id={Number(id)} onSuccess={() => revalidate()}/>
                     </div>
                 )}
 
-                <div className="mt-10 text-[#677467]">
-                    <div className="mb-3">
-                        Here's how to win{" "}
-                        <Link
-                            className="mt-2 font-semibold hover:underline"
-                            target="_blank"
-                            href={`https://opensea.io/assets/base/0x617978b8af11570c2dab7c39163a8bde1d282407/${raffle.sponsor.tokenId}`}>{`Based Bit #${raffle.sponsor.tokenId}`}</Link>
+                <RaffleRules raffle={raffle}/>
 
-                    </div>
-                    <div className="text-sm">
-                        <span className="mt-2 font-semibold">Free Entry</span>: A Based
-                        Bit NFT + Recent Check-in
-                    </div>
-                    <div className="text-sm">
-                        <span className="font-semibold">Paid Entry</span>: A tiny fee of
-                        0.0001Ξ to discourage bots
-                    </div>
-                </div>
             </div>
         </div>
     );

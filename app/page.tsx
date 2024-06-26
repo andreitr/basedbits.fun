@@ -7,6 +7,7 @@ import {Social} from "@/app/lib/components/Social";
 import {getRaffleById} from "@/app/lib/api/getRaffleById";
 import {RaffleComponent} from "@/app/raffle/[id]/components/RaffleComponent";
 import {getCurrentRaffleId} from "@/app/lib/api/getCurrentRaffleId";
+import {revalidatePath} from "next/cache";
 
 export default async function Home() {
 
@@ -18,7 +19,10 @@ export default async function Home() {
             <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
                 <div className="container max-w-screen-lg">
                     <Header/>
-                    <RaffleComponent id={7} raffle={raffle}/>
+                    <RaffleComponent id={raffleId} raffle={raffle} revalidate={async () => {
+                        "use server";
+                        revalidatePath("/", "layout");
+                    }}/>
                 </div>
             </div>
 

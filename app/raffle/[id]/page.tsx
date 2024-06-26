@@ -4,6 +4,7 @@ import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
 import {RaffleComponent} from "@/app/raffle/[id]/components/RaffleComponent";
 import {getRaffleById} from "@/app/lib/api/getRaffleById";
+import {revalidatePath} from "next/cache";
 
 
 interface PageProps {
@@ -49,7 +50,10 @@ export default async function Page({params: {id}}: PageProps) {
             <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
                 <div className="container max-w-screen-lg">
                     <Header/>
-                    <RaffleComponent id={id} raffle={raffle}/>
+                    <RaffleComponent id={id} raffle={raffle} revalidate={async () => {
+                        "use server";
+                        revalidatePath(`/raffle/${id}`, "page");
+                    }}/>
                 </div>
             </div>
 
