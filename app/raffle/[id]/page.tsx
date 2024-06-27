@@ -1,10 +1,10 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
-import { Footer } from "@/app/lib/components/Footer";
-import { RaffleComponent } from "@/app/raffle/[id]/components/RaffleComponent";
-import { getRaffleById } from "@/app/lib/api/getRaffleById";
-import { revalidatePath } from "next/cache";
+import {Header} from "@/app/lib/components/Header";
+import {Footer} from "@/app/lib/components/Footer";
+import {RaffleComponent} from "@/app/raffle/[id]/components/RaffleComponent";
+import {getRaffleById} from "@/app/lib/api/getRaffleById";
+import {revalidatePath} from "next/cache";
 
 interface PageProps {
   params: {
