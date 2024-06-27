@@ -2,6 +2,7 @@ import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
 import {getTokenTotalSupply} from "@/app/lib/api/getTokenTotalSupply";
 import {getTokenNFTCount} from "@/app/lib/api/getTokenNFTCount";
+import {formatUnits} from "ethers";
 
 export default async function Page() {
 
@@ -14,7 +15,7 @@ export default async function Page() {
                 <div className="container max-w-screen-lg">
                     <Header/>
                     <div className="mb-20">
-                        <div className="text-4xl mb-2">{tokens} $BITS backed by {count} Based Bits</div>
+                        <div className="text-4xl mb-2">{formatUnits(tokens)} $BITS backed by {count} Based Bits</div>
                         <div>1 Based Bit = 1024 $BBITS</div>
                     </div>
                 </div>
