@@ -2,7 +2,7 @@
 const nextConfig = {
 
     images: {
-        domains: ['ipfs.raribleuserdata.com'],
+        domains: ['ipfs.raribleuserdata.com', 'res.cloudinary.com'],
     },
 };
 
