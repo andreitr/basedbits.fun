@@ -28,7 +28,6 @@ const wagmiConfig = createConfig(
         walletConnectProjectId: process.env
             .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
         appName: "Based Bits",
-
         appDescription: "Your App Description",
         appUrl: "https://basedbits.fun",
         appIcon: "https://www.basedbits.fun/images/icon.png",
