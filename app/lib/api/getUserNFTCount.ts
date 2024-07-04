@@ -1,8 +1,10 @@
+
 type AlchemyResponse = {
   ownedNfts: AlchemyToken[];
   totalCount: number;
   pageKey: string;
 };
+
 type AlchemyToken = {
   tokenId: string;
   name: string;

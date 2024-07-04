@@ -10,6 +10,7 @@ interface Props {
 }
 
 export default async function User({params: {address}}: Props) {
+
     const contractNFTs = await getUserNFTCount({address, size: 1});
     const lastCheckin = await getUserCheckIns(address);
     return (
@@ -25,6 +26,7 @@ export default async function User({params: {address}}: Props) {
             </div>
 
             <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8">
+                <div>{contractNFTs.totalCount} Based Bits</div>
                 <div className="grid grid-cols-7 gap-3">
                     {contractNFTs.ownedNfts.map((nft, index) => {
                         return (
