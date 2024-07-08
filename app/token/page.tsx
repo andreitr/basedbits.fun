@@ -10,7 +10,7 @@ export default async function Page() {
   const tokenContractAddress = process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS || "";
   const contractNFTs = await getUserNFTCount({
     address: tokenContractAddress,
-    size: 100,
+    size: 28,
   });
 
   const tokens = await getTokenTotalSupply();
