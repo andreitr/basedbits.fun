@@ -5,6 +5,8 @@ import { getTokenNFTCount } from "@/app/lib/api/getTokenNFTCount";
 import { formatUnits } from "ethers";
 import Image from "next/image";
 import { getUserNFTCount } from "@/app/lib/api/getUserNFTCount";
+import { Deposit } from "@/app/token/components/Deposit";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 
 export default async function Page() {
   const tokenContractAddress = process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS || "";
@@ -23,12 +25,18 @@ export default async function Page() {
           <Header />
           <div className="mb-20">
             <div className="text-4xl mb-2">
-              {Number(formatUnits(tokens))} $BITS backed by {count} Based Bits
+              {humanizeNumber(Number(formatUnits(tokens)))} BBITS backed by{" "}
+              {count} Based Bits NFTs
             </div>
             <div>1 Based Bit = 1024 $BBITS</div>
           </div>
+
+          <div className="mb-8">
+            <Deposit />
+          </div>
         </div>
       </div>
+
       <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8">
         <div className="grid grid-cols-7 gap-3">
           {contractNFTs.ownedNfts.map((nft, index) => {

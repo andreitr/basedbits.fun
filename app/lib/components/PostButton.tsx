@@ -5,12 +5,12 @@ import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useEffect } from "react";
 import { BBitsSocialABI } from "@/app/lib/abi/BBitsSocial.abi";
 
-interface PostButtonProps {
+interface Props {
   message: string;
   onSuccess?: () => void;
 }
 
-export const PostButton = ({ message, onSuccess }: PostButtonProps) => {
+export const PostButton = ({ message, onSuccess }: Props) => {
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,

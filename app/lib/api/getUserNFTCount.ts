@@ -1,4 +1,3 @@
-
 type AlchemyResponse = {
   ownedNfts: AlchemyToken[];
   totalCount: number;

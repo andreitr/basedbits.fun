@@ -1,4 +1,4 @@
-export const BBitsTokenAbi = [
+export const BBitsTokenABI = [
   {
     inputs: [
       {
@@ -6,11 +6,7 @@ export const BBitsTokenAbi = [
         name: "_collection",
         type: "address",
       },
-      {
-        internalType: "uint256",
-        name: "_conversionRate",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "_conversionRate", type: "uint256" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
