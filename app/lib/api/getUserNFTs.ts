@@ -1,10 +1,10 @@
-type AlchemyResponse = {
+export type AlchemyResponse = {
   ownedNfts: AlchemyToken[];
   totalCount: number;
   pageKey: string;
 };
 
-type AlchemyToken = {
+export type AlchemyToken = {
   tokenId: string;
   name: string;
   image: {
@@ -18,7 +18,7 @@ interface Props {
   size: number;
 }
 
-export const getUserNFTCount = async ({ address, size }: Props) => {
+export const getUserNFTs = async ({ address, size }: Props) => {
   const nftContract = process.env.NEXT_PUBLIC_BB_NFT_ADDRESS;
 
   const contractNFTs: AlchemyResponse = await fetch(

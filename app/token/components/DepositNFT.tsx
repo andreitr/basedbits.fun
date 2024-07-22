@@ -2,39 +2,42 @@
 
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BBitsTokenABI } from "@/app/lib/abi/BBitsTokenABI";
+import { useEffect } from "react";
+import Link from "next/link";
 
-export const Deposit = () => {
+interface Props {
+  tokenId: string;
+  onSuccess?: () => void;
+}
+
+export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
   });
 
-  console.log(data);
-
-  // useEffect(() => {
-  //     if (isSuccess && onSuccess) {
-  //         onSuccess();
-  //     }
-  // }, [isSuccess, onSuccess]);
+  useEffect(() => {
+    if (isSuccess && onSuccess) {
+      onSuccess();
+    }
+  }, [isSuccess, onSuccess]);
 
   const post = () => {
     writeContract({
       abi: BBitsTokenABI,
       address: process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as `0x${string}`,
       functionName: "exchangeNFTsForTokens",
-      args: [6489],
+      args: [[tokenId]],
     });
   };
 
   return (
-    <button
+    <Link
+      href={"#"}
       onClick={post}
-      disabled={isFetching}
-      className={
-        "bg-[#303730] hover:bg-[#677467] text-[#DDF5DD] py-2 px-4 rounded"
-      }
+      className="mt-2 text-xs flex flex-row justify-center items-center gap-2 hover:underline cursor-pointer"
     >
-      {isFetching ? "Loading...." : "Deposit Based Bits"}
-    </button>
+      SWAP #{tokenId}
+    </Link>
   );
 };

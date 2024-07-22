@@ -3,15 +3,14 @@ import { Footer } from "@/app/lib/components/Footer";
 import { getTokenTotalSupply } from "@/app/lib/api/getTokenTotalSupply";
 import { getTokenNFTCount } from "@/app/lib/api/getTokenNFTCount";
 import { formatUnits } from "ethers";
-import Image from "next/image";
-import { getUserNFTCount } from "@/app/lib/api/getUserNFTCount";
-import { Deposit } from "@/app/token/components/Deposit";
+import { getUserNFTs } from "@/app/lib/api/getUserNFTs";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import Link from "next/link";
+import { TokenList } from "@/app/token/components/TokenList";
 
 export default async function Page() {
   const tokenContractAddress = process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS || "";
-  const contractNFTs = await getUserNFTCount({
+  const contractNFTs = await getUserNFTs({
     address: tokenContractAddress,
     size: 28,
   });
@@ -37,6 +36,7 @@ export default async function Page() {
               <Link
                 href="https://basescan.org/address/0x553c1f87c2ef99cca23b8a7ffaa629c8c2d27666"
                 className="underline"
+                target="_blank"
               >
                 token contract
               </Link>{" "}
@@ -44,34 +44,17 @@ export default async function Page() {
               <Link
                 href="https://app.uniswap.org/explore/tokens/base/0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666?chain=base"
                 className="underline"
+                target="_blank"
               >
-                traded on Uniswap
+                traded on Uniswap.
               </Link>
-              .
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8">
-        <div className="grid grid-cols-7 gap-3">
-          {contractNFTs.ownedNfts.map((nft, index) => {
-            return (
-              <div
-                key={index}
-                className="bg-[#ABBEAC] p-2 rounded-md sm:w-100 w-140"
-              >
-                <Image
-                  className="rounded-lg"
-                  src={nft.image.thumbnailUrl}
-                  alt={nft.name}
-                  width={120}
-                  height={120}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <TokenList list={contractNFTs.ownedNfts} />
       </div>
 
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
