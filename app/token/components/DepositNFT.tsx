@@ -1,7 +1,7 @@
 "use client";
 
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { BBitsTokenABI } from "@/app/lib/abi/BBitsTokenABI";
+import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { useEffect } from "react";
 import Link from "next/link";
 
@@ -24,7 +24,7 @@ export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
 
   const post = () => {
     writeContract({
-      abi: BBitsTokenABI,
+      abi: BBitsTokenAbi,
       address: process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as `0x${string}`,
       functionName: "exchangeNFTsForTokens",
       args: [[tokenId]],

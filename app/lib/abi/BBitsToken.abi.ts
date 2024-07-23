@@ -1,4 +1,4 @@
-export const BBitsTokenABI = [
+export const BBitsTokenAbi = [
   {
     inputs: [
       {

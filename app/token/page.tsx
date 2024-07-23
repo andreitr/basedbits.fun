@@ -1,22 +1,14 @@
 import { Header } from "@/app/lib/components/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { getTokenTotalSupply } from "@/app/lib/api/getTokenTotalSupply";
-import { getTokenNFTCount } from "@/app/lib/api/getTokenNFTCount";
 import { formatUnits } from "ethers";
-import { getUserNFTs } from "@/app/lib/api/getUserNFTs";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import Link from "next/link";
 import { TokenList } from "@/app/token/components/TokenList";
+import { Approval } from "@/app/token/components/Approval";
 
 export default async function Page() {
-  const tokenContractAddress = process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS || "";
-  const contractNFTs = await getUserNFTs({
-    address: tokenContractAddress,
-    size: 28,
-  });
-
   const tokens = await getTokenTotalSupply();
-  const count = await getTokenNFTCount();
   const percent = ((Number(formatUnits(tokens)) / 8_192_000) * 100).toFixed(2);
 
   return (
@@ -24,7 +16,7 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <div className="flex flex-col gap-4 mb-20">
+          <div className="flex flex-col gap-4 mb-8">
             <div className="text-4xl mb-2">
               {humanizeNumber(Number(formatUnits(tokens)))} BBITS issued{" "}
               <span className="text-2xl">({percent}% of total supply)</span>
@@ -50,11 +42,12 @@ export default async function Page() {
               </Link>
             </div>
           </div>
+          <Approval />
         </div>
       </div>
 
-      <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8">
-        <TokenList list={contractNFTs.ownedNfts} />
+      <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pt-8 pb-8">
+        <TokenList />
       </div>
 
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
