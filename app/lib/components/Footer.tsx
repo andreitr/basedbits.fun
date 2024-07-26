@@ -119,15 +119,6 @@ export const Footer = () => {
               BBITS Liquidity Pool
             </Link>
           </div>
-          <div>
-            <Link
-              className="hover:underline text-sm flex flex-row"
-              href="https://basescan.org/token/0x553c1f87c2ef99cca23b8a7ffaa629c8c2d27666?a=0x000000000000000000000000000000000000dead"
-              target="_blank"
-            >
-              BBITS Burned
-            </Link>
-          </div>
         </div>
 
         <div>
