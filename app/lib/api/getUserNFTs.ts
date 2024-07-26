@@ -1,17 +1,4 @@
-export type AlchemyResponse = {
-  ownedNfts: AlchemyToken[];
-  totalCount: number;
-  pageKey: string;
-};
-
-export type AlchemyToken = {
-  tokenId: string;
-  name: string;
-  image: {
-    thumbnailUrl: string;
-    originalUrl: string;
-  };
-};
+import { type AlchemyResponse } from "@/app/lib/types/alchemy";
 
 interface Props {
   address: string;

@@ -35,7 +35,7 @@ export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
     <Link
       href={"#"}
       onClick={post}
-      className="mt-2 text-xs flex flex-row justify-center items-center gap-2 hover:underline cursor-pointer"
+      className="mt-2 flex flex-row justify-center items-center gap-2 hover:underline cursor-pointer"
     >
       SWAP #{tokenId}
     </Link>
