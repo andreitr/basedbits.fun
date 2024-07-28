@@ -5,7 +5,7 @@ import { BBitsNFTABI } from "@/app/lib/abi/BBitsNFT.abi";
 import { ApproveButton } from "@/app/token/components/ApproveButton";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const Approval = () => {
+export const ApproveNFT = () => {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
 

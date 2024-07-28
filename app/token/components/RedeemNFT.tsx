@@ -9,7 +9,7 @@ interface Props {
   onSuccess?: () => void;
 }
 
-export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
+export const RedeemNFT = ({ tokenId, onSuccess }: Props) => {
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
@@ -25,8 +25,8 @@ export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
     writeContract({
       abi: BBitsTokenAbi,
       address: process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as `0x${string}`,
-      functionName: "exchangeNFTsForTokens",
-      args: [[tokenId]],
+      functionName: "exchangeTokensForSpecificNFTs",
+      args: [1024, [tokenId]],
     });
   };
 
@@ -35,7 +35,7 @@ export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
       onClick={post}
       className="mt-2 flex flex-row justify-center items-center gap-2 hover:underline cursor-pointer"
     >
-      DEPOSIT #{tokenId}
+      REDEEM #{tokenId}
     </div>
   );
 };

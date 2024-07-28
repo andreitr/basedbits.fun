@@ -2,14 +2,17 @@
 
 import { DepositNFT } from "@/app/token/components/DepositNFT";
 import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
-import { useAccount } from "wagmi";
-import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { RedeemNFT } from "@/app/token/components/RedeemNFT";
 
-export const TokenList = () => {
-  const { isConnected, address } = useAccount();
+interface Props {
+  action: "SWAP" | "REDEEM";
+  address: `0x${string}` | undefined;
+  label: string;
+}
 
+export const TokenList = ({ action, address, label }: Props) => {
   const [pageKey, setPageKey] = useState<string | undefined>(undefined);
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
   const { data, isLoading, isPlaceholderData } = useGetUserNFTs({
@@ -24,23 +27,15 @@ export const TokenList = () => {
     }
   }, [data, pageKey]);
 
-  if (!isConnected) {
-    return <ConnectAction action={"exchange Based Bits for BBITS"} />;
-  }
-
   if (isLoading) {
     return "Loading...";
-  }
-
-  if (data?.totalCount === 0) {
-    return "No Based Bits in your wallet... Sad :(";
   }
 
   return (
     <>
       <div>
-        <div className="text-xl mb-4 text-gray-600">
-          {data?.totalCount} Based Bits
+        <div className="text-xl my-4 text-gray-600">
+          {data?.totalCount} Based Bits {label}
         </div>
 
         <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
@@ -54,7 +49,8 @@ export const TokenList = () => {
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
-                <DepositNFT tokenId={nft.tokenId} />
+                {action === "SWAP" && <DepositNFT tokenId={nft.tokenId} />}
+                {action === "REDEEM" && <RedeemNFT tokenId={nft.tokenId} />}
               </div>
             );
           })}
