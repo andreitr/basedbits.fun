@@ -20,13 +20,11 @@ export default async function Page() {
           <Header />
           <div className="flex flex-col gap-6">
             <div className="text-4xl py-0 my-0">
-              {humanizeNumber(Number(formatUnits(tokens)))} BBITS Issued
+              {humanizeNumber(Number(formatUnits(tokens)))} BBITS
               <span className="hidden md:inline">
                 {" "}
-                🔥 {humanizeNumber(
-                  Math.round(Number(formatUnits(burned))),
-                )}{" "}
-                Burned
+                Issued 🔥{" "}
+                {humanizeNumber(Math.round(Number(formatUnits(burned))))} Burned
               </span>
             </div>
 

@@ -2,24 +2,16 @@
 
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { useEffect } from "react";
 
 interface Props {
   tokenId: string;
-  onSuccess?: () => void;
 }
 
-export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
+export const DepositNFT = ({ tokenId }: Props) => {
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
   });
-
-  useEffect(() => {
-    if (isSuccess && onSuccess) {
-      onSuccess();
-    }
-  }, [isSuccess, onSuccess]);
 
   const post = () => {
     writeContract({
@@ -30,12 +22,16 @@ export const DepositNFT = ({ tokenId, onSuccess }: Props) => {
     });
   };
 
+  if (isSuccess) {
+    return <div className="mt-2">Deposited!</div>;
+  }
+
   return (
     <div
       onClick={post}
       className="mt-2 flex flex-row justify-center items-center gap-2 hover:underline cursor-pointer"
     >
-      DEPOSIT #{tokenId}
+      {isFetching ? "Swapping..." : `DEPOSIT #${tokenId}`}
     </div>
   );
 };

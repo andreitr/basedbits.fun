@@ -1,10 +1,11 @@
 "use client";
 
 import { useAccount, useReadContract } from "wagmi";
-import { ApproveButton } from "@/app/token/components/ApproveButton";
 import { useQueryClient } from "@tanstack/react-query";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { formatUnits } from "ethers";
+import { BigNumberish, formatUnits } from "ethers";
+import { ApproveTokenButton } from "@/app/token/components/ApproveTokenButton";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 
 export const ApproveToken = () => {
   const { address, isConnected } = useAccount();
@@ -20,36 +21,50 @@ export const ApproveToken = () => {
     },
   });
 
+  if (!isFetched) {
+    return null;
+  }
+
   const invalidateQuery = () => {
     queryClient.invalidateQueries({ queryKey });
   };
 
-  const styles = data ? "bg-[#ABBEAC]" : "bg-[#303730] text-[#DDF5DD]";
-  if (isFetched) {
-    return (
-      <div className={`p-6 rounded-md ${styles}`}>
-        {data && Number(formatUnits(data as any)) > 0 ? (
-          <div>
-            {Number(formatUnits(data as any))}
-            Your NFTs are ready to be swapped for tokens. Feel free to revoke
-            the NFT transfer permissions once you are done playing around.{" "}
-            <ApproveButton
-              onSuccess={invalidateQuery}
-              approve={Boolean(data)}
-            />
+  const hasSpendingAllowance = Number(formatUnits(data as any)) > 0;
+
+  const styles = hasSpendingAllowance
+    ? "bg-[#ABBEAC]"
+    : "bg-[#303730] text-[#DDF5DD]";
+
+  return (
+    <div className={`p-6 rounded-md text-sm ${styles}`}>
+      {data && hasSpendingAllowance ? (
+        <div>
+          You can swap{" "}
+          <span className="font-bold">
+            {humanizeNumber(
+              Math.round(Number(formatUnits(data as BigNumberish))),
+            )}
+          </span>{" "}
+          BBITS for NFTs.{" "}
+          <ApproveTokenButton
+            address={address as `0x${string}`}
+            onSuccess={invalidateQuery}
+            approve={hasSpendingAllowance}
+          />
+        </div>
+      ) : (
+        <div>
+          <div className="mb-2">
+            To exchange your tokens for NFTs, grant the BBITS Token contract
+            permission to spend your tokens.
           </div>
-        ) : (
-          <div>
-            To exchange your tokens for NFTs, you need to grant the BBITS Token
-            Contract permission to transfer your tokens. You can revoke this
-            permission at any time.{" "}
-            <ApproveButton
-              onSuccess={invalidateQuery}
-              approve={Boolean(data)}
-            />
-          </div>
-        )}
-      </div>
-    );
-  }
+          <ApproveTokenButton
+            address={address as `0x${string}`}
+            onSuccess={invalidateQuery}
+            approve={hasSpendingAllowance}
+          />
+        </div>
+      )}
+    </div>
+  );
 };

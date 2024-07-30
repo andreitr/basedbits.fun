@@ -2,7 +2,7 @@
 
 import { useAccount, useReadContract } from "wagmi";
 import { BBitsNFTABI } from "@/app/lib/abi/BBitsNFT.abi";
-import { ApproveButton } from "@/app/token/components/ApproveButton";
+import { ApproveNFTButton } from "@/app/token/components/ApproveNFTButton";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const ApproveNFT = () => {
@@ -26,22 +26,22 @@ export const ApproveNFT = () => {
   const styles = data ? "bg-[#ABBEAC]" : "bg-[#303730] text-[#DDF5DD]";
   if (isFetched) {
     return (
-      <div className={`p-6 rounded-md ${styles}`}>
+      <div className={`p-6 rounded-md text-sm ${styles}`}>
         {data ? (
           <div>
-            Your NFTs are ready to be swapped for tokens. Feel free to revoke
-            the NFT transfer permissions once you are done playing around.{" "}
-            <ApproveButton
+            Your NFTs are ready to be swapped for tokens.{" "}
+            <ApproveNFTButton
               onSuccess={invalidateQuery}
               approve={Boolean(data)}
             />
           </div>
         ) : (
           <div>
-            To exchange your NFTs for tokens, you need to grant the BBITS Token
-            Contract permission to transfer your NFTs. You can revoke this
-            permission at any time.{" "}
-            <ApproveButton
+            <div className="mb-2">
+              To exchange your NFTs for tokens, grant the BBITS Token Contract
+              permission to transfer your NFTs.
+            </div>
+            <ApproveNFTButton
               onSuccess={invalidateQuery}
               approve={Boolean(data)}
             />

@@ -10,13 +10,15 @@ interface Props {
   onSuccess?: () => void;
 }
 
-export const ApproveButton = ({ approve, onSuccess }: Props) => {
+export const ApproveNFTButton = ({ approve, onSuccess }: Props) => {
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
   });
 
-  const label = approve ? "Revoke Permission" : "Grant Permission";
+  const label = approve
+    ? "Revoke Transfer Permission"
+    : "Grant Transfer Permission";
 
   useEffect(() => {
     if (isSuccess && onSuccess) {
