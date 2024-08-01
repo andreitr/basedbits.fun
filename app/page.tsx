@@ -8,6 +8,7 @@ import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { RaffleComponent } from "@/app/raffle/[id]/components/RaffleComponent";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 export default async function Home() {
   const raffleId = await getCurrentRaffleId();
@@ -26,6 +27,16 @@ export default async function Home() {
               revalidatePath("/", "layout");
             }}
           />
+        </div>
+      </div>
+      <div className="flex justify-center items-center w-full bg-[#303730] px-10 lg:px-0 pb-8 sm:pb-0">
+        <div className="container max-w-screen-lg text-[#FFFF00] text-center">
+          <div className="py-2">
+            New Emoji Bits collection dropping on August, 15!{" "}
+            <Link className="underline" href="/emojibits">
+              Get the alpha
+            </Link>
+          </div>
         </div>
       </div>
 
