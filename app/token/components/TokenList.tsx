@@ -23,7 +23,12 @@ export const TokenList = ({action, address, label}: Props) => {
 
     useEffect(() => {
         if (data && data.pageKey !== pageKey) {
-            setTokens((prevState) => [...prevState, ...data.ownedNfts]);
+            setTokens((prevState) => {
+                const newTokens = data.ownedNfts.filter(
+                    (nft) => !prevState.some((existingNft) => existingNft.tokenId === nft.tokenId)
+                );
+                return [...prevState, ...newTokens];
+            });
         }
     }, [data, pageKey]);
 
