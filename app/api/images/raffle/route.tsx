@@ -37,12 +37,9 @@ export async function GET(request: Request) {
               <img tw="rounded-lg" src={preview} width={630} height={630} />
             )}
             <div tw="flex flex-col items-center justify-center w-[570px] gap-4">
-              <div tw="text-7xl font-bold p-4 mb-6">{title}</div>
-              <div tw="mx-6 text-center text-4xl font-normal">
+              <div tw="text-6xl font-bold p-4 mb-6">{title}</div>
+              <div tw="mx-6 text-center text-3xl font-normal">
                 {description}
-              </div>
-              <div tw="mx-6 text-center text-4xl font-normal mt-2">
-                check-in to enter for free!
               </div>
             </div>
           </div>

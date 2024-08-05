@@ -7,6 +7,7 @@ import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { revalidatePath } from "next/cache";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
+import { truncateAddress } from "@/app/lib/utils/addressUtils";
 
 interface PageProps {
   params: {
@@ -20,10 +21,12 @@ export async function generateMetadata({ params: { id } }: PageProps) {
     tokenId: raffle.sponsor.tokenId.toString(),
   });
 
-  const title = `Raffle #${id}`;
-  let description = `Raffle for ${token.name}. Check-in to enter for free!`;
+  const title = raffle.settledAt ? `Raffle #${id}` : `Raffle is Live!`;
+  let description = raffle.settledAt
+    ? `Based Bit won by ${truncateAddress(raffle.winner)}`
+    : `${token.name} is up for grabs!`;
 
-  const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(`Raffle for ${token.name}`)}`;
+  const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
 
   return {
     title: title,
