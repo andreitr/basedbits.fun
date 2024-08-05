@@ -1,5 +1,5 @@
 import { Header } from "@/app/lib/components/Header";
-import { getUserNFTs } from "@/app/lib/api/getUserNFTs";
+import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import Image from "next/image";
 import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default async function User({ params: { address } }: Props) {
-  const contractNFTs = await getUserNFTs({ address, size: 1 });
+  const contractNFTs = await getNFTsForAddress({ address, size: 1 });
   const lastCheckin = await getUserCheckIns(address);
   return (
     <div className="flex flex-col justify-center items-center w-full">

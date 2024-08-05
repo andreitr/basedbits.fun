@@ -5,6 +5,8 @@ import { Footer } from "@/app/lib/components/Footer";
 import { RaffleComponent } from "@/app/raffle/[id]/components/RaffleComponent";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { revalidatePath } from "next/cache";
+import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 
 interface PageProps {
   params: {
@@ -14,10 +16,14 @@ interface PageProps {
 
 export async function generateMetadata({ params: { id } }: PageProps) {
   const raffle = await getRaffleById(id);
-  const title = `Raffle for Based Bit #${raffle.sponsor.tokenId}`;
-  let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`;
+  const token: AlchemyToken = await getNFTMetadata({
+    tokenId: raffle.sponsor.tokenId.toString(),
+  });
 
-  const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${raffle.sponsor.tokenId}.png`;
+  const title = `Raffle #${id}`;
+  let description = `Raffle for ${token.name}. Check-in to enter for free!`;
+
+  const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(`Raffle for ${token.name}`)}`;
 
   return {
     title: title,
@@ -25,7 +31,7 @@ export async function generateMetadata({ params: { id } }: PageProps) {
     openGraph: {
       images: [
         {
-          url: preview,
+          url: ogPreviewPath,
           width: 1200,
           height: 1200,
         },
