@@ -23,7 +23,7 @@ export async function generateMetadata({ params: { id } }: PageProps) {
 
   const title = raffle.settledAt ? `Raffle #${id}` : `Raffle is Live!`;
   let description = raffle.settledAt
-    ? `Based Bit won by ${truncateAddress(raffle.winner)}`
+    ? `${token.name} won by ${truncateAddress(raffle.winner)}`
     : `${token.name} is up for grabs!`;
 
   const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getEnsName } from "@wagmi/core";
 
-import { rainbowURI, truncateAddress } from "@/app/lib/utils/addressUtils";
+import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import Link from "next/link";
 import { ethConfig } from "@/app/lib/Web3Configs";
 
@@ -23,7 +23,7 @@ export const RaffleWinner = ({ address }: RaffleWinnerProps) => {
   return (
     <div className="p-4 bg-[#ABBEAC] rounded-lg text-center">
       <div className="text-xl font-semibold text-[#363E36]">
-        <Link href={rainbowURI(address)} target="_blank">
+        <Link href={`/users/${address}`}>
           winner → {ensName || truncateAddress(address)}
         </Link>
       </div>

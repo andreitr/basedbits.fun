@@ -11,6 +11,7 @@ export async function generateMetadata() {
   const raffleId = await getCurrentRaffleId();
   const raffle = await getRaffleById(raffleId);
   const title = `Raffle for Based Bit #${raffle.sponsor.tokenId}`;
+
   let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`;
   const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${raffle.sponsor.tokenId}.png`;
 

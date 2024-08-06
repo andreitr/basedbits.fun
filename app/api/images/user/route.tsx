@@ -6,7 +6,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const title = searchParams?.get("title");
+    const titleA = searchParams?.get("titleA");
+    const titleB = searchParams?.get("titleB");
     const description = searchParams?.get("description");
     const preview = searchParams?.get("preview");
 
@@ -41,8 +42,9 @@ export async function GET(request: Request) {
                 height={550}
               />
             )}
-            <div tw="flex flex-col items-center justify-center w-[610px]">
-              <div tw="text-6xl font-bold mb-10 text-[#363E36]">{title}</div>
+            <div tw="flex flex-col items-center justify-center border w-[610px]">
+              <div tw="text-5xl font-bold p-4 text-[#363E36]">{titleA}</div>
+              <div tw="text-4xl font-bold mb-10 text-[#677467]">{titleB}</div>
               <div tw="mx-6 px-10 text-center text-[#363E36] text-3xl font-normal">
                 {description}
               </div>
