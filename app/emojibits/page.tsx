@@ -3,6 +3,7 @@
 import { Header } from "@/app/lib/components/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import Image from "next/image";
+import { MintRules } from "@/app/emojibits/components/MintRules";
 
 export default async function Page() {
   return (
@@ -72,37 +73,7 @@ export default async function Page() {
               proceeds are raffled off to one lucky winner, while the rest are
               used to burn BBITS tokens.
             </div>
-            <div className="flex flex-col gap-2 p-4 bg-black bg-opacity-10 rounded-lg">
-              <li>All minters are entered into a raffle</li>
-              <li>
-                The more Emoji Bits you hold, the more raffle entries you get
-              </li>
-
-              <li>Starting a new mint gets you a free Emoji Bit</li>
-              <li>
-                Check-in streaks = mint discounts. 1 day = 1% off (up to a max
-                of 90%)
-              </li>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">
-                How will this benefit Based Bits NFT holders?
-              </div>
-              <div>
-                50% of every mint will be used to burn BBITS via{" "}
-                <a
-                  className="underline"
-                  title="BBITS Token Burner"
-                  href="https://basescan.org/address/0x1595409cbaef3dd2485107fb1e328fa0fa505c10"
-                  target="_blank"
-                >
-                  BBITS Token Burner
-                </a>{" "}
-                contract. The tokens will be purchased on the open market and
-                immediately burned. This mechanism will increase the value of
-                every single Based Bit in circulation.
-              </div>
-            </div>
+            <MintRules />
           </div>
         </div>
       </div>

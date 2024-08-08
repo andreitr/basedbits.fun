@@ -11,12 +11,12 @@ import { BBitsRaffleABI } from "@/app/lib/abi/BBitsRaffle.abi";
 import { useQueryClient } from "@tanstack/react-query";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 
-interface FreeEntryButtonProps {
+interface Props {
   id: number;
   onSuccess?: () => void;
 }
 
-export const EntryButton = ({ id, onSuccess }: FreeEntryButtonProps) => {
+export const EntryButton = ({ id, onSuccess }: Props) => {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
 

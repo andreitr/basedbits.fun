@@ -1,16 +1,17 @@
 "use client";
 
 import BigNumber from "bignumber.js";
-import { RaffleTimer } from "@/app/raffle/[id]/components/RaffleTimer";
 import Image from "next/image";
 import { DateTime, Duration, Interval } from "luxon";
-import { RaffleEntries } from "@/app/raffle/[id]/components/RaffleEntries";
-import { EntryButton } from "@/app/raffle/[id]/components/EntryButton";
-import { RaffleWinner } from "@/app/raffle/[id]/components/RaffleWinner";
-import { SettleButton } from "@/app/raffle/[id]/components/SettleButton";
+import { RaffleEntries } from "@/app/raffle/components/RaffleEntries";
+import { EntryButton } from "@/app/raffle/components/EntryButton";
+import { SettleButton } from "@/app/raffle/components/SettleButton";
 import { type Raffle } from "@/app/lib/types/types";
-import { RaffleNav } from "@/app/raffle/[id]/components/RaffleNav";
-import { RaffleRules } from "@/app/raffle/[id]/components/RaffleRules";
+import { RaffleRules } from "@/app/raffle/components/RaffleRules";
+import { ArrowNav } from "@/app/lib/components/ArrowNav";
+import { ElapsedTimer } from "@/app/lib/components/ElapsedTimer";
+import Link from "next/link";
+import { AddressToEns } from "@/app/lib/components/AddressToEns";
 
 interface RaffleProps {
   id: number;
@@ -44,7 +45,7 @@ export const RaffleComponent = ({ id, raffle, revalidate }: RaffleProps) => {
       </div>
       <div>
         <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
-          <RaffleNav id={id} hasNext={isEnded} />
+          <ArrowNav id={id} path={"raffle"} hasNext={isEnded} />
           <div>
             {startTime.monthLong} {startTime.day},{startTime.year}
           </div>
@@ -55,9 +56,11 @@ export const RaffleComponent = ({ id, raffle, revalidate }: RaffleProps) => {
 
         <div className="flex flex-row py-2 w-full justify-start gap-16">
           <RaffleEntries id={Number(id)} />
-          <RaffleTimer
+          <ElapsedTimer
             startTime={raffle.startedAt}
             endTime={raffle.settledAt}
+            startTitle={"Raffle ends in"}
+            endTitle={"Raffle ended"}
           />
         </div>
 
@@ -65,7 +68,13 @@ export const RaffleComponent = ({ id, raffle, revalidate }: RaffleProps) => {
           <>
             {hasWinner ? (
               <div className="mt-8">
-                <RaffleWinner address={raffle.winner} />
+                <div className="p-4 bg-[#ABBEAC] rounded-lg text-center">
+                  <div className="text-xl font-semibold text-[#363E36]">
+                    <Link href={`/users/${raffle.winner}`}>
+                      winner → {<AddressToEns address={raffle.winner} />}
+                    </Link>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="mt-8">

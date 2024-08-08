@@ -5,7 +5,7 @@ import { CheckIn } from "@/app/lib/components/CheckIn";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
-import { RaffleComponent } from "@/app/raffle/[id]/components/RaffleComponent";
+import { RaffleComponent } from "@/app/raffle/components/RaffleComponent";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";

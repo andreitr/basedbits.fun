@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { getEnsName } from "@wagmi/core";
 
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
-import Link from "next/link";
 import { ethConfig } from "@/app/lib/Web3Configs";
 
-interface RaffleWinnerProps {
+interface Props {
   address: `0x${string}`;
 }
 
-export const RaffleWinner = ({ address }: RaffleWinnerProps) => {
+export const AddressToEns = ({ address }: Props) => {
   const [ensName, setEnsName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,13 +19,5 @@ export const RaffleWinner = ({ address }: RaffleWinnerProps) => {
     fetchEnsName();
   }, [address]);
 
-  return (
-    <div className="p-4 bg-[#ABBEAC] rounded-lg text-center">
-      <div className="text-xl font-semibold text-[#363E36]">
-        <Link href={`/users/${address}`}>
-          winner → {ensName || truncateAddress(address)}
-        </Link>
-      </div>
-    </div>
-  );
+  return <>{ensName || truncateAddress(address)}</>;
 };

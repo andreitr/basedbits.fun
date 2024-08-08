@@ -2,7 +2,7 @@
 
 import { Header } from "@/app/lib/components/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { RaffleComponent } from "@/app/raffle/[id]/components/RaffleComponent";
+import { RaffleComponent } from "@/app/raffle/components/RaffleComponent";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { revalidatePath } from "next/cache";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";

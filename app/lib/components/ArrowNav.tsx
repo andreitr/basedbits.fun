@@ -3,31 +3,33 @@ import Image from "next/image";
 import leftArrow from "@/app/lib/icons/arrow-left.svg";
 import rightArrow from "@/app/lib/icons/arrow-right.svg";
 
-interface RaffleNavProps {
-  id: number;
+interface Props {
   hasNext: boolean;
+  id: number;
+  path: string;
 }
 
-export const RaffleNav = ({ id, hasNext }: RaffleNavProps) => {
+export const ArrowNav = ({ id, path, hasNext }: Props) => {
   return (
     <div className="flex flex-row gap-2">
       <Link
-        href={id > 1 ? `/raffle/${Number(id) - 1}` : `/raffle/${Number(id)}`}
+        className="cursor-pointer"
+        href={id > 1 ? `/${path}/${Number(id) - 1}` : `/${path}/${Number(id)}`}
       >
         <div
           className={`bg-white rounded-full p-2 ${id > 1 ? "cursor-pointer hover:bg-[#ABBEAC] opacity-70" : "opacity-40"}`}
         >
-          <Image className="w-4" src={leftArrow} alt="Previous Raffle" />
+          <Image className="w-4" src={leftArrow} alt="Previous" />
         </div>
       </Link>
 
       <Link
-        href={hasNext ? `/raffle/${Number(id) + 1}` : `/raffle/${Number(id)}`}
+        href={hasNext ? `/${path}/${Number(id) + 1}` : `/${path}/${Number(id)}`}
       >
         <div
           className={`bg-white rounded-full p-2 ${hasNext ? "cursor-pointer hover:bg-[#ABBEAC] opacity-70" : "opacity-40"}`}
         >
-          <Image className="w-4" src={rightArrow} alt="Next Raffle" />
+          <Image className="w-4" src={rightArrow} alt="Next" />
         </div>
       </Link>
     </div>
