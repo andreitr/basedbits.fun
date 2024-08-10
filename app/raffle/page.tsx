@@ -6,14 +6,23 @@ import { RaffleComponent } from "@/app/raffle/components/RaffleComponent";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { revalidatePath } from "next/cache";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
+import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
+import { truncateAddress } from "@/app/lib/utils/addressUtils";
 
 export async function generateMetadata() {
   const raffleId = await getCurrentRaffleId();
   const raffle = await getRaffleById(raffleId);
-  const title = `Raffle for Based Bit #${raffle.sponsor.tokenId}`;
+  const token: AlchemyToken = await getNFTMetadata({
+    tokenId: raffle.sponsor.tokenId.toString(),
+  });
 
-  let description = `Raffle for Based Bit #${raffle.sponsor.tokenId}! A Based Bit is raffled off every 24 hours. Check-in to enter for free.`;
-  const preview = `https://ipfs.raribleuserdata.com/ipfs/QmRqqnZsbMLJGWt8SWjP2ebtzeHtWv5kkz3brbLzY1ShHt/${raffle.sponsor.tokenId}.png`;
+  const title = raffle.settledAt ? `Raffle #${raffleId}` : `Raffle is Live!`;
+  let description = raffle.settledAt
+    ? `${token.name} won by ${truncateAddress(raffle.winner)}`
+    : `${token.name} is up for grabs!`;
+
+  const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
 
   return {
     title: title,
@@ -21,7 +30,7 @@ export async function generateMetadata() {
     openGraph: {
       images: [
         {
-          url: preview,
+          url: ogPreviewPath,
           width: 1200,
           height: 1200,
         },
