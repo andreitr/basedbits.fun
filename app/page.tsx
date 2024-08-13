@@ -29,12 +29,12 @@ export default async function Home() {
           />
         </div>
       </div>
-      <div className="flex justify-center items-center w-full bg-[#303730] px-10 lg:px-0 pb-8 sm:pb-0">
+      <div className="flex justify-center items-center w-full bg-[#0052FF]">
         <div className="container max-w-screen-lg text-[#FFFF00] text-center">
-          <div className="py-2">
-            New Emoji Bits collection dropping on August, 15!{" "}
-            <Link className="underline" href="/emojibits">
-              Get the alpha
+          <div className="lg:px-0 py-4 px-10">
+            New Emoji Bits collection dropping on August, 20th{". "}
+            <Link className="underline cursor-pointer" href="/emojibits">
+              Get the alpha!
             </Link>
           </div>
         </div>

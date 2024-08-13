@@ -14,7 +14,7 @@ export default async function Page() {
 
           <div className="flex flex-col gap-6 mb-8">
             <div className="text-4xl">
-              Emoji Bits dropping on August 15, 2024
+              Emoji Bits dropping on August 20, 2024
             </div>
 
             <div>
