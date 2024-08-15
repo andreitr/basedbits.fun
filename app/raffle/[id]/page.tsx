@@ -26,11 +26,20 @@ export async function generateMetadata({ params: { id } }: Props) {
     ? `${token.name} won by ${truncateAddress(raffle.winner)}`
     : `${token.name} is up for grabs!`;
 
-  const ogPreviewPath = `/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
+  const ogPreviewPath = `http://localhost:3000/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
 
   return {
     title: title,
     description: description,
+    other: {
+      ["fc:frame"]: "vNext",
+      ["fc:frame:image"]: ogPreviewPath,
+      ["fc:frame:post_url"]: `http://localhost:3000/api/raffle/${id}`,
+      ["fc:frame:button:1"]: raffle.settledAt
+        ? `View Raffle #${id}`
+        : `Enter Raffle #${id}`,
+      ["fc:frame:button:1:action"]: "post_redirect",
+    },
     openGraph: {
       images: [
         {
