@@ -14,7 +14,7 @@ export async function POST(
         return new Response(null, {
             status: 302,
             headers: {
-                Location: `https://www.basedbits.fun/raffle/${params.id}/`,
+                Location: `https://basedbits.fun/raffle/${params.id}/`,
             },
         });
     }
