@@ -4,11 +4,14 @@ export async function POST(
     req: Request,
     {params}: { params: { id: string } },
 ) {
+
     const data = await req.json();
     const frameMessage = await getFrameMessage(data);
 
     // Look into this
     // https://github.com/Crossmint/farcaster-frame/blob/main/src/app/api/frame/route.ts
+
+    console.log(frameMessage.buttonIndex);
 
     if (frameMessage.buttonIndex === 1) {
         return new Response(null, {
