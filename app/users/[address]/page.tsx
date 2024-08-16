@@ -33,7 +33,7 @@ export async function generateMetadata({ params: { address } }: Props) {
         {
           url: ogPreviewPath,
           width: 1200,
-          height: 1200,
+          height: 630,
         },
       ],
     },

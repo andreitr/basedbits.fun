@@ -1,4 +1,5 @@
 import {getFrameMessage} from "frames.js";
+import {NextResponse} from "next/server";
 
 export async function POST(
     req: Request,
@@ -6,19 +7,11 @@ export async function POST(
 ) {
 
     const data = await req.json();
-    const frameMessage = await getFrameMessage(data);
+    const message = await getFrameMessage(data, {fetchHubContext: false});
 
-    // Look into this
-    // https://github.com/Crossmint/farcaster-frame/blob/main/src/app/api/frame/route.ts
+    const btnIdx = message?.buttonIndex || 0;
 
-    console.log(frameMessage.buttonIndex);
-
-    if (frameMessage.buttonIndex === 1) {
-        return new Response(null, {
-            status: 302,
-            headers: {
-                Location: `https://basedbits.fun/raffle/${params.id}/`,
-            },
-        });
+    if (btnIdx === 1) {
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/raffle/${params.id}/`, {status: 302},)
     }
 }

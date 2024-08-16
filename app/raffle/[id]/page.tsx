@@ -8,7 +8,6 @@ import {revalidatePath} from "next/cache";
 import {AlchemyToken} from "@/app/lib/types/alchemy";
 import {getNFTMetadata} from "@/app/lib/api/getNFTMetadata";
 import {truncateAddress} from "@/app/lib/utils/addressUtils";
-import {rootURI} from "@/app/lib/utils/utils";
 
 interface Props {
     params: {
@@ -27,7 +26,7 @@ export async function generateMetadata({params: {id}}: Props) {
         ? `${token.name} won by ${truncateAddress(raffle.winner)}`
         : `${token.name} is up for grabs!`;
 
-    const ogPreviewPath = `${rootURI()}/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
+    const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/raffle?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
 
     return {
         title: title,
@@ -35,7 +34,7 @@ export async function generateMetadata({params: {id}}: Props) {
         other: {
             ["fc:frame"]: "vNext",
             ["fc:frame:image"]: ogPreviewPath,
-            ["fc:frame:post_url"]: `${rootURI()}/api/raffle/${id}`,
+            ["fc:frame:post_url"]: `${process.env.NEXT_PUBLIC_URL}/api/raffle/${id}`,
             ["fc:frame:button:1"]: raffle.settledAt
                 ? `View Raffle #${id}`
                 : `Enter Raffle #${id}`,
@@ -46,7 +45,7 @@ export async function generateMetadata({params: {id}}: Props) {
                 {
                     url: ogPreviewPath,
                     width: 1200,
-                    height: 1200,
+                    height: 630,
                 },
             ],
         },
