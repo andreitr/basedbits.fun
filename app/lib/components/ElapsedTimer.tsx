@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 
 interface Props {
   startTime: BigNumber;
-  endTime: BigNumber;
+  duration: number;
   startTitle: string;
   endTitle: string;
 }
 
 export const ElapsedTimer = ({
   startTime,
-  endTime,
+  duration,
   startTitle,
   endTitle,
 }: Props) => {
@@ -33,7 +33,7 @@ export const ElapsedTimer = ({
   );
 
   const elapsedTime = Interval.fromDateTimes(startDateTime, DateTime.now());
-  const remainingTime = Duration.fromObject({ hours: 24 }).minus(
+  const remainingTime = Duration.fromObject({ hours: duration }).minus(
     elapsedTime.toDuration("hours"),
   );
   const remainingTimeString = remainingTime.toFormat("hh:mm:ss");

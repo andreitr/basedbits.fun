@@ -19,6 +19,7 @@ export async function generateMetadata({ params: { id } }: Props) {
   const raffle = await getRaffleById(id);
   const token: AlchemyToken = await getNFTMetadata({
     tokenId: raffle.sponsor.tokenId.toString(),
+    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
   });
 
   const title = raffle.settledAt ? `Raffle #${id}` : `Raffle is Live!`;

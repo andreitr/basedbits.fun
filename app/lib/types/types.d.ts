@@ -18,7 +18,8 @@ export type Mint = {
   startedAt: BigNumber;
   tokenId: BigNumber;
   winner: `0x${string}`;
-  entries: MintEntry[];
+  // entries: MintEntry[];
+  // TODO: Add entries?
 };
 
 export type Raffle = {

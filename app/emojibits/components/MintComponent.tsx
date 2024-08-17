@@ -10,21 +10,22 @@ import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { MintButton } from "@/app/emojibits/components/MintButton";
-import { MintEntries } from "@/app/emojibits/components/MintEntries";
 import Link from "next/link";
+import { SettleButton } from "@/app/emojibits/components/SettleButton";
+import { AlchemyToken } from "@/app/lib/types/alchemy";
 
 interface Props {
-  id: number;
+  token: AlchemyToken;
   mint: Mint;
 }
 
-export const MintComponent = ({ mint, id }: Props) => {
+export const MintComponent = ({ mint, token }: Props) => {
   const startTime = DateTime.fromMillis(
     BigNumber(mint.startedAt).toNumber() * 1000,
   );
 
   const elapsedTime = Interval.fromDateTimes(startTime, DateTime.now());
-  const remainingTime = Duration.fromObject({ hours: 24 }).minus(
+  const remainingTime = Duration.fromObject({ hours: 8 }).minus(
     elapsedTime.toDuration("hours"),
   );
 
@@ -45,27 +46,30 @@ export const MintComponent = ({ mint, id }: Props) => {
     if (isEnded && !hasWinner) {
       return (
         <div className="mt-8">
-          Pick a winner
-          {/*<SettleButton onSuccess={() => revalidate()} />*/}
+          <SettleButton />
         </div>
       );
     }
 
-    return <MintButton />;
+    return <MintButton token={token} />;
   };
 
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-16 mb-8">
       <Image
         className="rounded-lg w-full md:w-[350px]"
-        src="/images/emojibit_1.png"
-        alt={`Emoji Bit Bit ${mint.tokenId}`}
+        src={token.image.originalUrl}
+        alt={`Emoji Bit ${token.tokenId}`}
         width={350}
         height={350}
       />
       <div>
         <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
-          <ArrowNav id={id} path={"emojibits"} hasNext={isEnded} />
+          <ArrowNav
+            id={Number(mint.tokenId)}
+            path={"emojibits"}
+            hasNext={isEnded}
+          />
           <div>
             {startTime.monthLong} {startTime.day},{startTime.year}
           </div>
@@ -89,15 +93,13 @@ export const MintComponent = ({ mint, id }: Props) => {
           </div>
           <ElapsedTimer
             startTime={mint.startedAt}
-            endTime={mint.settledAt}
+            duration={8}
             startTitle={"Mint ends in"}
-            endTitle={"Mint ended"}
+            endTitle={"Mint ended on"}
           />
         </div>
         <div className="my-10">{mintButton()}</div>
-        <div className="text-[#677467]">
-          <MintEntries mint={mint} />
-        </div>
+        <div className="text-[#677467]">{/*<MintEntries mint={mint} />*/}</div>
       </div>
     </div>
   );
