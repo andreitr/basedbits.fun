@@ -12,6 +12,7 @@ import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { getEmojiBitsMintById } from "@/app/lib/api/getEmojiBitsMintById";
 import { getMintPrice } from "@/app/lib/api/getMintPrice";
+import { revalidatePath } from "next/cache";
 
 interface Props {
   params: {
@@ -66,7 +67,14 @@ export default async function Page({ params: { id } }: Props) {
           <Header />
 
           <div className="flex flex-col gap-6 mb-8">
-            <MintComponent token={token} mint={mint} />
+            <MintComponent
+              token={token}
+              mint={mint}
+              revalidate={async () => {
+                "use server";
+                revalidatePath(`/emojibits/${id}`, "layout");
+              }}
+            />
             <div>
               A new Emoji Bit is born every 8 hours! Half of mint proceeds are
               raffled; the rest burned via BBITS 🔥

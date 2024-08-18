@@ -58,7 +58,7 @@ export const RaffleComponent = ({ id, raffle, revalidate }: RaffleProps) => {
           <RaffleEntries id={Number(id)} />
           <ElapsedTimer
             startTime={raffle.startedAt}
-            endTime={raffle.settledAt}
+            duration={24}
             startTitle={"Raffle ends in"}
             endTitle={"Raffle ended"}
           />

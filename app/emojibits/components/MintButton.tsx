@@ -11,12 +11,15 @@ import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { BigNumberish, formatUnits } from "ethers";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { Button } from "@/app/lib/components/Button";
+import { useEffect } from "react";
 
 interface Props {
   token: AlchemyToken;
+  revalidate: () => void;
 }
 
-export const MintButton = ({ token }: Props) => {
+export const MintButton = ({ token, revalidate }: Props) => {
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -42,6 +45,12 @@ export const MintButton = ({ token }: Props) => {
     });
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      revalidate();
+    }
+  }, [isSuccess, revalidate]);
+
   const label = hasMintPrice
     ? `Mint for ${humanizeNumber(Number(formatUnits(mintPrice as BigNumberish)))}E`
     : `Calculating your mint price...`;
@@ -52,17 +61,14 @@ export const MintButton = ({ token }: Props) => {
 
   return (
     <div>
-      <button
-        onClick={mint}
-        className="bg-[#000000] w-full text-white text-lg font-bold py-2 px-4 rounded-lg"
-        disabled={!hasMintPrice}
-      >
+      <Button onClick={mint} loading={isFetching}>
         {isFetching ? "Minting..." : label}
-      </button>
+      </Button>
+
       {isSuccess && (
         <div className="mt-4 text-sm">
-          You have minted {token.name}! Please note that streak discount only
-          applies to the first mint.
+          <div>You have minted {token.name} and entered this raffle!</div>
+          <div>The streak discount applies only to the first mint.</div>
         </div>
       )}
     </div>

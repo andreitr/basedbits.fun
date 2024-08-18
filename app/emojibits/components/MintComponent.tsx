@@ -13,13 +13,15 @@ import { MintButton } from "@/app/emojibits/components/MintButton";
 import Link from "next/link";
 import { SettleButton } from "@/app/emojibits/components/SettleButton";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { MintEntries } from "@/app/emojibits/components/MintEntries";
 
 interface Props {
   token: AlchemyToken;
   mint: Mint;
+  revalidate: () => void;
 }
 
-export const MintComponent = ({ mint, token }: Props) => {
+export const MintComponent = ({ mint, token, revalidate }: Props) => {
   const startTime = DateTime.fromMillis(
     BigNumber(mint.startedAt).toNumber() * 1000,
   );
@@ -29,8 +31,11 @@ export const MintComponent = ({ mint, token }: Props) => {
     elapsedTime.toDuration("hours"),
   );
 
-  const isEnded = remainingTime.as("milliseconds") <= 0;
-  const hasWinner = mint.winner !== `0x${"0".repeat(40)}`;
+  const isEnded =
+    remainingTime.as("milliseconds") <= 0 ||
+    BigNumber(mint.settledAt).toNumber() !== 0;
+  const hasWinner =
+    mint.winner !== "0x0000000000000000000000000000000000000000";
 
   const mintButton = () => {
     if (isEnded && hasWinner) {
@@ -46,12 +51,11 @@ export const MintComponent = ({ mint, token }: Props) => {
     if (isEnded && !hasWinner) {
       return (
         <div className="mt-8">
-          <SettleButton />
+          <SettleButton token={token} />
         </div>
       );
     }
-
-    return <MintButton token={token} />;
+    return <MintButton token={token} revalidate={revalidate} />;
   };
 
   return (
@@ -78,7 +82,7 @@ export const MintComponent = ({ mint, token }: Props) => {
           Emoji Bit #{mint.tokenId.toString()}
         </div>
 
-        <div className="flex flex-row py-2 w-full gap-10">
+        <div className="flex flex-row py-2 w-full gap-10 mb-5">
           <div className="flex flex-col">
             <div className="text-md text-[#677467]">Mints</div>
             <div className="text-3xl font-semibold text-[#363E36]">
@@ -98,8 +102,10 @@ export const MintComponent = ({ mint, token }: Props) => {
             endTitle={"Mint ended on"}
           />
         </div>
-        <div className="my-10">{mintButton()}</div>
-        <div className="text-[#677467]">{/*<MintEntries mint={mint} />*/}</div>
+        <div className="text-[#677467] mb-10">
+          {<MintEntries mint={mint} />}
+        </div>
+        {mintButton()}
       </div>
     </div>
   );

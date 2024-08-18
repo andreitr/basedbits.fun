@@ -1,7 +1,8 @@
 "use client";
 
 import { Mint } from "@/app/lib/types/types";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
+import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
 interface Props {
   mint: Mint;
@@ -10,31 +11,39 @@ interface Props {
 export const MintEntries = ({ mint }: Props) => {
   const { isConnected, address } = useAccount();
 
-  const totalEntries = mint.entries.reduce(
-    (acc, entry) => acc + Number(entry.weight),
-    0,
-  );
+  const { data: totalEntries, isFetched: hasTotalEntries } = useReadContract({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
+    functionName: "totalEntries",
+    args: [BigInt(Number(mint.tokenId))],
+  });
 
-  if (!isConnected) {
+  const { data: userEntries, isFetched: hasUserEntries } = useReadContract({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
+    functionName: "userEntryByAddress",
+    args: [[BigInt(Number(mint.tokenId))], address],
+    query: {
+      enabled: isConnected,
+    },
+  });
+
+  if (!isConnected && hasTotalEntries) {
     return (
       <>
-        There are <span className="font-semibold">{totalEntries}</span> raffle
-        entries.
+        There are <span className="font-semibold">{String(totalEntries)}</span>{" "}
+        raffle entries.
       </>
     );
   }
 
-  const yourEntries = mint.entries.reduce((acc, entry) => {
-    return entry.user.toLowerCase() === address?.toLowerCase()
-      ? acc + Number(entry.weight)
-      : acc;
-  }, 0);
-
-  return (
-    <>
-      You hold <span className="font-semibold">{yourEntries}</span> out of the{" "}
-      <span className="font-semibold">{totalEntries}</span> total raffle
-      entries.
-    </>
-  );
+  if (hasUserEntries && hasTotalEntries) {
+    return (
+      <>
+        You hold <span className="font-semibold">{String(userEntries)}</span>{" "}
+        out of <span className="font-semibold">{String(totalEntries)}</span>{" "}
+        total raffle entries.
+      </>
+    );
+  }
 };
