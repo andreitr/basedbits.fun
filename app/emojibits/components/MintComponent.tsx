@@ -61,11 +61,11 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-16 mb-8">
       <Image
-        className="rounded-lg w-full md:w-[350px]"
+        className="rounded-lg w-full md:w-[357px]"
         src={token.image.originalUrl}
         alt={`Emoji Bit ${token.tokenId}`}
-        width={350}
-        height={350}
+        width={357}
+        height={357}
       />
       <div>
         <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
@@ -102,7 +102,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
             endTitle={"Mint ended on"}
           />
         </div>
-        <div className="text-[#677467] mb-10">
+        <div className="text-[#677467] mb-5">
           {<MintEntries mint={mint} />}
         </div>
         {mintButton()}
