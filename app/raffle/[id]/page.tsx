@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
+import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 
 interface Props {
   params: {
@@ -18,8 +19,9 @@ interface Props {
 export async function generateMetadata({ params: { id } }: Props) {
   const raffle = await getRaffleById(id);
   const token: AlchemyToken = await getNFTMetadata({
-    tokenId: raffle.sponsor.tokenId.toString(),
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
+    path: ALCHEMY_API_PATH.MAINNET,
+    tokenId: raffle.sponsor.tokenId.toString(),
   });
 
   const title = raffle.settledAt ? `Raffle #${id}` : `Raffle is Live!`;

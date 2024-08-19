@@ -12,7 +12,7 @@ import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { BigNumberish, formatUnits } from "ethers";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { Button } from "@/app/lib/components/Button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   token: AlchemyToken;
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export const MintButton = ({ token, revalidate }: Props) => {
+  const [refresh, setRefresh] = useState(false);
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -46,10 +47,11 @@ export const MintButton = ({ token, revalidate }: Props) => {
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && !refresh) {
       revalidate();
+      setRefresh(true);
     }
-  }, [isSuccess, revalidate]);
+  }, [isSuccess, revalidate, refresh, setRefresh]);
 
   const label = hasMintPrice
     ? `Mint for ${humanizeNumber(Number(formatUnits(mintPrice as BigNumberish)))}E`
@@ -61,7 +63,13 @@ export const MintButton = ({ token, revalidate }: Props) => {
 
   return (
     <div>
-      <Button onClick={mint} loading={isFetching}>
+      <Button
+        onClick={() => {
+          mint();
+          setRefresh(false);
+        }}
+        loading={isFetching}
+      >
         {isFetching ? "Minting..." : label}
       </Button>
 

@@ -26,7 +26,7 @@ export const SettleButton = ({ token }: Props) => {
     if (isSuccess) {
       router.push(`/emojibits/${Number(token.tokenId) + 1}`);
     }
-  }, [isSuccess]);
+  }, [router, token, isSuccess]);
 
   const settle = () => {
     writeContract({
@@ -42,10 +42,10 @@ export const SettleButton = ({ token }: Props) => {
   return (
     <div className="text-center">
       <Button onClick={settle} loading={isFetching}>
-        {isFetching ? "Settling..." : "Start Next Mint"}
+        {isFetching ? "Starting Next Mint..." : "Start Next Mint"}
       </Button>
       <div className="mt-5 text-sm text-[#677467]">
-        Starting the next mint gets you the next Emoji Bit for free :)
+        Starting the next mint gets you the next NFT for free :)
       </div>
     </div>
   );

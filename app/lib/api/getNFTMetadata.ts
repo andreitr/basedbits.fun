@@ -1,13 +1,15 @@
 import { type AlchemyToken } from "@/app/lib/types/alchemy";
+import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 
 interface Props {
-  tokenId: string;
+  path: ALCHEMY_API_PATH;
   contract: string;
+  tokenId: string;
 }
 
-export const getNFTMetadata = async ({ tokenId, contract }: Props) => {
+export const getNFTMetadata = async ({ tokenId, contract, path }: Props) => {
   const meta: AlchemyToken = await fetch(
-    `https://base-sepolia.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getNFTMetadata?contractAddress=${contract}&tokenId=${tokenId}&tokenType=ERC721`,
+    `https://${path}.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getNFTMetadata?contractAddress=${contract}&tokenId=${tokenId}&tokenType=ERC721`,
     {
       next: { revalidate: 60 },
     },

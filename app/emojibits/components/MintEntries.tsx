@@ -46,4 +46,6 @@ export const MintEntries = ({ mint }: Props) => {
       </>
     );
   }
+
+  return <>Loading raffle entries for this mint...</>;
 };

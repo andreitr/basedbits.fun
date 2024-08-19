@@ -9,13 +9,15 @@ import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
+import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 
 export async function generateMetadata() {
   const raffleId = await getCurrentRaffleId();
   const raffle = await getRaffleById(raffleId);
   const token: AlchemyToken = await getNFTMetadata({
-    tokenId: raffle.sponsor.tokenId.toString(),
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
+    path: ALCHEMY_API_PATH.MAINNET,
+    tokenId: raffle.sponsor.tokenId.toString(),
   });
 
   const title = raffle.settledAt ? `Raffle #${raffleId}` : `Raffle is Live!`;

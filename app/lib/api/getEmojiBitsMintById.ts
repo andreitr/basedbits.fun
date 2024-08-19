@@ -12,7 +12,7 @@ export async function getEmojiBitsMintById({ id }: Props) {
     abi: EmojiBitsABI,
     address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
     functionName: "raffleInfo",
-    args: [id],
+    args: [BigInt(id)],
   });
 
   const mint: Mint = {

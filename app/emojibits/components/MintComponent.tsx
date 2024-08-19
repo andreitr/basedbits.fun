@@ -7,13 +7,15 @@ import Image from "next/image";
 import { ArrowNav } from "@/app/lib/components/ArrowNav";
 import { ElapsedTimer } from "@/app/lib/components/ElapsedTimer";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
-import { formatUnits } from "ethers";
+import { BigNumberish, formatUnits } from "ethers";
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { MintButton } from "@/app/emojibits/components/MintButton";
 import Link from "next/link";
 import { SettleButton } from "@/app/emojibits/components/SettleButton";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { MintEntries } from "@/app/emojibits/components/MintEntries";
+import { useReadContract } from "wagmi";
+import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
 interface Props {
   token: AlchemyToken;
@@ -25,20 +27,31 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
   const startTime = DateTime.fromMillis(
     BigNumber(mint.startedAt).toNumber() * 1000,
   );
+  const endTime = startTime.plus({ hours: 8 });
 
-  const elapsedTime = Interval.fromDateTimes(startTime, DateTime.now());
-  const remainingTime = Duration.fromObject({ hours: 8 }).minus(
-    elapsedTime.toDuration("hours"),
-  );
-
-  const isEnded =
-    remainingTime.as("milliseconds") <= 0 ||
-    BigNumber(mint.settledAt).toNumber() !== 0;
+  const hasEnded =
+    DateTime.now() >= endTime || BigNumber(mint.settledAt).toNumber() !== 0;
   const hasWinner =
     mint.winner !== "0x0000000000000000000000000000000000000000";
 
+  const { data: liveRaffleRewards, isFetched: hasLiveRaffleAmount } =
+    useReadContract({
+      abi: EmojiBitsABI,
+      address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
+      functionName: "raffleAmount",
+      query: {
+        enabled: !hasEnded && !hasWinner,
+      },
+    });
+
+  const raffleAmount: BigNumberish = hasWinner
+    ? mint.rewards
+    : hasLiveRaffleAmount
+      ? (liveRaffleRewards as BigNumberish)
+      : 0;
+
   const mintButton = () => {
-    if (isEnded && hasWinner) {
+    if (hasEnded && hasWinner) {
       return (
         <div className="p-4 bg-[#ABBEAC] rounded-lg text-center text-xl font-semibold text-[#363E36]">
           <Link href={`/users/${mint.winner}`}>
@@ -48,12 +61,10 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
       );
     }
 
-    if (isEnded && !hasWinner) {
-      return (
-        <div className="mt-8">
-          <SettleButton token={token} />
-        </div>
-      );
+    if (hasEnded && !hasWinner) {
+      console.log("Winner", mint.winner);
+
+      return <SettleButton token={token} />;
     }
     return <MintButton token={token} revalidate={revalidate} />;
   };
@@ -72,14 +83,14 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           <ArrowNav
             id={Number(mint.tokenId)}
             path={"emojibits"}
-            hasNext={isEnded}
+            hasNext={hasEnded}
           />
           <div>
             {startTime.monthLong} {startTime.day},{startTime.year}
           </div>
         </div>
         <div className="text-[#363E36] text-4xl font-semibold mb-4">
-          Emoji Bit #{mint.tokenId.toString()}
+          Summoji #{mint.tokenId.toString()}
         </div>
 
         <div className="flex flex-row py-2 w-full gap-10 mb-5">
@@ -92,7 +103,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           <div className="flex flex-col">
             <div className="text-md text-[#677467]">Raffle Reward</div>
             <div className="text-3xl font-semibold text-[#363E36]">
-              {humanizeNumber(Number(formatUnits(mint.rewards)))}Ξ
+              {humanizeNumber(Number(formatUnits(raffleAmount)))}Ξ
             </div>
           </div>
           <ElapsedTimer
@@ -102,9 +113,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
             endTitle={"Mint ended on"}
           />
         </div>
-        <div className="text-[#677467] mb-5">
-          {<MintEntries mint={mint} />}
-        </div>
+        <div className="text-[#677467] mb-5">{<MintEntries mint={mint} />}</div>
         {mintButton()}
       </div>
     </div>
