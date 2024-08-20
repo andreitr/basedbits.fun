@@ -1,13 +1,14 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
+
     images: {
         domains: ['ipfs.raribleuserdata.com', 'res.cloudinary.com'],
     },
 
-    async headers() {
+    headers: async () => {
+
         return [
             {
-                source: "/api/images/(.*)",
+                source: '/api/images/(.*)',
                 headers: [
                     {
                         key: "Cache-Control",
@@ -16,7 +17,7 @@ const nextConfig = {
                 ],
             },
             {
-                source: "/raffle/(.*)",
+                source: '/raffle/:id',
                 headers: [
                     {
                         key: "Cache-Control",
@@ -25,7 +26,7 @@ const nextConfig = {
                 ],
             },
             {
-                source: "/users/(.*)",
+                source: '/users/[:address]',
                 headers: [
                     {
                         key: "Cache-Control",
@@ -34,7 +35,5 @@ const nextConfig = {
                 ],
             },
         ]
-    }
-};
-
-export default nextConfig;
+    },
+}
