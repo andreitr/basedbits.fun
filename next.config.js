@@ -8,20 +8,11 @@ module.exports = {
 
         return [
             {
-                source: '/api/images/(.*)',
-                headers: [
-                    {
-                        key: "Cache-Control",
-                        value: "max-age=1800",
-                    },
-                ],
-            },
-            {
                 source: '/raffle/:id',
                 headers: [
                     {
-                        key: "Cache-Control",
-                        value: "max-age=1800",
+                        key: "cache-control",
+                        value: "public, immutable, no-transform, max-age=600",
                     },
                 ],
             },
@@ -29,8 +20,8 @@ module.exports = {
                 source: '/users/[:address]',
                 headers: [
                     {
-                        key: "Cache-Control",
-                        value: "max-age=1800",
+                        key: "cache-control",
+                        value: "public, immutable, no-transform, max-age=600",
                     },
                 ],
             },
