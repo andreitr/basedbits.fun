@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import Image from "next/image";
 
 export const runtime = "edge";
 
@@ -6,8 +7,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const title = searchParams?.get("title");
-    const description = searchParams?.get("description");
+    // const title = searchParams?.get("title");
     const preview = searchParams?.get("preview");
 
     const interBoldFont = await fetch(
@@ -33,26 +33,13 @@ export async function GET(request: Request) {
           }}
         >
           <div tw="flex flex-row justify-between">
-            {preview && (
-              <img
-                tw="my-[40px] ml-[40px]"
-                src={preview}
-                width={550}
-                height={550}
-              />
-            )}
-            <div tw="flex flex-col items-center justify-center w-[610px]">
-              <div tw="text-6xl font-bold mb-10 text-[#363E36]">{title}</div>
-              <div tw="mx-6 px-10 text-center text-[#363E36] text-3xl font-normal">
-                {description}
-              </div>
-            </div>
+            {preview && <img src={preview} width={840} height={840} />}
           </div>
         </div>
       ),
       {
-        width: 1200,
-        height: 630,
+        width: 840,
+        height: 840,
         fonts: [
           {
             data: interBoldFont,
@@ -67,6 +54,10 @@ export async function GET(request: Request) {
             weight: 400,
           },
         ],
+        headers: {
+          "cache-control": "public, immutable, no-transform, max-age=600",
+          "content-type": "image/png",
+        },
       },
     );
   } catch (e: any) {

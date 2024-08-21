@@ -1,7 +1,7 @@
 "use client";
 
 import type { Mint } from "@/app/lib/types/types";
-import { DateTime, Duration, Interval } from "luxon";
+import { DateTime } from "luxon";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
 import { ArrowNav } from "@/app/lib/components/ArrowNav";
@@ -62,8 +62,6 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
     }
 
     if (hasEnded && !hasWinner) {
-      console.log("Winner", mint.winner);
-
       return <SettleButton token={token} />;
     }
     return <MintButton token={token} revalidate={revalidate} />;
@@ -74,7 +72,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
       <Image
         className="rounded-lg w-full md:w-[357px]"
         src={token.image.originalUrl}
-        alt={`Emoji Bit ${token.tokenId}`}
+        alt={token.name}
         width={357}
         height={357}
       />
@@ -90,7 +88,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           </div>
         </div>
         <div className="text-[#363E36] text-4xl font-semibold mb-4">
-          Summoji #{mint.tokenId.toString()}
+          {token.name}
         </div>
 
         <div className="flex flex-row py-2 w-full gap-10 mb-5">

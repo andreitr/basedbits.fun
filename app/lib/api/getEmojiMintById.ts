@@ -7,12 +7,12 @@ interface Props {
   id: number;
 }
 
-export async function getEmojiBitsMintById({ id }: Props) {
+export async function getEmojiMintById({ id }: Props) {
   const data: any = await readContract(baseTestnetConfig, {
     abi: EmojiBitsABI,
     address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
     functionName: "raffleInfo",
-    args: [BigInt(id)],
+    args: [id],
   });
 
   const mint: Mint = {

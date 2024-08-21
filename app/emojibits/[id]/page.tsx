@@ -7,7 +7,7 @@ import { MintRules } from "@/app/emojibits/components/MintRules";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
-import { getEmojiBitsMintById } from "@/app/lib/api/getEmojiBitsMintById";
+import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
 import { revalidatePath } from "next/cache";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 
@@ -17,8 +17,12 @@ interface Props {
   };
 }
 
+interface FarcasterMetadata {
+  [key: string]: string | number;
+}
+
 export async function generateMetadata({ params: { id } }: Props) {
-  const mint = await getEmojiBitsMintById({ id });
+  const mint = await getEmojiMintById({ id });
   const token: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
     path: ALCHEMY_API_PATH.TESTNET,
@@ -31,17 +35,34 @@ export async function generateMetadata({ params: { id } }: Props) {
     ? `Mint ended! ${mint.mints} editions minted! Raffle won by ${truncateAddress(mint.winner)}`
     : `Live mint! ${mint.mints} editions minted so far!`;
 
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/emoji?title=${encodeURIComponent(title)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/emoji?title=${encodeURIComponent(title)}&preview=${token.image.pngUrl}&description=${encodeURIComponent(description)}`;
+
+  const other: FarcasterMetadata = {
+    ["fc:frame"]: "vNext",
+    ["fc:frame:image:aspect_ratio"]: "1:1",
+    ["fc:frame:image"]: ogPreviewPath,
+    ["fc:frame:button:1"]: `View ${token.name}`,
+    ["fc:frame:button:1:action"]: "link",
+    ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/emojibits/${id}`,
+  };
+
+  if (!mint.settledAt) {
+    other["fc:frame:button:2"] = `Mint`;
+    other["fc:frame:button:2:action"] = "tx";
+    other["fc:frame:button:2:target"] =
+      `${process.env.NEXT_PUBLIC_URL}/api/emojibits/${id}`;
+  }
 
   return {
     title: title,
     description: description,
+    other: other,
     openGraph: {
       images: [
         {
           url: ogPreviewPath,
-          width: 1200,
-          height: 630,
+          width: 840,
+          height: 840,
         },
       ],
     },
@@ -54,7 +75,7 @@ export async function generateMetadata({ params: { id } }: Props) {
 }
 
 export default async function Page({ params: { id } }: Props) {
-  const mint = await getEmojiBitsMintById({ id });
+  const mint = await getEmojiMintById({ id });
   const token: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
     path: ALCHEMY_API_PATH.TESTNET,
