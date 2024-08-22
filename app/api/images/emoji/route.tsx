@@ -54,7 +54,7 @@ export async function GET(request: Request) {
             <div tw="flex absolute bottom-0 p-3 w-full text-center text-3xl text-white text-center">
               {mint.settledAt
                 ? `${token.name} Mint Ended! Burned ${mint.burned} 🔥 Raffled ${mint.rewards} 🏆`
-                : `Mint Live! Every minter eligible for ${raflleAmount.toString()} 🏆 raffle!`}
+                : `Mint Live! Current raffle reward is ${raflleAmount.toString()} 🏆`}
             </div>
           </div>
         </div>

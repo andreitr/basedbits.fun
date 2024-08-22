@@ -20,8 +20,7 @@ export async function POST(
       : await getEmojiMintPrice();
 
     return transaction({
-      // chainId: "eip155:8453",
-      chainId: "eip155:84532",
+      chainId: "eip155:8453",
       method: "eth_sendTransaction",
       params: {
         abi: EmojiBitsABI as any,
