@@ -9,7 +9,7 @@ import {
   WagmiProvider,
   webSocket,
 } from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
@@ -19,19 +19,16 @@ const wagmiConfig = createConfig(
     storage: createStorage({
       storage: cookieStorage,
     }),
-    chains: [base, baseSepolia],
+    chains: [base],
     transports: {
       [base.id]: webSocket(
         `wss://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-      ),
-      [baseSepolia.id]: webSocket(
-        `wss://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
       ),
     },
     walletConnectProjectId: process.env
       .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
     appName: "Based Bits",
-    appDescription: "Your App Description",
+    appDescription: "Based Bits causing byte-sized mischief on the BASE chain.",
     appUrl: "https://basedbits.fun",
     appIcon: "https://www.basedbits.fun/images/icon.png",
   }),

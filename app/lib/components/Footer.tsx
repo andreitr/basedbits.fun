@@ -7,24 +7,24 @@ export const Footer = () => {
     <div className="container max-w-screen-lg">
       <div className="text-5xl text-[#363E36] mb-4">Based Bits</div>
       <div className="text-[#677467]">
-        8000 Based Bits causing byte-sized mischief on the BASE chain, a nerdy
-        collection by{" "}
+        Based Bits is a community centered around building experimental and fun
+        NFT use cases. Join us! Grab a Based Bit NFT on{" "}
         <Link
-          href="https://warpcast.com/andreitr"
+          className="hover:underline text-sm"
+          href="https://opensea.io/collection/based-bits"
           target="_blank"
-          title="andreitr.eth on Farcaster"
         >
-          andreitr.eth
+          OpenSea
         </Link>{" "}
-        with art by{" "}
+        or{" "}
         <Link
-          href="https://warpcast.com/gretagremplin"
+          className="hover:underline text-sm"
+          href="https://rarible.com/BasedBits/items"
           target="_blank"
-          title="gretagremplin on Farcaster"
         >
-          gretagremplin.eth
-        </Link>
-        . All art is CC0.
+          Rarible
+        </Link>{" "}
+        and start checking in.
       </div>
 
       <div className="flex sm:flex-row gap-8 flex-col justify-between mt-16 text-[#677467]">
@@ -33,10 +33,10 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://rarible.com/BasedBits/items"
+              href="https://opensea.io/collection/based-bits"
               target="_blank"
             >
-              Rarible
+              Based Bits
             </Link>
           </div>
           <div>
@@ -45,7 +45,7 @@ export const Footer = () => {
               href="https://opensea.io/collection/based-bits"
               target="_blank"
             >
-              OpenSea
+              Emoji Bits (Onchain Summer)
             </Link>
           </div>
         </div>
@@ -129,7 +129,16 @@ export const Footer = () => {
               href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
               target="_blank"
             >
-              NFT Contract
+              Based Bits NFT
+            </Link>
+          </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href="https://basescan.org/address/0xf6b0da3a3a8e23bbc7df54fe42bee302e35ea8dc"
+              target="_blank"
+            >
+              Emoji Bits (Onchain Summer)
             </Link>
           </div>
           <div>

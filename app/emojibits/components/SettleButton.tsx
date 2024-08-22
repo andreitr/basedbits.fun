@@ -24,7 +24,9 @@ export const SettleButton = ({ token }: Props) => {
 
   useEffect(() => {
     if (isSuccess) {
-      router.push(`/emojibits/${Number(token.tokenId) + 1}`);
+      setTimeout(() => {
+        router.push(`/emojibits/${Number(token.tokenId) + 1}`);
+      }, 5000);
     }
   }, [router, token, isSuccess]);
 
@@ -42,7 +44,7 @@ export const SettleButton = ({ token }: Props) => {
   return (
     <div className="text-center">
       <Button onClick={settle} loading={isFetching}>
-        {isFetching ? "Starting Next Mint..." : "Start Next Mint"}
+        {isFetching || isSuccess ? "Starting Next Mint..." : "Start Next Mint"}
       </Button>
       <div className="mt-5 text-sm text-[#677467]">
         Starting the next mint gets you the next NFT for free :)

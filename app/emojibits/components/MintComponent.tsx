@@ -6,7 +6,6 @@ import BigNumber from "bignumber.js";
 import Image from "next/image";
 import { ArrowNav } from "@/app/lib/components/ArrowNav";
 import { ElapsedTimer } from "@/app/lib/components/ElapsedTimer";
-import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { BigNumberish, formatUnits } from "ethers";
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { MintButton } from "@/app/emojibits/components/MintButton";
@@ -16,6 +15,7 @@ import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { MintEntries } from "@/app/emojibits/components/MintEntries";
 import { useReadContract } from "wagmi";
 import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 
 interface Props {
   token: AlchemyToken;
@@ -38,17 +38,17 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
     useReadContract({
       abi: EmojiBitsABI,
       address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
-      functionName: "raffleAmount",
+      functionName: "currentMintRaffleAmount",
       query: {
         enabled: !hasEnded && !hasWinner,
       },
     });
 
-  const raffleAmount: BigNumberish = hasWinner
+  const raffleAmount: string = hasWinner
     ? mint.rewards
     : hasLiveRaffleAmount
-      ? (liveRaffleRewards as BigNumberish)
-      : 0;
+      ? `${humanizeNumber(Number(formatUnits(liveRaffleRewards as any)))}Ξ`
+      : "";
 
   const mintButton = () => {
     if (hasEnded && hasWinner) {
@@ -101,7 +101,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           <div className="flex flex-col">
             <div className="text-md text-[#677467]">Raffle Reward</div>
             <div className="text-3xl font-semibold text-[#363E36]">
-              {humanizeNumber(Number(formatUnits(raffleAmount)))}Ξ
+              {raffleAmount}
             </div>
           </div>
           <ElapsedTimer

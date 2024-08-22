@@ -487,19 +487,6 @@ export const EmojiBitsABI = [
   },
   {
     inputs: [],
-    name: "burnAmount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "burnPercentage",
     outputs: [
       {
@@ -539,7 +526,33 @@ export const EmojiBitsABI = [
   },
   {
     inputs: [],
-    name: "currentRound",
+    name: "currentMint",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "currentMintBurnAmount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "currentMintRaffleAmount",
     outputs: [
       {
         internalType: "uint256",
@@ -662,17 +675,17 @@ export const EmojiBitsABI = [
       },
       {
         internalType: "uint256",
-        name: "hair",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
         name: "eyes",
         type: "uint256",
       },
       {
         internalType: "uint256",
         name: "mouth",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "hair",
         type: "uint256",
       },
     ],
@@ -684,6 +697,55 @@ export const EmojiBitsABI = [
     name: "mint",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "mintById",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "mints",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "rewards",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "burned",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "winner",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "startedAt",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "settledAt",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -733,68 +795,6 @@ export const EmojiBitsABI = [
         internalType: "bool",
         name: "",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "raffleAmount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "raffleInfo",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "mints",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "rewards",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "burned",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "winner",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "startedAt",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "settledAt",
-        type: "uint256",
       },
     ],
     stateMutability: "view",

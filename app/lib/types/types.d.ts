@@ -11,15 +11,13 @@ export type MintEntry = {
   weight: BigNumber;
 };
 export type Mint = {
-  burned: BigNumberish;
+  burned: string;
   mints: BigNumber;
-  rewards: BigNumberish;
+  rewards: strings;
   settledAt: BigNumber;
   startedAt: BigNumber;
   tokenId: BigNumber;
   winner: `0x${string}`;
-  // entries: MintEntry[];
-  // TODO: Add entries?
 };
 
 export type Raffle = {

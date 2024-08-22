@@ -30,11 +30,10 @@ export default async function Home() {
         </div>
       </div>
       <div className="flex justify-center items-center w-full bg-[#0052FF]">
-        <div className="container max-w-screen-lg text-[#FFFF00] text-center">
-          <div className="lg:px-0 py-4 px-10">
-            New Emoji Bits collection dropping on August, 22th{". "}
-            <Link className="underline cursor-pointer" href="/emojibits">
-              Get the alpha!
+        <div className="container max-w-screen-lg text-[#FFFF00] text-center p-5">
+          <div className="text-2xl">
+            <Link className="hover:underline cursor-pointer" href="/emojibits">
+              🔆 OᑎᑕᕼᗩIᑎ ᔑᑌᗰᗰEᖇ 🔆 EMOJI BITS MINTING!{" "}
             </Link>
           </div>
         </div>
