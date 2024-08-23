@@ -15,10 +15,13 @@ import { revalidatePath } from "next/cache";
 export async function generateMetadata() {
   const id = await getEmojiCurrentMint();
   const mint = await getEmojiMintById({ id });
+
   const token: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
     path: ALCHEMY_API_PATH.MAINNET,
     tokenId: mint.tokenId.toString(),
+    tokenType: "ERC1155",
+    refreshCache: false,
   });
 
   const title = `${token.name}`;
@@ -67,6 +70,8 @@ export default async function Page() {
     contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
     path: ALCHEMY_API_PATH.MAINNET,
     tokenId: id.toString(),
+    tokenType: "ERC1155",
+    refreshCache: false,
   });
 
   return (

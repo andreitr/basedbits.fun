@@ -22,6 +22,8 @@ export async function generateMetadata({ params: { id } }: Props) {
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
     path: ALCHEMY_API_PATH.MAINNET,
     tokenId: raffle.sponsor.tokenId.toString(),
+    tokenType: "ERC721",
+    refreshCache: false,
   });
 
   const title = raffle.settledAt ? `Raffle #${id}` : `Raffle is Live!`;

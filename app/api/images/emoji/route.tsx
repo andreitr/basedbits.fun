@@ -22,6 +22,8 @@ export async function GET(request: Request) {
       contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
       path: ALCHEMY_API_PATH.MAINNET,
       tokenId: mint.tokenId.toString(),
+      tokenType: "ERC1155",
+      refreshCache: false,
     });
 
     const raflleAmount = await getEmojiCurrentRaffleAmount();
