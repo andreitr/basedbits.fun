@@ -30,7 +30,7 @@ export async function generateMetadata({ params: { id } }: Props) {
   const title = `${token.name}`;
 
   let description = mint.settledAt
-    ? `Mint ended! ${mint.mints} editions minted! Raffle won by ${truncateAddress(mint.winner)}`
+    ? `Mint ended! ${mint.mints} editions minted!`
     : `Live mint! ${mint.mints} editions minted so far!`;
 
   const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/emoji?id=${id}`;

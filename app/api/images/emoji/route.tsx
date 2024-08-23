@@ -18,6 +18,7 @@ export async function GET(request: Request) {
     }
 
     const mint = await getEmojiMintById({ id: Number(id) });
+
     const token: AlchemyToken = await getNFTMetadata({
       contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
       path: ALCHEMY_API_PATH.MAINNET,
@@ -26,7 +27,11 @@ export async function GET(request: Request) {
       refreshCache: false,
     });
 
-    const raflleAmount = await getEmojiCurrentRaffleAmount();
+    const isMintLive = !mint.settledAt;
+    let reward = "0";
+    if (isMintLive) {
+      reward = await getEmojiCurrentRaffleAmount();
+    }
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),
@@ -53,11 +58,11 @@ export async function GET(request: Request) {
           <div tw="flex">
             <img src={token.image.pngUrl} width={840} height={840} />
 
-            <div tw="flex absolute bottom-0 p-3 w-full text-center text-3xl text-white text-center">
-              {mint.settledAt
-                ? `${token.name} Mint Ended! Burned ${mint.burned} 🔥 Raffled ${mint.rewards} 🏆`
-                : `Mint Live! Current raffle reward is ${raflleAmount.toString()} 🏆`}
-            </div>
+            {isMintLive && (
+              <div tw="flex absolute bottom-0 left-0 right-0 items-center justify-center m-4 p-6 text-center text-4xl text-white bg-black bg-opacity-60 rounded-xl">
+                {`${token.name} - ${reward.toString()} Mint Reward`}
+              </div>
+            )}
           </div>
         </div>
       ),
