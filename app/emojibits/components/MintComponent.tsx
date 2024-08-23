@@ -6,7 +6,7 @@ import BigNumber from "bignumber.js";
 import Image from "next/image";
 import { ArrowNav } from "@/app/lib/components/ArrowNav";
 import { ElapsedTimer } from "@/app/lib/components/ElapsedTimer";
-import { BigNumberish, formatUnits } from "ethers";
+import { formatUnits } from "ethers";
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { MintButton } from "@/app/emojibits/components/MintButton";
 import Link from "next/link";
@@ -62,7 +62,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
     }
 
     if (hasEnded && !hasWinner) {
-      return <SettleButton token={token} />;
+      return <SettleButton revalidate={revalidate} />;
     }
     return <MintButton token={token} revalidate={revalidate} />;
   };

@@ -38,6 +38,10 @@ export const MintButton = ({ token, revalidate }: Props) => {
   });
 
   const mint = () => {
+    if (!mintPrice) {
+      console.error("Mint price is not available.");
+      return;
+    }
     writeContract({
       abi: EmojiBitsABI,
       address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,
@@ -51,11 +55,12 @@ export const MintButton = ({ token, revalidate }: Props) => {
       revalidate();
       setRefresh(true);
     }
-  }, [isSuccess, revalidate, refresh, setRefresh]);
+  }, [isSuccess, revalidate, refresh]);
 
-  const label = hasMintPrice
-    ? `Mint for ${humanizeNumber(Number(formatUnits(mintPrice as BigNumberish)))}E`
-    : `Calculating your mint price...`;
+  const label =
+    hasMintPrice && mintPrice
+      ? `Mint for ${humanizeNumber(Number(formatUnits(mintPrice as BigNumberish)))}E`
+      : `Calculating your mint price...`;
 
   if (!isConnected) {
     return <ConnectAction action={"to mint"} />;
@@ -76,7 +81,6 @@ export const MintButton = ({ token, revalidate }: Props) => {
       {isSuccess && (
         <div className="mt-4 text-sm">
           <div>You have minted {token.name} and entered this raffle!</div>
-          <div>The streak discount applies only to the first mint.</div>
         </div>
       )}
     </div>

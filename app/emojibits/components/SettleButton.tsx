@@ -7,15 +7,12 @@ import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { Button } from "@/app/lib/components/Button";
 import { useEffect } from "react";
-import { AlchemyToken } from "@/app/lib/types/alchemy";
-import { useRouter } from "next/navigation";
 
 interface Props {
-  token: AlchemyToken;
+  revalidate: () => void;
 }
 
-export const SettleButton = ({ token }: Props) => {
-  const router = useRouter();
+export const SettleButton = ({ revalidate }: Props) => {
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -24,11 +21,12 @@ export const SettleButton = ({ token }: Props) => {
 
   useEffect(() => {
     if (isSuccess) {
-      setTimeout(() => {
-        router.push(`/emojibits/${Number(token.tokenId) + 1}`);
+      const timer = setTimeout(() => {
+        revalidate();
       }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [router, token, isSuccess]);
+  }, [isSuccess, revalidate]);
 
   const settle = () => {
     writeContract({
