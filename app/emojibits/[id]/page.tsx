@@ -6,7 +6,6 @@ import { MintComponent } from "@/app/emojibits/components/MintComponent";
 import { MintRules } from "@/app/emojibits/components/MintRules";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
-import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
 import { revalidatePath } from "next/cache";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";

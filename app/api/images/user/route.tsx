@@ -1,4 +1,9 @@
 import { ImageResponse } from "next/og";
+import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
+import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
+import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { formatUnits } from "ethers";
 
 export const runtime = "edge";
 
@@ -6,10 +11,24 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const titleA = searchParams?.get("titleA");
-    const titleB = searchParams?.get("titleB");
-    const description = searchParams?.get("description");
-    const preview = searchParams?.get("preview");
+    const address = searchParams?.get("address");
+
+    if (!address) {
+      // TODO Gracefully handle this error
+      return new Response(`Address is required`, {});
+    }
+
+    const lastCheckin = await getUserCheckIns(address);
+    const contractNFTs = await getNFTsForAddress({ address, size: 1 });
+    const token = contractNFTs.ownedNfts[0];
+    const balance = await getUserTokenBalance(address as `0x${string}`);
+
+    const streak = `${lastCheckin.streak}-DAY STREAK 🔥`;
+    const total = `${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
+    const nfts = `${contractNFTs.totalCount} Based Bits NFTs`;
+    const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
+
+    const preview = token.image.pngUrl;
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),
@@ -36,17 +55,18 @@ export async function GET(request: Request) {
           <div tw="flex flex-row justify-between">
             {preview && (
               <img
-                tw="my-[40px] ml-[40px]"
+                tw="my-[75px] ml-[45px]"
                 src={preview}
-                width={550}
-                height={550}
+                width={500}
+                height={500}
               />
             )}
-            <div tw="flex flex-col items-center justify-center border w-[610px]">
-              <div tw="text-5xl font-bold p-4 text-[#363E36]">{titleA}</div>
-              <div tw="text-4xl font-bold mb-10 text-[#677467]">{titleB}</div>
-              <div tw="mx-6 px-10 text-center text-[#363E36] text-3xl font-normal">
-                {description}
+            <div tw="flex flex-col items-center justify-center w-[655px]">
+              <div tw="text-6xl font-bold p-4 text-[#363E36]">{streak}</div>
+              <div tw="text-5xl font-bold mb-20 text-[#677467]">{total}</div>
+              <div tw="flex flex-col mx-6 px-10 text-[#677467] text-4xl ">
+                <div tw="flex">{nfts}</div>
+                <div tw="flex mt-4">{tokens}</div>
               </div>
             </div>
           </div>

@@ -17,17 +17,25 @@ export async function generateMetadata({ params: { address } }: Props) {
   const lastCheckin = await getUserCheckIns(address);
   const contractNFTs = await getNFTsForAddress({ address, size: 1 });
   const balance = await getUserTokenBalance(address as `0x${string}`);
-  const token = contractNFTs.ownedNfts[0];
 
-  const titleA = `${lastCheckin.streak}-DAY STREAK 🔥`;
-  const titleB = `${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
+  const title = `${lastCheckin.streak}-DAY STREAK 🔥`;
   const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens`;
 
-  const ogPreviewPath = `/api/images/user?titleA=${encodeURIComponent(titleA)}&titleB=${encodeURIComponent(titleB)}&preview=${token.image.originalUrl}&description=${encodeURIComponent(description)}`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/user?address=${address}`;
 
   return {
-    title: `${titleA} ${titleB}`,
+    title: title,
     description: description,
+    other: {
+      ["fc:frame"]: "vNext",
+      ["fc:frame:image"]: ogPreviewPath,
+      ["fc:frame:button:1"]: `View Profile`,
+      ["fc:frame:button:1:action"]: "link",
+      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${address}`,
+      // ["fc:frame:button:2"]: `Check-In`,
+      // ["fc:frame:button:2:action"]: "tx",
+      // ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/checkin`,
+    },
     openGraph: {
       images: [
         {
@@ -39,7 +47,7 @@ export async function generateMetadata({ params: { address } }: Props) {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${titleA} ${titleB}`,
+      title: title,
       description,
     },
   };
