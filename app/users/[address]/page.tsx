@@ -32,6 +32,12 @@ export async function generateMetadata({ params: { address } }: Props) {
       ["fc:frame:button:1"]: `View Profile`,
       ["fc:frame:button:1:action"]: "link",
       ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${address}`,
+
+      // ["fc:frame:button:2"]: `Your Stats`,
+      // ["fc:frame:button:2:action"]: "post",
+      // ["fc:frame:button:2:post_url]: `Your Stats`,
+      // ["fc:frame:button:2:post_url"]: `${process.env.NEXT_PUBLIC_URL}/api/checkin`,
+
       // ["fc:frame:button:2"]: `Check-In`,
       // ["fc:frame:button:2:action"]: "tx",
       // ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/checkin`,
@@ -59,7 +65,7 @@ export default async function Page({ params: { address } }: Props) {
   const balance = await getUserTokenBalance(address as `0x${string}`);
 
   const title = `${lastCheckin.streak}-DAY STREAK 🔥 ${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
-  const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens`;
+  const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens. Mint discount: ${lastCheckin.streak}% OFF`;
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -71,7 +77,7 @@ export default async function Page({ params: { address } }: Props) {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
           <div className="text-4xl text-[#363E36]">{title}</div>
-          <div className="mb-8">{description}</div>
+          <div className="mb-8 mt-2">{description}</div>
           <NFTList address={address as `0x${string}`} />
         </div>
       </div>

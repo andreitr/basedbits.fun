@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { MyStreak } from "@/app/lib/components/MyStreak";
 
-export const CheckIn = () => {
+interface Props {
+  revalidate: () => void;
+}
+
+export const CheckInComponent = ({ revalidate }: Props) => {
   return (
     <div className="flex flex-col justify-between mt-8 sm:flex-row">
       <Image
@@ -20,11 +24,14 @@ export const CheckIn = () => {
           Daily Check-In
         </div>
         <div className="text-[#677467]">
-          <p>Check-ins unlock free raffle entries and other goodies.</p>
+          <p>
+            Check-ins unlock mint discounts, free raffle entries, and social
+            posts!
+          </p>
         </div>
 
         <div className="mt-8">
-          <MyStreak />
+          <MyStreak revalidate={revalidate} />
         </div>
       </div>
     </div>

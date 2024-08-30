@@ -1,7 +1,7 @@
 "use server";
 
 import { Header } from "@/app/lib/components/Header";
-import { CheckIn } from "@/app/lib/components/CheckIn";
+import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
@@ -41,7 +41,12 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full bg-[#cae2ca] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
-          <CheckIn />
+          <CheckInComponent
+            revalidate={async () => {
+              "use server";
+              revalidatePath("/", "layout");
+            }}
+          />
         </div>
       </div>
 
