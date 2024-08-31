@@ -9,3 +9,7 @@ export const humanizeNumber = (
   strValue[0] = strValue[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + d);
   return strValue.join(s);
 };
+
+export const streakToDiscount = (val: number) => {
+  return val >= 90 ? 90 : val;
+};

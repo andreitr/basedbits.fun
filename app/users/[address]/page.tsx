@@ -2,7 +2,7 @@ import { Header } from "@/app/lib/components/Header";
 import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
-import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 import { NFTList } from "@/app/users/[address]/components/NFTList";
 import { Footer } from "@/app/lib/components/Footer";
@@ -65,7 +65,7 @@ export default async function Page({ params: { address } }: Props) {
   const balance = await getUserTokenBalance(address as `0x${string}`);
 
   const title = `${lastCheckin.streak}-DAY STREAK 🔥 ${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
-  const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens. Mint discount: ${lastCheckin.streak}% OFF`;
+  const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens. Mint discount: ${streakToDiscount(lastCheckin.streak)}% OFF`;
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

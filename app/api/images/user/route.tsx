@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
 import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
-import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 
 export const runtime = "edge";
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     const total = `${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
     const nfts = `${contractNFTs.totalCount} Based Bits NFTs`;
     const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
-    const discount = `Mint discount ${lastCheckin.streak}% OFF`;
+    const discount = `Mint discount ${streakToDiscount(lastCheckin.streak)}% OFF`;
 
     const preview = token.image.pngUrl;
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Web3Provider } from "@/app/lib/Web3Provider";
 import { headers } from "next/headers";
-import {Toaster} from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import "./global.css";
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-mono">
-      <Toaster />
+        <Toaster />
         <Web3Provider>{children}</Web3Provider>
       </body>
     </html>
