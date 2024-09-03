@@ -41,12 +41,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full bg-[#cae2ca] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
-          <CheckInComponent
-            revalidate={async () => {
-              "use server";
-              revalidatePath("/", "layout");
-            }}
-          />
+          <CheckInComponent />
         </div>
       </div>
 

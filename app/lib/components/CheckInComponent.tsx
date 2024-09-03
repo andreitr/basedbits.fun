@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import { MyStreak } from "@/app/lib/components/MyStreak";
+import { useAccount } from "wagmi";
+import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { ConnectAction } from "@/app/lib/components/ConnectAction";
+import Link from "next/link";
 
-interface Props {
-  revalidate: () => void;
-}
+export const CheckInComponent = () => {
+  const { address, isConnected } = useAccount();
+  const { data: userNFTs } = useGetUserNFTs({ address, size: 1 });
+  const holder = Boolean(userNFTs && userNFTs.totalCount > 0);
 
-export const CheckInComponent = ({ revalidate }: Props) => {
   return (
     <div className="flex flex-col justify-between mt-8 sm:flex-row">
       <Image
@@ -21,17 +25,40 @@ export const CheckInComponent = ({ revalidate }: Props) => {
 
       <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
         <div className="text-4xl font-semibold text-[#363E36] mb-4">
-          Daily Check-In
+          Hold Based Bits? Check-in daily!
         </div>
         <div className="text-[#677467]">
           <p>
-            Check-ins unlock mint discounts, free raffle entries, and social
-            posts!
+            Check-ins unlock mint discounts, free raffle entries, and other
+            goodies.
           </p>
         </div>
 
         <div className="mt-8">
-          <MyStreak revalidate={revalidate} />
+          {holder ? (
+            <>
+              {isConnected ? (
+                <MyStreak address={address!} holder={holder} />
+              ) : (
+                <ConnectAction action={"to check-in"} />
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col text-[#677467]">
+              <div>You need a Based Bit NFT to check in :(</div>
+              <div>
+                Grab one on{" "}
+                <Link
+                  className="underline text-[#0000FF]"
+                  href="https://opensea.io/collection/based-bits"
+                  target="_blank"
+                >
+                  OpenSea
+                </Link>{" "}
+                or try your luck in the raffle!
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
