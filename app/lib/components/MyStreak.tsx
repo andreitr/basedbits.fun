@@ -65,7 +65,7 @@ export const MyStreak = ({ address, holder }: Props) => {
             </div>
             <div>
               • Free{" "}
-              <Link className="underline text-[#0000FF]" href={`/emojibits`}>
+              <Link className="underline text-[#0000FF]" href={`/raffle`}>
                 Daily Raffle
               </Link>{" "}
               entry
