@@ -70,13 +70,13 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-16 mb-8">
       <Image
-        className="rounded-lg w-full md:w-[357px]"
+        className="rounded-lg w-full md:w-[357px] md:h-[357px] bg-[#0052FF]"
         src={token.image.originalUrl}
         alt={token.name}
         width={357}
         height={357}
       />
-      <div>
+      <div className="w-full">
         <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
           <ArrowNav
             id={Number(mint.tokenId)}

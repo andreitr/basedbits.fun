@@ -19,15 +19,7 @@ export const Header = () => {
           />
         </div>
       </Link>
-
-      <div className="flex flex-row align-middle gap-4">
-        <Link href="/token">
-          <div className="bg-[#ABBEAC] px-5 py-2 rounded-lg cursor-pointer">
-            Token
-          </div>
-        </Link>
-        <ConnectKitButton />
-      </div>
+      <ConnectKitButton />
     </div>
   );
 };

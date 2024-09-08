@@ -51,7 +51,7 @@ export const ElapsedTimer = ({
         <div className="flex flex-col">
           <div className="text-md text-[#677467]">{endTitle}</div>
           <div className="text-3xl font-semibold text-[#363E36]">
-            {endDateTime.monthLong} {endDateTime.day},{endDateTime.year}
+            {endDateTime.monthShort} {endDateTime.day},{endDateTime.year}
           </div>
         </div>
       )}
