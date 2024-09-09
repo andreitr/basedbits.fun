@@ -24,17 +24,14 @@ export const CheckInComponent = () => {
       />
 
       <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
-        <div className="text-4xl font-semibold text-[#363E36] mb-4">
+        <div className="text-4xl font-semibold text-[#363E36] mb-2">
           Hold Based Bits? Check-in!
         </div>
         <div className="text-[#677467]">
-          <p>
-            Daily check-ins unlock mint discounts, free raffle entries, and
-            more.
-          </p>
+          Daily check-ins unlock mint discounts, free raffle entries, and more.
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6 md:mt-16">
           {holder ? (
             <>
               {isConnected ? (

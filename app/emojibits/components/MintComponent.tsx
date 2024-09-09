@@ -68,7 +68,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
   };
 
   return (
-    <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-16 mb-8">
+    <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-8 md:gap-16 mb-8">
       <Image
         className="rounded-lg w-full md:w-[357px] md:h-[357px] bg-[#0052FF]"
         src={token.image.originalUrl}

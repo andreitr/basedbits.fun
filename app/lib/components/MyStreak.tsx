@@ -2,12 +2,9 @@
 
 import { CheckInButton } from "@/app/lib/components/CheckInButton";
 import { DateTime } from "luxon";
-import Link from "next/link";
 import BigNumber from "bignumber.js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetUserCheckIn } from "@/app/lib/hooks/useGetUserCheckIn";
-import { streakToDiscount } from "@/app/lib/utils/numberUtils";
-import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { CheckInGoodies } from "@/app/lib/components/CheckInGoodies";
 
 interface Props {
@@ -41,7 +38,6 @@ export const MyStreak = ({ address, holder }: Props) => {
       return (
         <div className="flex flex-col gap-2 text-[#677467]">
           <CheckInGoodies streak={streak} address={address} />
-
           <CheckInButton onSuccess={invalidate} />
           <div>
             Last seen on{" "}
@@ -54,9 +50,8 @@ export const MyStreak = ({ address, holder }: Props) => {
       const comeBackTime = `${lastCheckinTime.toFormat("t")} on ${nextCheckinTime.toFormat("LLL dd")} `;
 
       return (
-        <div className="flex flex-col gap-2 text-[#677467]">
+        <div className="flex flex-col text-[#677467]">
           <CheckInGoodies streak={streak} address={address} />
-
           <div>
             Come back after{" "}
             <span className="font-semibold test-sm">{comeBackTime}</span> to

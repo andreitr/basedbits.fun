@@ -1,5 +1,6 @@
 import { streakToDiscount } from "@/app/lib/utils/numberUtils";
 import Link from "next/link";
+import { AddressToEns } from "@/app/lib/components/AddressToEns";
 
 interface Props {
   streak: number;
@@ -15,7 +16,7 @@ export const CheckInGoodies = ({ streak, address }: Props) => {
           className="hover:no-underline underline text-[#0000FF]"
           href={`/users/${address}`}
         >
-          profile
+          <AddressToEns address={address as `0x${string}`} />
         </Link>
       </div>
 
