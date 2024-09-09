@@ -31,7 +31,7 @@ export const CheckInComponent = () => {
           Daily check-ins unlock mint discounts, free raffle entries, and more.
         </div>
 
-        <div className="mt-6 md:mt-16">
+        <div className="mt-6 md:mt-10">
           {holder ? (
             <>
               {isConnected ? (

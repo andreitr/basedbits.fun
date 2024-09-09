@@ -116,9 +116,6 @@ export const MintButton = ({ token, revalidate }: Props) => {
 
   useEffect(() => {
     if (isSuccess && !refresh) {
-      toast.success(`Minted ${token.name} and entered the raffle!`, {
-        duration: 10000,
-      });
       socialDisplay();
       revalidate();
       setRefresh(true);
