@@ -9,9 +9,12 @@ interface Props {
 }
 
 export const FeatureCard = ({ title, description, image, link }: Props) => {
+  const target = link.startsWith("http") ? "_blank" : "_self";
+
   return (
     <Link
       href={link}
+      target={target}
       className="flex flex-row gap-4 rounded-lg bg-white bg-opacity-20 w-full"
     >
       <Image

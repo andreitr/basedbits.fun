@@ -50,7 +50,6 @@ export default async function Home() {
       <div className="flex justify-center items-center text-white bg-black w-full lg:px-0 sm:pb-0">
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
-            <div className="hidden md:inline w-full">STUFF TO DO NEXT</div>
             <FeatureCard
               title="Mint"
               description={mintToken.name}
@@ -68,6 +67,12 @@ export default async function Home() {
               description="NFTs → BBITS"
               image="/images/icon.png"
               link="/token"
+            />
+            <FeatureCard
+              title="Upcoming mint"
+              description="Filter8 Collab"
+              image="/images/bit98_1.png"
+              link="https://warpcast.com/andreitr.eth/0x99b872e3"
             />
           </div>
         </div>
