@@ -22,13 +22,14 @@ export const CheckInGoodies = ({ streak, address }: Props) => {
 
       <div className="flex flex-col text-black mb-6 bg-white bg-opacity-80 rounded-lg p-4 gap-1">
         <div>
-          • {streakToDiscount(streak)}% mint discount on{" "}
+          • {streakToDiscount(streak)}% OFF on{" "}
           <Link
             className="hover:no-underline underline text-[#0000FF]"
             href={`/emojibits`}
           >
             Emoji Bits
           </Link>{" "}
+          mint
         </div>
         <div>
           • Free{" "}

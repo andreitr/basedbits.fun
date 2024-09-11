@@ -91,7 +91,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           {token.name}
         </div>
 
-        <div className="flex flex-row py-2 w-full gap-10 mb-5">
+        <div className="flex flex-row sm:flex-nowrap flex-wrap py-2 sm:gap-10 gap-5 mb-5">
           <div className="flex flex-col">
             <div className="text-md text-[#677467]">Mints</div>
             <div className="text-3xl font-semibold text-[#363E36]">
