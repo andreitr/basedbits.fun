@@ -1,10 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getEmojiCurrentMint } from "@/app/lib/api/getEmojiCurrentMint";
 import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
-import { AlchemyToken } from "@/app/lib/types/alchemy";
-import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
-import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 import { getEmojiCurrentRaffleAmount } from "@/app/lib/api/getEmojiCurrentRaffleAmount";
+import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 
 export const runtime = "edge";
 
@@ -18,14 +16,7 @@ export async function GET(request: Request) {
     }
 
     const mint = await getEmojiMintById({ id: Number(id) });
-
-    const token: AlchemyToken = await getNFTMetadata({
-      contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
-      path: ALCHEMY_API_PATH.MAINNET,
-      tokenId: mint.tokenId.toString(),
-      tokenType: "ERC1155",
-      refreshCache: false,
-    });
+    const meta = await getNFTRawMetadata({ id: id });
 
     const isMintLive = !mint.settledAt;
     let reward = "0";
@@ -56,13 +47,15 @@ export async function GET(request: Request) {
           }}
         >
           <div tw="flex">
-            <img src={token.image.pngUrl} width={840} height={840} />
+            <img src={meta.image} width={840} height={840} />
 
-            {isMintLive && (
-              <div tw="flex absolute bottom-0 left-0 right-0 items-center justify-center m-4 p-6 text-center text-4xl text-white bg-black bg-opacity-60 rounded-xl">
-                {`${token.name} - ${reward.toString()} Mint Reward`}
-              </div>
-            )}
+            <div tw="flex absolute bottom-0 left-0 right-0 items-center justify-center m-4 p-6 text-center text-4xl text-white bg-black bg-opacity-60 rounded-xl">
+              {isMintLive ? (
+                <>{`${meta.name} - ${reward.toString()} Mint Reward`}</>
+              ) : (
+                <>{`${meta.name} - Mint Ended`}</>
+              )}
+            </div>
           </div>
         </div>
       ),

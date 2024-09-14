@@ -15,20 +15,15 @@ import { MintRules } from "@/app/emojibits/components/MintRules";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
+import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 
 export default async function Home() {
   const mintId = await getEmojiCurrentMint();
+
   const raffleId = await getCurrentRaffleId();
   const raffle = await getRaffleById(raffleId);
   const mint = await getEmojiMintById({ id: mintId });
-
-  const mintToken: AlchemyToken = await getNFTMetadata({
-    contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
-    path: ALCHEMY_API_PATH.MAINNET,
-    tokenId: mintId.toString(),
-    tokenType: "ERC1155",
-    refreshCache: false,
-  });
+  const mintMeta = await getNFTRawMetadata({ id: mintId });
 
   const raffleToken: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
@@ -52,8 +47,8 @@ export default async function Home() {
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
               title="Mint"
-              description={mintToken.name}
-              image={mintToken.image.originalUrl}
+              description={mintMeta.name}
+              image={mintMeta.image}
               link={`/emojibits/${mintId}`}
             />
             <FeatureCard
@@ -81,7 +76,7 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
           <MintComponent
-            token={mintToken}
+            meta={mintMeta}
             mint={mint}
             revalidate={async () => {
               "use server";

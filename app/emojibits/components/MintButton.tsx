@@ -19,13 +19,14 @@ import XIcon from "@/app/lib/icons/x.svg";
 import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
 import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import Image from "next/image";
+import { RawMetadata } from "@/app/lib/types/types";
 
 interface Props {
-  token: AlchemyToken;
+  meta: RawMetadata;
   revalidate: () => void;
 }
 
-export const MintButton = ({ token, revalidate }: Props) => {
+export const MintButton = ({ meta, revalidate }: Props) => {
   const [refresh, setRefresh] = useState(false);
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
@@ -45,7 +46,7 @@ export const MintButton = ({ token, revalidate }: Props) => {
 
   const socialDisplay = () => {
     const encodedText = encodeURIComponent(
-      `I just minted ${token.name} and entered the mint raffle!`,
+      `I just minted ${meta.name} and entered the mint raffle!`,
     );
 
     toast.custom(
@@ -54,7 +55,7 @@ export const MintButton = ({ token, revalidate }: Props) => {
           <div className="flex flex-col justify-end gap-5">
             <div className="flex flex-row justify-between items-start">
               <div>
-                Minted {token.name} and entered the raffle. Spread the word 🙏
+                Minted {meta.name} and entered the raffle. Spread the word 🙏
               </div>
               <button onClick={() => toast.dismiss(t.id)}>
                 <Image src={CloseIcon} alt="Close" width={40} height={40} />
@@ -63,7 +64,7 @@ export const MintButton = ({ token, revalidate }: Props) => {
             <div className="flex flex-row mt-6 gap-6 justify-center">
               <Link
                 className="flex flex-row rounded-md border-white border px-3 py-2 w-full justify-center items-center"
-                href={`https://warpcast.com/~/compose?text=${encodedText}&&embeds[]=https://basedbits.fun/emojibits/${token.tokenId}`}
+                href={`https://warpcast.com/~/compose?text=${encodedText}&&embeds[]=https://basedbits.fun/emojibits/${meta.id}`}
                 target="_blank"
               >
                 Share on{" "}
@@ -77,7 +78,7 @@ export const MintButton = ({ token, revalidate }: Props) => {
               </Link>
               <Link
                 className="flex flex-row rounded-md border-white border px-3 py-2 w-full justify-center items-center"
-                href={`https://x.com/intent/post?text=${encodedText}&&url=https://basedbits.fun/emojibits/${token.tokenId}`}
+                href={`https://x.com/intent/post?text=${encodedText}&&url=https://basedbits.fun/emojibits/${meta.id}`}
                 target="_blank"
               >
                 Share on{" "}

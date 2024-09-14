@@ -1,5 +1,10 @@
 import BigNumber from "bignumber.js";
-import { BigNumberish } from "ethers";
+
+export type RawMetadata = {
+  id: number;
+  image: string;
+  name: string;
+};
 
 export type RaffleSponsor = {
   sponsor: `0x${string}`;

@@ -4,11 +4,9 @@ import { Header } from "@/app/lib/components/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { MintComponent } from "@/app/emojibits/components/MintComponent";
 import { MintRules } from "@/app/emojibits/components/MintRules";
-import { AlchemyToken } from "@/app/lib/types/alchemy";
-import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
 import { revalidatePath } from "next/cache";
-import { ALCHEMY_API_PATH } from "@/app/lib/constants";
+import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 
 interface Props {
   params: {
@@ -18,15 +16,9 @@ interface Props {
 
 export async function generateMetadata({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
-  const token: AlchemyToken = await getNFTMetadata({
-    contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
-    path: ALCHEMY_API_PATH.MAINNET,
-    tokenId: mint.tokenId.toString(),
-    tokenType: "ERC1155",
-    refreshCache: false,
-  });
+  const meta = await getNFTRawMetadata({ id: id });
 
-  const title = `${token.name}`;
+  const title = `${meta.name}`;
 
   let description = mint.settledAt
     ? `Mint ended! ${mint.mints} editions minted!`
@@ -41,7 +33,7 @@ export async function generateMetadata({ params: { id } }: Props) {
       ["fc:frame"]: "vNext",
       ["fc:frame:image:aspect_ratio"]: "1:1",
       ["fc:frame:image"]: ogPreviewPath,
-      ["fc:frame:button:1"]: `View ${token.name}`,
+      ["fc:frame:button:1"]: `View ${meta.name}`,
       ["fc:frame:button:1:action"]: "link",
       ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/emojibits/${id}`,
       ["fc:frame:button:2"]: `Mint`,
@@ -67,13 +59,7 @@ export async function generateMetadata({ params: { id } }: Props) {
 
 export default async function Page({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
-  const token: AlchemyToken = await getNFTMetadata({
-    contract: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as string,
-    path: ALCHEMY_API_PATH.MAINNET,
-    tokenId: id.toString(),
-    tokenType: "ERC1155",
-    refreshCache: false,
-  });
+  const meta = await getNFTRawMetadata({ id: id });
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -83,7 +69,7 @@ export default async function Page({ params: { id } }: Props) {
 
           <div className="flex flex-col gap-6 mb-8">
             <MintComponent
-              token={token}
+              meta={meta}
               mint={mint}
               revalidate={async () => {
                 "use server";

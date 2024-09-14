@@ -1,6 +1,6 @@
 "use client";
 
-import type { Mint } from "@/app/lib/types/types";
+import type { Mint, RawMetadata } from "@/app/lib/types/types";
 import { DateTime } from "luxon";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
@@ -18,12 +18,12 @@ import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 
 interface Props {
-  token: AlchemyToken;
+  meta: RawMetadata;
   mint: Mint;
   revalidate: () => void;
 }
 
-export const MintComponent = ({ mint, token, revalidate }: Props) => {
+export const MintComponent = ({ meta, mint, revalidate }: Props) => {
   const startTime = DateTime.fromMillis(
     BigNumber(mint.startedAt).toNumber() * 1000,
   );
@@ -64,15 +64,15 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
     if (hasEnded && !hasWinner) {
       return <SettleButton revalidate={revalidate} />;
     }
-    return <MintButton token={token} revalidate={revalidate} />;
+    return <MintButton meta={meta} revalidate={revalidate} />;
   };
 
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-8 md:gap-16 mb-8">
       <Image
         className="rounded-lg w-full md:w-[357px] md:h-[357px] bg-[#0052FF]"
-        src={token.image.originalUrl}
-        alt={token.name}
+        src={meta.image}
+        alt={meta.name}
         width={357}
         height={357}
       />
@@ -88,7 +88,7 @@ export const MintComponent = ({ mint, token, revalidate }: Props) => {
           </div>
         </div>
         <div className="text-[#363E36] text-4xl font-semibold mb-4">
-          {token.name}
+          {meta.name}
         </div>
 
         <div className="flex flex-row sm:flex-nowrap flex-wrap py-2 sm:gap-10 gap-5 mb-5">
