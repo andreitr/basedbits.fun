@@ -34,7 +34,7 @@ export const MintComponent = ({ meta, mint, revalidate }: Props) => {
   const hasWinner =
     mint.winner !== "0x0000000000000000000000000000000000000000";
 
-  const { data: liveRaffleRewards, isFetched: hasLiveRaffleAmount } =
+  const { data: liveRaffleRewards, isSuccess: hasLiveRaffleAmount } =
     useReadContract({
       abi: EmojiBitsABI,
       address: process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS as `0x${string}`,

@@ -1,17 +1,23 @@
-import {Header} from "@/app/lib/components/Header";
+"use server";
 
+import {Header} from "@/app/lib/components/Header";
 import {Footer} from "@/app/lib/components/Footer";
-import {MintRules} from "@/app/bit98/components/MintRules";
-import {getBit98CurrentMint} from "@/app/lib/api/getBit98CurrentMint";
-import {getBit98MintById} from "@/app/lib/api/getBit98MintById";
 import {MintComponent} from "@/app/bit98/components/MintComponent";
+import {MintRules} from "@/app/bit98/components/MintRules";
 import {revalidatePath} from "next/cache";
 import {getNFTRawMetadata} from "@/app/lib/api/getNFTRawMetadata";
+import {getBit98MintById} from "@/app/lib/api/getBit98MintById";
 import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
 
-export default async function Page() {
+interface Props {
+    params: {
+        id: number;
+    };
+}
 
-    const id = await getBit98CurrentMint();
+
+export default async function Page({params: {id}}: Props) {
+
     const mint = await getBit98MintById({id});
     const meta = await getNFTRawMetadata({
             abi: Bit98ABI,
@@ -25,17 +31,20 @@ export default async function Page() {
             <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
                 <div className="container max-w-screen-lg">
                     <Header/>
+
                     <div className="flex flex-col gap-6 mb-8">
-                        <div className="hidden md:inline">
+                        <MintComponent
+                            meta={meta}
+                            mint={mint}
+                            revalidate={async () => {
+                                "use server";
+                                revalidatePath(`/bit98/${id}`, "layout");
+                            }}
+                        />
+                        <div>
                             A new Bit98 is born every 4 hours! Every minter has a chance of
                             winning 1:1 at the end of the mint.
                         </div>
-                        <MintComponent meta={meta} mint={mint}
-                                       revalidate={async () => {
-                                           "use server";
-                                           revalidatePath(`/bit98`, "layout");
-                                       }}
-                        />
                         <MintRules/>
                     </div>
                 </div>
