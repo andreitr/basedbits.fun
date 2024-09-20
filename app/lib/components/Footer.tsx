@@ -29,11 +29,11 @@ export const Footer = () => {
 
       <div className="flex sm:flex-row gap-8 flex-col justify-between mt-16 text-[#677467]">
         <div>
-          <div className="text-xl text-[#363E36] mb-2">Marketplaces</div>
+          <div className="text-xl text-[#363E36] mb-2">NFT Collections</div>
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://opensea.io/collection/based-bits"
+              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BB_NFT_ADDRESS}`}
               target="_blank"
             >
               Based Bits
@@ -42,10 +42,19 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://opensea.io/collection/emoji-bits-onchain-summer"
+              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS}`}
               target="_blank"
             >
               Emoji Bits (Onchain Summer)
+            </Link>
+          </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS}`}
+              target="_blank"
+            >
+              Bit98
             </Link>
           </div>
         </div>
@@ -126,7 +135,7 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://basescan.org/address/0x617978b8af11570c2dab7c39163a8bde1d282407"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_NFT_ADDRESS}`}
               target="_blank"
             >
               Based Bits NFT
@@ -135,10 +144,19 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://basescan.org/address/0xf6b0da3a3a8e23bbc7df54fe42bee302e35ea8dc"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS}`}
               target="_blank"
             >
               Emoji Bits (Onchain Summer)
+            </Link>
+          </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS}`}
+              target="_blank"
+            >
+              Bit98
             </Link>
           </div>
           <div>

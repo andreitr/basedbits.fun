@@ -9,11 +9,16 @@ import { getEmojiCurrentMint } from "@/app/lib/api/getEmojiCurrentMint";
 import { MintComponent } from "@/app/emojibits/components/MintComponent";
 import { revalidatePath } from "next/cache";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
+import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
 export async function generateMetadata() {
   const id = await getEmojiCurrentMint();
   const mint = await getEmojiMintById({ id });
-  const meta = await getNFTRawMetadata({ id: id });
+  const meta = await getNFTRawMetadata({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    id: id,
+  });
 
   const title = `${meta.name}`;
 
@@ -57,7 +62,11 @@ export async function generateMetadata() {
 export default async function Page() {
   const id = await getEmojiCurrentMint();
   const mint = await getEmojiMintById({ id });
-  const meta = await getNFTRawMetadata({ id: id });
+  const meta = await getNFTRawMetadata({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    id: id,
+  });
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

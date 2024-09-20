@@ -1,59 +1,78 @@
 "use client";
 
-import {Mint} from "@/app/lib/types/types";
-import {useAccount, useReadContract} from "wagmi";
-import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
-import {baseSepoliaConfig} from "@/app/lib/Web3Configs";
-import {baseSepolia} from "wagmi/chains";
+import { Mint } from "@/app/lib/types/types";
+import { useAccount, useReadContract } from "wagmi";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
+import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
+import { baseSepolia } from "wagmi/chains";
+import Link from "next/link";
 
 interface Props {
-    mint: Mint;
+  mint: Mint;
 }
 
-export const MintEntries = ({mint}: Props) => {
-    const {isConnected, address} = useAccount();
+export const MintEntries = ({ mint }: Props) => {
+  const { isConnected, address } = useAccount();
 
-    const {data: totalEntries, isFetched: hasTotalEntries} = useReadContract({
-        abi: Bit98ABI,
-        address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
-        functionName: "totalEntries",
-        // TODO: Remove config and chain id in prod
-        config: baseSepoliaConfig,
-        chainId: baseSepolia.id,
-        args: [BigInt(Number(mint.tokenId))],
-    });
+  const hasWinner =
+    mint.winner !== "0x0000000000000000000000000000000000000000";
 
-    const {data: userEntries, isFetched: hasUserEntries} = useReadContract({
-        abi: Bit98ABI,
-        address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
-        // TODO: Remove config and chain id in prod
-        config: baseSepoliaConfig,
-        chainId: baseSepolia.id,
-        functionName: "userEntryByAddress",
-        args: [[BigInt(Number(mint.tokenId))], address],
-        query: {
-            enabled: isConnected,
-        },
-    });
+  const { data: totalEntries, isFetched: hasTotalEntries } = useReadContract({
+    abi: Bit98ABI,
+    address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
+    functionName: "totalEntries",
+    // TODO: Remove config and chain id in prod
+    config: baseSepoliaConfig,
+    chainId: baseSepolia.id,
+    args: [BigInt(Number(mint.tokenId))],
+  });
 
-    if (!isConnected && hasTotalEntries) {
-        return (
-            <>
-                There are <span className="font-semibold">{String(totalEntries)}</span>{" "}
-                raffle entries.
-            </>
-        );
-    }
+  const { data: userEntries, isFetched: hasUserEntries } = useReadContract({
+    abi: Bit98ABI,
+    address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
+    // TODO: Remove config and chain id in prod
+    config: baseSepoliaConfig,
+    chainId: baseSepolia.id,
+    functionName: "userEntryByAddress",
+    args: [[BigInt(Number(mint.tokenId))], address],
+    query: {
+      enabled: isConnected,
+    },
+  });
 
-    if (hasUserEntries && hasTotalEntries) {
-        return (
-            <>
-                You hold <span className="font-semibold">{String(userEntries)}</span>{" "}
-                out of <span className="font-semibold">{String(totalEntries)}</span>{" "}
-                total raffle entries.
-            </>
-        );
-    }
+  if (hasWinner) {
+    return (
+      <>
+        The mint has ended, view on{" "}
+        <Link
+          className="hover:no-underline underline text-[#0000FF]"
+          href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS}/${mint.tokenId}`}
+          target="_blank"
+        >
+          OpenSea
+        </Link>
+      </>
+    );
+  }
 
-    return <>Loading raffle entries for this mint...</>;
+  if (!isConnected && hasTotalEntries) {
+    return (
+      <>
+        There are <span className="font-semibold">{String(totalEntries)}</span>{" "}
+        raffle entries.
+      </>
+    );
+  }
+
+  if (hasUserEntries && hasTotalEntries) {
+    return (
+      <>
+        You hold <span className="font-semibold">{String(userEntries)}</span>{" "}
+        out of <span className="font-semibold">{String(totalEntries)}</span>{" "}
+        total raffle entries.
+      </>
+    );
+  }
+
+  return <>Loading raffle entries for this mint...</>;
 };

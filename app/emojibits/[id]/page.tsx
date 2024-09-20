@@ -7,6 +7,7 @@ import { MintRules } from "@/app/emojibits/components/MintRules";
 import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
 import { revalidatePath } from "next/cache";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
+import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
 interface Props {
   params: {
@@ -16,7 +17,11 @@ interface Props {
 
 export async function generateMetadata({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
-  const meta = await getNFTRawMetadata({ id: id });
+  const meta = await getNFTRawMetadata({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    id: id,
+  });
 
   const title = `${meta.name}`;
 
@@ -59,7 +64,11 @@ export async function generateMetadata({ params: { id } }: Props) {
 
 export default async function Page({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
-  const meta = await getNFTRawMetadata({ id: id });
+  const meta = await getNFTRawMetadata({
+    abi: EmojiBitsABI,
+    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    id: id,
+  });
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

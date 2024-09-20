@@ -4,26 +4,31 @@ import { Header } from "@/app/lib/components/Header";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";
-import { getEmojiCurrentMint } from "@/app/lib/api/getEmojiCurrentMint";
-import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { getNFTMetadata } from "@/app/lib/api/getNFTMetadata";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
-import { MintComponent } from "@/app/emojibits/components/MintComponent";
+import { MintComponent } from "@/app/bit98/components/MintComponent";
 import { revalidatePath } from "next/cache";
-import { MintRules } from "@/app/emojibits/components/MintRules";
+import { MintRules } from "@/app/bit98/components/MintRules";
 import { getCurrentRaffleId } from "@/app/lib/api/getCurrentRaffleId";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
+import { getBit98CurrentMint } from "@/app/lib/api/getBit98CurrentMint";
+import { getBit98MintById } from "@/app/lib/api/getBit98MintById";
 
 export default async function Home() {
-  const mintId = await getEmojiCurrentMint();
+  const mintId = await getBit98CurrentMint();
 
   const raffleId = await getCurrentRaffleId();
   const raffle = await getRaffleById(raffleId);
-  const mint = await getEmojiMintById({ id: mintId });
-  const mintMeta = await getNFTRawMetadata({ id: mintId });
+  const mint = await getBit98MintById({ id: mintId });
+  const mintMeta = await getNFTRawMetadata({
+    abi: Bit98ABI,
+    address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
+    id: mintId,
+  });
 
   const raffleToken: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
@@ -65,16 +70,16 @@ export default async function Home() {
             />
             <FeatureCard
               title="Upcoming mint"
-              description="Filter8 Collab"
-              image="/images/bit98_1.png"
-              link="https://warpcast.com/andreitr.eth/0x99b872e3"
+              description="Greta collab"
+              image="/images/icon.png"
+              link="/token"
             />
           </div>
         </div>
       </div>
 
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
-        <div className="container max-w-screen-lg mb-10">
+        <div className="container max-w-screen-lg">
           <MintComponent
             meta={mintMeta}
             mint={mint}
@@ -83,13 +88,7 @@ export default async function Home() {
               revalidatePath(`/`, "layout");
             }}
           />
-          <div className="mb-6">
-            A new Emoji Bit is born every 8 hours! Half of mint proceeds are
-            raffled; the rest burned via BBITS 🔥
-          </div>
-          <div className="hidden md:inline">
-            <MintRules />
-          </div>
+          <MintRules />
         </div>
       </div>
 
