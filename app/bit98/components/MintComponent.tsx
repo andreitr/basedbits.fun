@@ -15,8 +15,6 @@ import {useReadContract} from "wagmi";
 import {humanizeNumber} from "@/app/lib/utils/numberUtils";
 import {formatUnits} from "ethers";
 import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
-import {baseSepoliaConfig} from "@/app/lib/Web3Configs";
-import {baseSepolia} from "wagmi/chains";
 import {useQueryClient} from "@tanstack/react-query";
 
 interface Props {
@@ -52,9 +50,6 @@ export const MintComponent = ({meta, mint, revalidate}: Props) => {
         abi: Bit98ABI,
         address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
         functionName: "currentMintArtistReward",
-        // TODO: Remove config and chain id in prod
-        config: baseSepoliaConfig,
-        chainId: baseSepolia.id,
         query: {
             enabled: !hasWinner,
         },

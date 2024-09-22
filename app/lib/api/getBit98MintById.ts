@@ -1,16 +1,16 @@
-import { readContract } from "@wagmi/core";
-import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
-import { Mint } from "@/app/lib/types/types";
-import { humanizeNumber } from "@/app/lib/utils/numberUtils";
-import { formatUnits } from "ethers";
-import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
+import {readContract} from "@wagmi/core";
+import {baseConfig} from "@/app/lib/Web3Configs";
+import {Mint} from "@/app/lib/types/types";
+import {humanizeNumber} from "@/app/lib/utils/numberUtils";
+import {formatUnits} from "ethers";
+import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
 
 interface Props {
   id: number;
 }
 
 export async function getBit98MintById({ id }: Props) {
-  const data: any = await readContract(baseSepoliaConfig, {
+  const data: any = await readContract(baseConfig, {
     abi: Bit98ABI,
     address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
     functionName: "mintById",

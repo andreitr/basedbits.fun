@@ -1,7 +1,6 @@
-import { readContract } from "@wagmi/core";
-import { baseConfig, baseSepoliaConfig } from "@/app/lib/Web3Configs";
-import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
-import { RawMetadata } from "@/app/lib/types/types";
+import {readContract} from "@wagmi/core";
+import {baseConfig} from "@/app/lib/Web3Configs";
+import {RawMetadata} from "@/app/lib/types/types";
 
 interface Props {
   abi: any;
@@ -10,7 +9,7 @@ interface Props {
 }
 
 export const getNFTRawMetadata = async ({ abi, id, address }: Props) => {
-  const uri = await readContract(baseSepoliaConfig, {
+  const uri = await readContract(baseConfig, {
     abi,
     address,
     functionName: "uri",

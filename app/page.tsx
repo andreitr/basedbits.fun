@@ -69,12 +69,6 @@ export default async function Home() {
                             image="/images/icon.png"
                             link="/token"
                         />
-                        <FeatureCard
-                            title="Upcoming mint"
-                            description="Collab Greta G."
-                            image="/images/icon.png"
-                            link="/token"
-                        />
                     </div>
                 </div>
             </div>
