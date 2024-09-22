@@ -99,8 +99,10 @@ export default async function Home() {
                         <div className="text-[#363E36] text-4xl font-semibold mb-4">
                             Bit98 mint starts at 22:00 UTC
                         </div>
-                        <div>Join @andreitr and @Filter8 on <Link className="hover:no-underline underline text-[#0000FF]" href="https://x.com/andreitr/status/1837858492566364362"
-                                                               target="_blank">X Spaces</Link>!
+                        <div>Join @andreitr and @Filter8 on <Link
+                            className="hover:no-underline underline text-[#0000FF]"
+                            href="https://x.com/andreitr/status/1837858492566364362"
+                            target="_blank">X Spaces</Link>!
                         </div>
                     </div>
                 )}
