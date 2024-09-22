@@ -4,27 +4,32 @@ import {Header} from "@/app/lib/components/Header";
 import {CheckInComponent} from "@/app/lib/components/CheckInComponent";
 import {Footer} from "@/app/lib/components/Footer";
 import {Social} from "@/app/lib/components/Social";
-import {getEmojiCurrentMint} from "@/app/lib/api/getEmojiCurrentMint";
-import {getEmojiMintById} from "@/app/lib/api/getEmojiMintById";
 import {AlchemyToken} from "@/app/lib/types/alchemy";
 import {getNFTMetadata} from "@/app/lib/api/getNFTMetadata";
 import {ALCHEMY_API_PATH} from "@/app/lib/constants";
-import {MintComponent} from "@/app/emojibits/components/MintComponent";
+import {MintComponent} from "@/app/bit98/components/MintComponent";
 import {revalidatePath} from "next/cache";
-import {MintRules} from "@/app/emojibits/components/MintRules";
 import {getCurrentRaffleId} from "@/app/lib/api/getCurrentRaffleId";
 import {getRaffleById} from "@/app/lib/api/getRaffleById";
 import {FeatureCard} from "@/app/lib/components/FeatureCard";
 import {getNFTRawMetadata} from "@/app/lib/api/getNFTRawMetadata";
-import Link from "next/link";
+import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
+import {getBit98CurrentMint} from "@/app/lib/api/getBit98CurrentMint";
+import {MintRules} from "@/app/bit98/components/MintRules";
+import {getBit98MintById} from "@/app/lib/api/getBit98MintById";
 
 export default async function Home() {
-    const mintId = await getEmojiCurrentMint();
 
+    const mintId = await getBit98CurrentMint();
     const raffleId = await getCurrentRaffleId();
     const raffle = await getRaffleById(raffleId);
-    const mint = await getEmojiMintById({id: mintId});
-    const mintMeta = await getNFTRawMetadata({id: mintId});
+    const mint = await getBit98MintById({id: mintId});
+
+    const mintMeta = await getNFTRawMetadata({
+        abi: Bit98ABI,
+        address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
+        id: mintId,
+    });
 
     const raffleToken: AlchemyToken = await getNFTMetadata({
         contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
@@ -51,7 +56,7 @@ export default async function Home() {
                             title="Mint"
                             description={mintMeta.name}
                             image={mintMeta.image}
-                            link={`/emojibits/${mintId}`}
+                            link={`/bit98/${mintId}`}
                         />
                         <FeatureCard
                             title="Enter raffle"
@@ -65,47 +70,22 @@ export default async function Home() {
                             image="/images/icon.png"
                             link="/token"
                         />
-                        <FeatureCard
-                            title="Upcoming mint"
-                            description="Filter8 Collab"
-                            image="/images/bit98_1.png"
-                            link="https://warpcast.com/andreitr.eth/0x99b872e3"
-                        />
                     </div>
                 </div>
             </div>
 
             <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
-                {mintId <= 92 ? (
-                    <div className="container max-w-screen-lg mb-10">
-                        <MintComponent
-                            meta={mintMeta}
-                            mint={mint}
-                            revalidate={async () => {
-                                "use server";
-                                revalidatePath(`/`, "layout");
-                            }}
-                        />
-                        <div className="mb-6">
-                            A new Emoji Bit is born every 8 hours! Half of mint proceeds are
-                            raffled; the rest burned via BBITS 🔥
-                        </div>
-                        <div className="hidden md:inline">
-                            <MintRules/>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="container max-w-screen-lg mb-20 mt-10">
-                        <div className="text-[#363E36] text-4xl font-semibold mb-4">
-                            Bit98 mint starts at 22:00 UTC
-                        </div>
-                        <div>Join @andreitr and @Filter8 on <Link
-                            className="hover:no-underline underline text-[#0000FF]"
-                            href="https://x.com/andreitr/status/1837858492566364362"
-                            target="_blank">X Spaces</Link>!
-                        </div>
-                    </div>
-                )}
+                <div className="container max-w-screen-lg mb-10">
+                    <MintComponent
+                        meta={mintMeta}
+                        mint={mint}
+                        revalidate={async () => {
+                            "use server";
+                            revalidatePath(`/`, "layout");
+                        }}
+                    />
+                    <MintRules/>
+                </div>
             </div>
 
             <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
