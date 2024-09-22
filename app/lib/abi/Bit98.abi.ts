@@ -580,7 +580,7 @@ export const Bit98ABI = [
   },
   {
     inputs: [],
-    name: "currentMintBurnAmount",
+    name: "currentMintArtistReward",
     outputs: [
       {
         internalType: "uint256",
@@ -593,7 +593,7 @@ export const Bit98ABI = [
   },
   {
     inputs: [],
-    name: "currentMintRaffleAmount",
+    name: "currentMintBurnAmount",
     outputs: [
       {
         internalType: "uint256",

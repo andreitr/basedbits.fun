@@ -25,9 +25,9 @@ export const CheckInGoodies = ({ streak, address }: Props) => {
           • {streakToDiscount(streak)}% OFF on{" "}
           <Link
             className="hover:no-underline underline text-[#0000FF]"
-            href={`/emojibits`}
+            href={`/bit98`}
           >
-            Emoji Bits
+            Bit98
           </Link>{" "}
           mint
         </div>

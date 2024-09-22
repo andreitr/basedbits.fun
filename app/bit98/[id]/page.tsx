@@ -1,17 +1,22 @@
-import { Header } from "@/app/lib/components/Header";
+"use server";
 
+import { Header } from "@/app/lib/components/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { MintRules } from "@/app/bit98/components/MintRules";
-import { getBit98CurrentMint } from "@/app/lib/api/getBit98CurrentMint";
-import { getBit98MintById } from "@/app/lib/api/getBit98MintById";
 import { MintComponent } from "@/app/bit98/components/MintComponent";
+import { MintRules } from "@/app/bit98/components/MintRules";
 import { revalidatePath } from "next/cache";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
+import { getBit98MintById } from "@/app/lib/api/getBit98MintById";
 import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
 
-export async function generateMetadata() {
-  const id = await getBit98CurrentMint();
+interface Props {
+  params: {
+    id: number;
+  };
+}
+
+export async function generateMetadata({ params: { id } }: Props) {
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
     abi: Bit98ABI,
@@ -25,7 +30,7 @@ export async function generateMetadata() {
     ? `Mint ended! ${mint.mints} editions minted! Raffle won by ${truncateAddress(mint.winner)}`
     : `Live mint! ${mint.mints} editions minted so far!`;
 
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/bit98`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/bit98?id=${id}`;
 
   return {
     title: title,
@@ -58,8 +63,7 @@ export async function generateMetadata() {
   };
 }
 
-export default async function Page() {
-  const id = await getBit98CurrentMint();
+export default async function Page({ params: { id } }: Props) {
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
     abi: Bit98ABI,
@@ -72,12 +76,13 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
+
           <MintComponent
             meta={meta}
             mint={mint}
             revalidate={async () => {
               "use server";
-              revalidatePath(`/bit98`, "layout");
+              revalidatePath(`/bit98/${id}`, "layout");
             }}
           />
           <MintRules />

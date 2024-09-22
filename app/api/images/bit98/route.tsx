@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
-import { getEmojiCurrentMint } from "@/app/lib/api/getEmojiCurrentMint";
-import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";
-import { getEmojiCurrentRaffleAmount } from "@/app/lib/api/getEmojiCurrentRaffleAmount";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
-import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
+import { getBit98CurrentMint } from "@/app/lib/api/getBit98CurrentMint";
+import { getBit98MintById } from "@/app/lib/api/getBit98MintById";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 
 export const runtime = "edge";
 
@@ -13,21 +12,17 @@ export async function GET(request: Request) {
     let id: any = searchParams?.get("id");
 
     if (!id) {
-      id = await getEmojiCurrentMint();
+      id = await getBit98CurrentMint();
     }
 
-    const mint = await getEmojiMintById({ id: Number(id) });
+    const mint = await getBit98MintById({ id: Number(id) });
     const meta = await getNFTRawMetadata({
-      abi: EmojiBitsABI,
-      address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+      abi: Bit98ABI,
+      address: process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS as `0x${string}`,
       id: id,
     });
 
     const isMintLive = !mint.settledAt;
-    let reward = "0";
-    if (isMintLive) {
-      reward = await getEmojiCurrentRaffleAmount();
-    }
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),
@@ -54,13 +49,11 @@ export async function GET(request: Request) {
           <div tw="flex">
             <img src={meta.image} width={840} height={840} />
 
-            <div tw="flex absolute bottom-0 left-0 right-0 items-center justify-center m-4 p-6 text-center text-4xl text-white bg-black bg-opacity-60 rounded-xl">
-              {isMintLive ? (
-                <>{`${meta.name} - ${reward.toString()} Mint Reward`}</>
-              ) : (
+            {!isMintLive && (
+              <div tw="flex absolute bottom-0 left-0 right-0 items-center justify-center m-4 p-6 text-center text-4xl text-white bg-black bg-opacity-60 rounded-xl">
                 <>{`${meta.name} - Mint Ended`}</>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       ),
