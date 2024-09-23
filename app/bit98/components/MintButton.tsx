@@ -58,7 +58,7 @@ export const MintButton = ({ meta, revalidate }: Props) => {
             <div className="flex flex-row mt-6 gap-6 justify-center">
               <Link
                 className="flex flex-row rounded-md border-white border px-3 py-2 w-full justify-center items-center"
-                href={`https://warpcast.com/~/compose?text=${encodedText}&&embeds[]=https://basedbits.fun/emojibits/${meta.id}`}
+                href={`https://warpcast.com/~/compose?text=${encodedText}&&embeds[]=https://basedbits.fun/bit98/${meta.id}`}
                 target="_blank"
               >
                 Share on{" "}
@@ -72,7 +72,7 @@ export const MintButton = ({ meta, revalidate }: Props) => {
               </Link>
               <Link
                 className="flex flex-row rounded-md border-white border px-3 py-2 w-full justify-center items-center"
-                href={`https://x.com/intent/post?text=${encodedText}&&url=https://basedbits.fun/emojibits/${meta.id}`}
+                href={`https://x.com/intent/post?text=${encodedText}&&url=https://basedbits.fun/bit98/${meta.id}`}
                 target="_blank"
               >
                 Share on{" "}
