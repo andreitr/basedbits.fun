@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const mint = await getEmojiMintById({ id: Number(id) });
     const meta = await getNFTRawMetadata({
       abi: EmojiBitsABI,
-      address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+      address: "0xf6b0da3a3a8e23bbc7df54fe42bee302e35ea8dc",
       id: id,
     });
 

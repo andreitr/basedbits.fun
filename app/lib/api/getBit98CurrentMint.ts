@@ -1,6 +1,6 @@
-import {readContract} from "@wagmi/core";
-import {baseConfig} from "@/app/lib/Web3Configs";
-import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
+import { readContract } from "@wagmi/core";
+import { baseConfig } from "@/app/lib/Web3Configs";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 
 export async function getBit98CurrentMint() {
   const data: any = await readContract(baseConfig, {

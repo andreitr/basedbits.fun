@@ -1,9 +1,9 @@
-import {readContract} from "@wagmi/core";
-import {baseConfig} from "@/app/lib/Web3Configs";
-import {Mint} from "@/app/lib/types/types";
-import {humanizeNumber} from "@/app/lib/utils/numberUtils";
-import {formatUnits} from "ethers";
-import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
+import { readContract } from "@wagmi/core";
+import { baseConfig } from "@/app/lib/Web3Configs";
+import { Mint } from "@/app/lib/types/types";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { formatUnits } from "ethers";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 
 interface Props {
   id: number;

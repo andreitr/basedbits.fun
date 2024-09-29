@@ -14,7 +14,7 @@ export const MintRules = () => {
         </Link>{" "}
         and Based Bits. A new Bit98 is bleeped into existence every 4 hours! A
         single edition is raffled off at the end of each mint! There can only be
-        330 unique Bit98s.
+        512 unique Bit98s.
       </div>
 
       <div className="flex flex-col gap-2 p-4 bg-black bg-opacity-10 rounded-lg">

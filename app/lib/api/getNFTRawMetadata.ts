@@ -1,6 +1,6 @@
-import {readContract} from "@wagmi/core";
-import {baseConfig} from "@/app/lib/Web3Configs";
-import {RawMetadata} from "@/app/lib/types/types";
+import { readContract } from "@wagmi/core";
+import { baseConfig } from "@/app/lib/Web3Configs";
+import { RawMetadata } from "@/app/lib/types/types";
 
 interface Props {
   abi: any;
@@ -21,8 +21,8 @@ export const getNFTRawMetadata = async ({ abi, id, address }: Props) => {
     "data:application/json;base64,",
     "",
   );
-  const jsonString = Buffer.from(base64String, "base64").toString("utf-8");
 
+  const jsonString = Buffer.from(base64String, "base64").toString("utf-8");
   const metadata = JSON.parse(jsonString);
 
   return {

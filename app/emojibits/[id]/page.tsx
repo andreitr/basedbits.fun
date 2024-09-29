@@ -19,7 +19,7 @@ export async function generateMetadata({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,
-    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    address: "0xF6B0DA3A3A8e23bBc7Df54Fe42Bee302e35ea8dc",
     id: id,
   });
 
@@ -66,7 +66,7 @@ export default async function Page({ params: { id } }: Props) {
   const mint = await getEmojiMintById({ id });
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,
-    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    address: "0xF6B0DA3A3A8e23bBc7Df54Fe42Bee302e35ea8dc",
     id: id,
   });
 

@@ -1,8 +1,8 @@
 "use client";
 
-import {Mint} from "@/app/lib/types/types";
-import {useAccount, useReadContract} from "wagmi";
-import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
+import { Mint } from "@/app/lib/types/types";
+import { useAccount, useReadContract } from "wagmi";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 import Link from "next/link";
 
 interface Props {

@@ -1,19 +1,24 @@
 "use client";
 
-import {useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract,} from "wagmi";
-import {ConnectAction} from "@/app/lib/components/ConnectAction";
-import {humanizeNumber} from "@/app/lib/utils/numberUtils";
-import {BigNumberish, formatUnits} from "ethers";
-import {Button} from "@/app/lib/components/Button";
-import {useEffect, useState} from "react";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { ConnectAction } from "@/app/lib/components/ConnectAction";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { BigNumberish, formatUnits } from "ethers";
+import { Button } from "@/app/lib/components/Button";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import XIcon from "@/app/lib/icons/x.svg";
 import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
 import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import Image from "next/image";
-import {RawMetadata} from "@/app/lib/types/types";
-import {Bit98ABI} from "@/app/lib/abi/Bit98.abi";
+import { RawMetadata } from "@/app/lib/types/types";
+import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 
 interface Props {
   meta: RawMetadata;

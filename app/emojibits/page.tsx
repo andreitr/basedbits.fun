@@ -8,15 +8,16 @@ import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { getEmojiCurrentMint } from "@/app/lib/api/getEmojiCurrentMint";
 import { MintComponent } from "@/app/emojibits/components/MintComponent";
 import { revalidatePath } from "next/cache";
-import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
+import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 
 export async function generateMetadata() {
   const id = await getEmojiCurrentMint();
   const mint = await getEmojiMintById({ id });
+
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,
-    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    address: "0xf6b0da3a3a8e23bbc7df54fe42bee302e35ea8dc",
     id: id,
   });
 
@@ -62,9 +63,10 @@ export async function generateMetadata() {
 export default async function Page() {
   const id = await getEmojiCurrentMint();
   const mint = await getEmojiMintById({ id });
+
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,
-    address: process.env.NEXT_PUBLIC_BB_EMOJIBITS_ADDRESS as `0x${string}`,
+    address: "0xF6B0DA3A3A8e23bBc7Df54Fe42Bee302e35ea8dc",
     id: id,
   });
 
@@ -75,14 +77,6 @@ export default async function Page() {
           <Header />
 
           <div className="flex flex-col gap-6 mb-8">
-            <div className="text-4xl">
-              <span className="hidden md:inline">🔆 OᑎᑕᕼᗩIᑎ ᔑᑌᗰᗰEᖇ 🔆</span>{" "}
-              Emoji Bits
-            </div>
-            <div className="hidden md:inline">
-              A new Emoji Bit is born every 8 hours! Half of mint proceeds are
-              raffled 🏆 the rest burned via BBITS 🔥
-            </div>
             <MintComponent
               meta={meta}
               mint={mint}
@@ -91,6 +85,10 @@ export default async function Page() {
                 revalidatePath(`/emojibits`, "layout");
               }}
             />
+            <div>
+              A new Emoji Bit is born every 8 hours! Half of mint proceeds are
+              raffled; the rest burned via BBITS 🔥
+            </div>
             <MintRules />
           </div>
         </div>
