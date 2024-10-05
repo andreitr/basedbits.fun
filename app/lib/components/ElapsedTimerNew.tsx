@@ -1,17 +1,16 @@
-import BigNumber from "bignumber.js";
-import { DateTime, Duration, Interval } from "luxon";
+import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 
 interface Props {
-  startTime: BigNumber;
-  duration: number;
+  start: DateTime;
+  end: DateTime;
   startTitle: string;
   endTitle: string;
 }
 
-export const ElapsedTimer = ({
-  startTime,
-  duration,
+export const ElapsedTimerNew = ({
+  start,
+  end,
   startTitle,
   endTitle,
 }: Props) => {
@@ -25,22 +24,11 @@ export const ElapsedTimer = ({
     return () => clearInterval(interval);
   }, []);
 
-  const startDateTime = DateTime.fromMillis(
-    BigNumber(startTime).toNumber() * 1000,
-  );
-  const endDateTime = DateTime.fromMillis(
-    BigNumber(startTime).toNumber() * 1000,
-  );
-
-  const elapsedTime = Interval.fromDateTimes(startDateTime, DateTime.now());
-  const remainingTime = Duration.fromObject({ hours: duration }).minus(
-    elapsedTime.toDuration("hours"),
-  );
-  const remainingTimeString = remainingTime.toFormat("d hh:mm:ss");
+  const remainingTimeString = end.diffNow().toFormat("d hh:mm:ss");
 
   return (
     <div>
-      {remainingTime.as("milliseconds") > 0 ? (
+      {end.diffNow().milliseconds > 0 ? (
         <div className="flex flex-col">
           <div className="text-md text-[#677467]">{startTitle}</div>
           <div className="text-3xl font-semibold text-[#363E36]">
@@ -51,7 +39,7 @@ export const ElapsedTimer = ({
         <div className="flex flex-col">
           <div className="text-md text-[#677467]">{endTitle}</div>
           <div className="text-3xl font-semibold text-[#363E36]">
-            {endDateTime.monthShort} {endDateTime.day},{endDateTime.year}
+            {end.monthShort} {end.day},{end.year}
           </div>
         </div>
       )}

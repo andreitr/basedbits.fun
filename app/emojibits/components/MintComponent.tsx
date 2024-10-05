@@ -78,59 +78,6 @@ export const MintComponent = ({ meta, mint, revalidate }: Props) => {
         width={357}
         height={357}
       />
-      <div className="w-full">
-        <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
-          <ArrowNav
-            id={Number(mint.tokenId)}
-            path={"emojibits"}
-            hasNext={Number(mint.tokenId) < 93}
-          />
-          <div>
-            {startTime.monthLong} {startTime.day},{startTime.year}
-          </div>
-        </div>
-        {Number(mint.tokenId) >= 93 ? (
-          <>
-            <div className="text-[#363E36] text-4xl font-semibold mb-4">
-              {meta.name}
-            </div>
-            <div className="flex flex-col py-2 gap-2 mb-5">
-              <div>The Emoji Bit mint has ended! Thanks for playing :-)</div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="text-[#363E36] text-4xl font-semibold mb-4">
-              {meta.name}
-            </div>
-
-            <div className="flex flex-row sm:flex-nowrap flex-wrap py-2 sm:gap-10 gap-5 mb-5">
-              <div className="flex flex-col">
-                <div className="text-md text-[#677467]">Mints</div>
-                <div className="text-3xl font-semibold text-[#363E36]">
-                  {mint.mints.toString()}
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="text-md text-[#677467]">Raffle Reward</div>
-                <div className="text-3xl font-semibold text-[#363E36]">
-                  {raffleAmount}
-                </div>
-              </div>
-              <ElapsedTimer
-                startTime={mint.startedAt}
-                duration={8}
-                startTitle={"Mint ends in"}
-                endTitle={"Mint ended on"}
-              />
-            </div>
-            <div className="text-[#677467] mb-5">
-              {<MintEntries mint={mint} />}
-            </div>
-            {mintButton()}
-          </>
-        )}
-      </div>
     </div>
   );
 };

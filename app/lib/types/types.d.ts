@@ -11,10 +11,21 @@ export type RaffleSponsor = {
   tokenId: BigNumber;
 };
 
-export type MintEntry = {
+export type SocialRewardsRoundEntry = {
+  approved: boolean;
+  link: string;
   user: `0x${string}`;
-  weight: BigNumber;
+  timestamp: number;
 };
+export type SocialRewardsRound = {
+  settledAt: number;
+  startedAt: number;
+  userReward: string;
+  adminReward: string;
+  entriesCount: number;
+  rewardedCount: number;
+};
+
 export type Mint = {
   burned: string;
   mints: BigNumber;
