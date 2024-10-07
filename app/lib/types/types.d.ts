@@ -13,7 +13,7 @@ export type RaffleSponsor = {
 
 export type SocialRewardsRoundEntry = {
   approved: boolean;
-  link: string;
+  post: string;
   user: `0x${string}`;
   timestamp: number;
 };

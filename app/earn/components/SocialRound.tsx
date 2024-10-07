@@ -1,9 +1,7 @@
 "use client";
-import { ArrowNav } from "@/app/lib/components/ArrowNav";
 import { SocialRewardsRound } from "@/app/lib/types/types";
 import { DateTime } from "luxon";
-import Image from "next/image";
-import { ElapsedTimerNew } from "@/app/lib/components/ElapsedTimerNew";
+import { SocialRoundTimer } from "@/app/earn/components/SocialRoundTimer";
 import { SocialRoundEntry } from "@/app/earn/components/SocialRoundEntry";
 
 interface Props {
@@ -22,56 +20,49 @@ export const SocialRound = ({ id, round }: Props) => {
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-8 md:gap-16 mb-8 w-full">
       <div className="w-full">
-        <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
-          <ArrowNav id={id} path={"earn"} hasNext={round.settledAt !== 0} />
-          <div>
-            {startTime.monthLong} {startTime.day},{startTime.year}
-          </div>
-        </div>
-        <div className="text-[#363E36] text-4xl font-semibold mb-4">
+        <div className="text-[#363E36] text-4xl font-semibold mb-16">
           {"Social Rewards Round #"}
           {id}
         </div>
 
-        <div className="flex flex-row sm:flex-nowrap flex-wrap py-2 sm:gap-10 gap-5 mb-5">
-          <div className="flex flex-col">
-            <div className="text-md text-[#677467]">Entries</div>
-            <div className="text-3xl font-semibold text-[#363E36]">
-              {round.entriesCount}
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <div className="text-md text-[#677467]">Reward pool</div>
-            <div className="text-3xl font-semibold text-[#363E36]">
-              {round.userReward === "0"
-                ? "1024 BBITS"
-                : `${round.userReward} BBITS`}
-            </div>
-          </div>
-          <ElapsedTimerNew
+        <div className="w-full flex flex-col gap-4">
+          {entries.map((_, index) => {
+            return (
+              <SocialRoundEntry
+                key={index}
+                entryId={index}
+                roundId={id}
+                reward={1024}
+              />
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex flex-col bg-black bg-opacity-10 rounded-lg p-5 gap-4">
+        <div>
+          <SocialRoundTimer
             start={startTime}
             end={endTime}
             startTitle={"Round ends in"}
             endTitle={"Round ended on"}
           />
         </div>
+        <div>
+          <div className="text-gray-500 text-xs uppercase">
+            distributed rewards
+          </div>
+          <div className="text-2xl font-semibold text-[#363E36]">
+            1024 BBITS
+          </div>
+        </div>
 
         <div>
-          {entries.map((_, index) => {
-            return (
-              <SocialRoundEntry key={index} entryId={index} roundId={id} />
-            );
-          })}
+          <div className="text-gray-500 text-xs uppercase">total entries</div>
+          <div className="text-2xl font-semibold text-[#363E36]">
+            {round.entriesCount}
+          </div>
         </div>
       </div>
-      <Image
-        className="w-auto max-w-72 hidden sm:block scale-x-[-1]"
-        src="/images/notepad.png"
-        alt="Are you here?"
-        width={250}
-        height={250}
-        priority={true}
-      />
     </div>
   );
 };
