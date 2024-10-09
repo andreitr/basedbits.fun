@@ -48,14 +48,18 @@ export const NewEntry = ({ onNewEntry }: Props) => {
   }, [isSuccess]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2 p-2 bg-black bg-opacity-10 rounded-md">
       <textarea
-        className="mt-6 rounded-lg p-2 shadow-sm focus:outline-none"
+        className="rounded-lg p-2 shadow-sm focus:outline-none"
         rows={2}
-        placeholder="a link to your post!"
+        placeholder="https://warpcast.com..."
         value={entry}
         onChange={(e) => setEntry(e.target.value)}
       ></textarea>
+      <div className="text-sm text-gray-500">
+        If your post is approved, you will receive a proportional share of the
+        rewards at the end of the round.
+      </div>
       {!isConnected ? (
         <ConnectAction action={"submit a post"} />
       ) : (

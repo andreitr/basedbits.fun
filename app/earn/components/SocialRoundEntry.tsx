@@ -58,7 +58,7 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
   const entry: SocialRewardsRoundEntry = entryData as SocialRewardsRoundEntry;
 
   return (
-    <div className="flex flex-row text-[#363E36] gap-6 bg-black bg-opacity-10 items-center justify-start rounded-lg px-5 py-2">
+    <div className="flex sm:flex-row flex-col text-[#363E36] sm:gap-10 gap-2 bg-black bg-opacity-10 w-full rounded-lg px-5 py-2">
       <div className="flex flex-col">
         <div className="text-[#677467] text-xs  uppercase">entry by</div>
         <Link href={`/users/${entry.user}`}>
@@ -66,9 +66,14 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
         </Link>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col float-right">
+        <div className="text-[#677467] text-xs uppercase">status</div>
+        <div>{entry.approved ? "Approved" : "Pending"}</div>
+      </div>
+
+      <div className="flex flex-col justify-between">
         <div className="text-[#677467] text-xs uppercase">proof of shill</div>
-        <div className="w-[280px] overflow-hidden whitespace-nowrap overflow-ellipsis">
+        <div className="whitespace-nowrap overflow-x-hidden">
           {entry.approved ? (
             <Link
               className="hover:no-underline underline text-[#0000FF]"
@@ -81,11 +86,6 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
             <div className="text-[#677467]">{entry.post}</div>
           )}
         </div>
-      </div>
-
-      <div className="flex flex-col">
-        <div className="text-[#677467] text-xs  uppercase">status</div>
-        <div>{entry.approved ? "Earning" : "Awaiting approval"}</div>
       </div>
 
       {!entry.approved &&
