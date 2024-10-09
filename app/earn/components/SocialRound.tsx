@@ -26,10 +26,9 @@ export const SocialRound = ({ id, round }: Props) => {
         <div className="flex sm:flex-row flex-col justify-between">
           <div>
             <div className="text-[#363E36] text-4xl font-semibold">
-              {"Rewards Round #"}
-              {id}
+              {"Social Rewards"}
             </div>
-            <div className="text-[#363E36]">
+            <div className="text-[#677467]">
               Post about Based Bits on socials and earn!
             </div>
           </div>

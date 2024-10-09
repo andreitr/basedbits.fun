@@ -35,6 +35,11 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
   const { isFetching: isApproving, isSuccess: isApproved } =
     useWaitForTransactionReceipt({ hash: data });
 
+  const canApprove =
+    isConnected &&
+    address?.toLowerCase() ===
+      "0x1d671d1B191323A38490972D58354971E5c1cd2A".toLowerCase();
+
   const approve = () => {
     writeContract({
       abi: BBitsSocialRewardsAbi,
@@ -60,25 +65,21 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
   return (
     <div className="flex sm:flex-row flex-col text-[#363E36] sm:gap-10 gap-2 bg-black bg-opacity-10 w-full rounded-lg px-5 py-2">
       <div className="flex flex-col">
-        <div className="text-[#677467] text-xs  uppercase">entry by</div>
+        <div className="text-[#677467] text-xs  uppercase">by</div>
         <Link href={`/users/${entry.user}`}>
           <AddressToEns address={entry.user} />
         </Link>
       </div>
 
-      <div className="flex flex-col float-right">
-        <div className="text-[#677467] text-xs uppercase">status</div>
-        <div>{entry.approved ? "Approved" : "Pending"}</div>
-      </div>
-
       <div className="flex flex-col justify-between">
-        <div className="text-[#677467] text-xs uppercase">proof of shill</div>
+        <div className="text-[#677467] text-xs uppercase">social post</div>
         <div className="whitespace-nowrap overflow-x-hidden">
           {entry.approved ? (
             <Link
               className="hover:no-underline underline text-[#0000FF]"
               title={entry.post}
               href={entry.post}
+              target="_blank"
             >
               {entry.post}
             </Link>
@@ -87,15 +88,18 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
           )}
         </div>
       </div>
-
-      {!entry.approved &&
-        isConnected &&
-        address?.toLowerCase() ===
-          "0x1d671d1B191323A38490972D58354971E5c1cd2A".toLowerCase() && (
-          <div className="flex flex-col">
-            <div onClick={approve}> Approve</div>
+      <div className="flex flex-row w-full justify-end">
+        {!entry.approved && (
+          <div className="flex flex-col float-right">
+            <div className="text-[#677467] text-xs uppercase">status</div>
+            {canApprove ? (
+              <div onClick={approve}> Approve</div>
+            ) : (
+              <div>{"In Review"}</div>
+            )}
           </div>
         )}
+      </div>
     </div>
   );
 };
