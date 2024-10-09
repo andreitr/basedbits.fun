@@ -36,7 +36,7 @@ export const ElapsedTimer = ({
   const remainingTime = Duration.fromObject({ hours: duration }).minus(
     elapsedTime.toDuration("hours"),
   );
-  const remainingTimeString = remainingTime.toFormat("d hh:mm:ss");
+  const remainingTimeString = remainingTime.toFormat("hh:mm:ss");
 
   return (
     <div>
