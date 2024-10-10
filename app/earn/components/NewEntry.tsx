@@ -57,8 +57,8 @@ export const NewEntry = ({ onNewEntry }: Props) => {
         onChange={(e) => setEntry(e.target.value)}
       ></textarea>
       <div className="text-sm text-gray-500">
-        If your post is approved, you will receive a proportional share of the
-        rewards at the end of the round.
+        If your post is approved, you will receive a share of the rewards at the
+        end of the round.
       </div>
       {!isConnected ? (
         <ConnectAction action={"submit a post"} />

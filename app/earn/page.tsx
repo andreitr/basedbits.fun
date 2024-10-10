@@ -5,10 +5,12 @@ import { Footer } from "@/app/lib/components/Footer";
 import { getSocialRewardsRoundCount } from "@/app/lib/api/getSocialRewardsRoundCount";
 import { getSocialRewardsRound } from "@/app/lib/api/getSocialRewardsRound";
 import { SocialRound } from "@/app/earn/components/SocialRound";
+import { getSocialRewardsRoundDuration } from "@/app/lib/api/getSocialRewardsRoundDuration";
+import { getSocialRewardsAmount } from "@/app/lib/api/getSocialRewardsAmount";
 
 export default async function Page() {
   const id = await getSocialRewardsRoundCount();
-
+  const reward = await getSocialRewardsAmount();
   const round = await getSocialRewardsRound({ id });
 
   return (
@@ -16,7 +18,7 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <SocialRound id={id} round={round} />
+          <SocialRound id={id} round={round} reward={reward} />
         </div>
       </div>
 

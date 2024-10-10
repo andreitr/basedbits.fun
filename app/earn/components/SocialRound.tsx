@@ -9,12 +9,13 @@ import { useState } from "react";
 interface Props {
   id: number;
   round: SocialRewardsRound;
+  reward: number;
 }
 
 const DURATION = 604800;
 const SECONDS_IN_DAY = 86400;
 
-export const SocialRound = ({ id, round }: Props) => {
+export const SocialRound = ({ id, round, reward }: Props) => {
   const startTime = DateTime.fromMillis(round.startedAt * 1000);
   const endTime = startTime.plus({ seconds: DURATION });
 
@@ -36,7 +37,7 @@ export const SocialRound = ({ id, round }: Props) => {
             <div>
               <div className="text-gray-500 text-xs uppercase">reward pool</div>
               <div className="text-2xl font-semibold text-[#363E36]">
-                1024 BBITS
+                {reward} BBITS
               </div>
             </div>
             <SocialRoundTimer
