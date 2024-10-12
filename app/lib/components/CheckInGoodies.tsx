@@ -41,6 +41,16 @@ export const CheckInGoodies = ({ streak, address }: Props) => {
           </Link>{" "}
           entry
         </div>
+        <div>
+          • Earn{" "}
+          <Link
+            className="hover:no-underline underline text-[#0000FF]"
+            href={`/earn`}
+          >
+            BBITS for posting
+          </Link>{" "}
+          on socials
+        </div>
         {streak > 7 && <div>• Community social posts</div>}
       </div>
     </div>

@@ -18,6 +18,8 @@ import { getBit98CurrentMint } from "@/app/lib/api/getBit98CurrentMint";
 import { MintRules } from "@/app/bit98/components/MintRules";
 import { getBit98MintById } from "@/app/lib/api/getBit98MintById";
 
+import chatBubble from "@/app/lib/icons/social.svg";
+
 export default async function Home() {
   const mintId = await getBit98CurrentMint();
   const raffleId = await getCurrentRaffleId();
@@ -63,7 +65,14 @@ export default async function Home() {
               link={`/raffle/${raffleId}`}
             />
             <FeatureCard
-              title="Get tokens"
+              title="Earn tokens"
+              description="Share → Earn"
+              image={chatBubble}
+              style={"bg-[#DDF5DD] w-[80px] h-[80px] rounded-lg"}
+              link="/earn"
+            />
+            <FeatureCard
+              title="Swap tokens"
               description="NFTs → BBITS"
               image="/images/icon.png"
               link="/token"

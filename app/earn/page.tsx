@@ -1,12 +1,12 @@
 "use server";
 
-import {Header} from "@/app/lib/components/Header";
-import {Footer} from "@/app/lib/components/Footer";
-import {getSocialRewardsRoundCount} from "@/app/lib/api/getSocialRewardsRoundCount";
-import {getSocialRewardsRound} from "@/app/lib/api/getSocialRewardsRound";
-import {SocialRound} from "@/app/earn/components/SocialRound";
-import {getSocialRewardsAmount} from "@/app/lib/api/getSocialRewardsAmount";
-import {getSocialRewardsRoundDuration} from "@/app/lib/api/getSocialRewardsRoundDuration";
+import { Header } from "@/app/lib/components/Header";
+import { Footer } from "@/app/lib/components/Footer";
+import { getSocialRewardsRoundCount } from "@/app/lib/api/getSocialRewardsRoundCount";
+import { getSocialRewardsRound } from "@/app/lib/api/getSocialRewardsRound";
+import { SocialRound } from "@/app/earn/components/SocialRound";
+import { getSocialRewardsAmount } from "@/app/lib/api/getSocialRewardsAmount";
+import { getSocialRewardsRoundDuration } from "@/app/lib/api/getSocialRewardsRoundDuration";
 
 export default async function Page() {
   const id = await getSocialRewardsRoundCount();
@@ -19,7 +19,12 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <SocialRound id={id} round={round} reward={reward} duration={duration} />
+          <SocialRound
+            id={id}
+            round={round}
+            reward={reward}
+            duration={duration}
+          />
         </div>
       </div>
 
