@@ -135,33 +135,6 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_NFT_ADDRESS}`}
-              target="_blank"
-            >
-              Based Bits NFT
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_EMOJI_BITS_ADDRESS}`}
-              target="_blank"
-            >
-              Emoji Bits (Onchain Summer)
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS}`}
-              target="_blank"
-            >
-              Bit98
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
               href="https://basescan.org/address/0x553c1f87c2ef99cca23b8a7ffaa629c8c2d27666"
               target="_blank"
             >
@@ -195,7 +168,15 @@ export const Footer = () => {
               Check-in Contract
             </Link>
           </div>
-
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_SOCIAL_REWARDS_ADDRESS}`}
+              target="_blank"
+            >
+              Social Rewards Contract
+            </Link>
+          </div>
           <div>
             <Link
               className="hover:underline text-sm"

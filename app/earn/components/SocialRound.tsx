@@ -18,6 +18,10 @@ export const SocialRound = ({ id, round, reward, duration }: Props) => {
   const endTime = startTime.plus({ seconds: duration });
 
   const [entries, setEntries] = useState(new Array(round.entriesCount).fill(0));
+  const entriesLabel =
+    round.entriesCount > 0
+      ? `${round.entriesCount} ${round.entriesCount === 1 ? "entry" : "entries"}`
+      : "No entries yet. Be the first one to post!";
 
   return (
     <div className="flex flex-col justify-start mt-2 sm:mt-4 sm:flex-row gap-8 md:gap-16 mb-8 w-full">
@@ -38,12 +42,7 @@ export const SocialRound = ({ id, round, reward, duration }: Props) => {
                 {reward} BBITS
               </div>
             </div>
-            <SocialRoundTimer
-              start={startTime}
-              end={endTime}
-              startTitle={"Round ends in"}
-              endTitle={"Round ended on"}
-            />
+            <SocialRoundTimer endTime={endTime} />
           </div>
         </div>
 
@@ -57,7 +56,7 @@ export const SocialRound = ({ id, round, reward, duration }: Props) => {
           />
         </div>
 
-        <div className="mb-2">{entries.length} Entries</div>
+        <div className="mb-2">{entriesLabel}</div>
         <div className="w-full flex flex-col gap-4">
           {entries.map((_, index) => {
             return (

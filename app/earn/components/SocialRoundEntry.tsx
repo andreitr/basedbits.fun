@@ -4,14 +4,11 @@ import { useGetSocialRewardsRoundEntry } from "@/app/lib/hooks/useGetSocialRewar
 import { SocialRewardsRoundEntry } from "@/app/lib/types/types";
 import Link from "next/link";
 import { AddressToEns } from "@/app/lib/components/client/AddressToEns";
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BBitsSocialRewardsAbi } from "@/app/lib/abi/BBitsSocialRewards.abi";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useGetSocialRewardsAdmin } from "@/app/lib/hooks/useGetSocialRewardsAdmin";
 
 interface Props {
   roundId: number;
@@ -20,7 +17,6 @@ interface Props {
 }
 
 export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
-  const { isConnected, address } = useAccount();
   const queryClient = useQueryClient();
   const {
     data: entryData,
@@ -31,14 +27,11 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
     entryId,
   });
 
+  const { data: canApprove } = useGetSocialRewardsAdmin();
+
   const { data, writeContract } = useWriteContract();
   const { isFetching: isApproving, isSuccess: isApproved } =
     useWaitForTransactionReceipt({ hash: data });
-
-  const canApprove =
-    isConnected &&
-    address?.toLowerCase() ===
-      "0x1d671d1B191323A38490972D58354971E5c1cd2A".toLowerCase();
 
   const approve = () => {
     writeContract({

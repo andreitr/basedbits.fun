@@ -2,18 +2,10 @@ import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 
 interface Props {
-  start: DateTime;
-  end: DateTime;
-  startTitle: string;
-  endTitle: string;
+  endTime: DateTime;
 }
 
-export const SocialRoundTimer = ({
-  start,
-  end,
-  startTitle,
-  endTitle,
-}: Props) => {
+export const SocialRoundTimer = ({ endTime }: Props) => {
   const [, setTimer] = useState(new Date());
 
   useEffect(() => {
@@ -24,7 +16,7 @@ export const SocialRoundTimer = ({
     return () => clearInterval(interval);
   }, []);
 
-  const remainingTimeString = end.diffNow().toFormat("d:hh:mm:ss");
+  const remainingTimeString = endTime.diffNow().toFormat("d:hh:mm:ss");
 
   const days = remainingTimeString.split(":")[0];
   const hrs = remainingTimeString.split(":")[1];
@@ -33,7 +25,7 @@ export const SocialRoundTimer = ({
 
   return (
     <div>
-      {end.diffNow().milliseconds > 0 ? (
+      {endTime.diffNow().milliseconds > 0 ? (
         <div className="flex flex-row gap-4">
           <div className="flex flex-col">
             <div className="text-gray-500 text-xs uppercase">DAYS</div>
@@ -53,8 +45,11 @@ export const SocialRoundTimer = ({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col text-2xl font-semibold text-[#363E36]">
-          {end.monthShort} {end.day},{end.year}
+        <div className="flex flex-col">
+          <div className="text-gray-500 text-xs uppercase">rewards paid on</div>
+          <div className="text-2xl font-semibold text-[#363E36]">
+            {endTime.monthShort} {endTime.day},{endTime.year}
+          </div>
         </div>
       )}
     </div>

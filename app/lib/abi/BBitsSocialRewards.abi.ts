@@ -1,15 +1,28 @@
 export const BBitsSocialRewardsAbi = [
   {
     inputs: [
+      { internalType: "address", name: "_owner", type: "address" },
       {
-        internalType: "address",
-        name: "_owner",
+        internalType: "contract IERC20",
+        name: "_BBITS",
         type: "address",
       },
-      { internalType: "contract IERC20", name: "_BBITS", type: "address" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  { inputs: [], name: "AccessControlBadConfirmation", type: "error" },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      { internalType: "bytes32", name: "neededRole", type: "bytes32" },
+    ],
+    name: "AccessControlUnauthorizedAccount",
+    type: "error",
   },
   { inputs: [], name: "AmountZero", type: "error" },
   {
@@ -29,16 +42,6 @@ export const BBitsSocialRewardsAbi = [
     name: "InvalidPercentage",
     type: "error",
   },
-  {
-    inputs: [{ internalType: "address", name: "owner", type: "address" }],
-    name: "OwnableInvalidOwner",
-    type: "error",
-  },
-  {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
-  },
   { inputs: [], name: "ReentrancyGuardReentrantCall", type: "error" },
   {
     inputs: [],
@@ -50,6 +53,32 @@ export const BBitsSocialRewardsAbi = [
     inputs: [],
     name: "WrongStatus",
     type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "roundId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "entryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      { indexed: false, internalType: "string", name: "post", type: "string" },
+    ],
+    name: "Approved",
+    type: "event",
   },
   {
     anonymous: false,
@@ -97,33 +126,9 @@ export const BBitsSocialRewardsAbi = [
         name: "_user",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "_link",
-        type: "string",
-      },
+      { indexed: false, internalType: "string", name: "_link", type: "string" },
     ],
     name: "NewEntry",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
     type: "event",
   },
   {
@@ -137,6 +142,66 @@ export const BBitsSocialRewardsAbi = [
       },
     ],
     name: "Paused",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "previousAdminRole",
+        type: "bytes32",
+      },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "newAdminRole",
+        type: "bytes32",
+      },
+    ],
+    name: "RoleAdminChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+    ],
+    name: "RoleGranted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+    ],
+    name: "RoleRevoked",
     type: "event",
   },
   {
@@ -167,8 +232,22 @@ export const BBitsSocialRewardsAbi = [
   },
   {
     inputs: [],
+    name: "ADMIN_ROLE",
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "BBITS",
     outputs: [{ internalType: "contract IERC20", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "DEFAULT_ADMIN_ROLE",
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
     stateMutability: "view",
     type: "function",
   },
@@ -215,18 +294,18 @@ export const BBitsSocialRewardsAbi = [
     outputs: [
       {
         components: [
-          { internalType: "bool", name: "approved", type: "bool" },
           {
-            internalType: "string",
-            name: "post",
-            type: "string",
+            internalType: "bool",
+            name: "approved",
+            type: "bool",
           },
-          { internalType: "address", name: "user", type: "address" },
+          { internalType: "string", name: "post", type: "string" },
           {
-            internalType: "uint256",
-            name: "timestamp",
-            type: "uint256",
+            internalType: "address",
+            name: "user",
+            type: "address",
           },
+          { internalType: "uint256", name: "timestamp", type: "uint256" },
         ],
         internalType: "struct IBBitsSocialRewards.Entry",
         name: "entry",
@@ -237,9 +316,37 @@ export const BBitsSocialRewardsAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "owner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    inputs: [{ internalType: "bytes32", name: "role", type: "bytes32" }],
+    name: "getRoleAdmin",
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "grantRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "hasRole",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
   },
@@ -251,8 +358,29 @@ export const BBitsSocialRewardsAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "renounceOwnership",
+    inputs: [
+      { internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        internalType: "address",
+        name: "callerConfirmation",
+        type: "address",
+      },
+    ],
+    name: "renounceRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "bytes32", name: "role", type: "bytes32" },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "revokeRole",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -367,17 +495,17 @@ export const BBitsSocialRewardsAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "totalRewardsPerRound",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "totalRewardsPerRound",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
     type: "function",
   },
 ];
