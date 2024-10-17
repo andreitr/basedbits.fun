@@ -83,14 +83,23 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
       </div>
       <div className="flex flex-row w-full justify-end">
         {!entry.approved && (
-          <div className="flex flex-col float-right">
-            <div className="text-[#677467] text-xs uppercase">status</div>
+          <>
             {canApprove ? (
-              <div onClick={approve}> Approve</div>
+              <div className="flex flex-col float-right">
+                <div className="text-[#677467] text-xs uppercase">
+                  admin only
+                </div>
+                <div className="cursor-pointer" onClick={approve}>
+                  {"Approve"}
+                </div>
+              </div>
             ) : (
-              <div>{"In Review"}</div>
+              <div className="flex flex-col float-right">
+                <div className="text-[#677467] text-xs uppercase">status</div>
+                <div>{"In Review"}</div>
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
