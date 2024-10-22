@@ -45,7 +45,7 @@ export const RaffleComponent = ({ id, raffle, revalidate }: RaffleProps) => {
       </div>
       <div>
         <div className="flex flex-row gap-2 text-[#677467] mb-4 items-center">
-          <ArrowNav id={id} path={"raffle"} hasNext={isEnded} />
+          <ArrowNav id={id} path={"raffle"} hasNext={id < 124} />
           <div>
             {startTime.monthLong} {startTime.day},{startTime.year}
           </div>

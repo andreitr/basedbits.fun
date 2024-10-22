@@ -32,16 +32,6 @@ export const CheckInGoodies = ({ streak, address }: Props) => {
           mint
         </div>
         <div>
-          • Free{" "}
-          <Link
-            className="hover:no-underline underline text-[#0000FF]"
-            href={`/raffle`}
-          >
-            Daily Raffle
-          </Link>{" "}
-          entry
-        </div>
-        <div>
           • Earn{" "}
           <Link
             className="hover:no-underline underline text-[#0000FF]"

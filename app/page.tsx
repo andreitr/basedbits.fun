@@ -59,7 +59,7 @@ export default async function Home() {
               link={`/bit98/${mintId}`}
             />
             <FeatureCard
-              title="Enter raffle"
+              title="Daily raffle"
               description={raffleToken.name}
               image={raffleToken.image.thumbnailUrl}
               link={`/raffle/${raffleId}`}
