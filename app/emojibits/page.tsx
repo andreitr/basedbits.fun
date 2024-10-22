@@ -1,6 +1,6 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { MintRules } from "@/app/emojibits/components/MintRules";
 import { getEmojiMintById } from "@/app/lib/api/getEmojiMintById";

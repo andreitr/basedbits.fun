@@ -1,6 +1,6 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";

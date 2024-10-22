@@ -1,4 +1,4 @@
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";

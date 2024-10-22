@@ -1,6 +1,6 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { MintComponent } from "@/app/bit98/components/MintComponent";
 import { MintRules } from "@/app/bit98/components/MintRules";

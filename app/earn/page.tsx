@@ -1,6 +1,6 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { getSocialRewardsRoundCount } from "@/app/lib/api/getSocialRewardsRoundCount";
 import { getSocialRewardsRound } from "@/app/lib/api/getSocialRewardsRound";

@@ -1,4 +1,4 @@
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 
 import { Footer } from "@/app/lib/components/Footer";
 import { MintRules } from "@/app/bit98/components/MintRules";

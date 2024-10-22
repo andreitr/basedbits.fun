@@ -1,6 +1,6 @@
 "use server";
 
-import { Header } from "@/app/lib/components/Header";
+import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { RaffleComponent } from "@/app/raffle/components/RaffleComponent";
 import { getRaffleById } from "@/app/lib/api/getRaffleById";
