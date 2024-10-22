@@ -59,10 +59,10 @@ export default async function Home() {
               link={`/bit98/${mintId}`}
             />
             <FeatureCard
-              title="Daily raffle"
-              description={raffleToken.name}
-              image={raffleToken.image.thumbnailUrl}
-              link={`/raffle/${raffleId}`}
+              title="Coming soon"
+              description="Burned Bits"
+              image={"/images/burnedbit.avif"}
+              link="https://warpcast.com/andreitr.eth/0xf9f4abcf"
             />
             <FeatureCard
               title="Earn tokens"
