@@ -42,17 +42,16 @@ export const MintedList = ({ contract }: Props) => {
       <div>
         <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
           {tokens.map((nft, index) => {
-            console.log(nft);
             return (
               <div
                 key={index}
-                className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center"
+                className="flex flex-col bg-black bg-opacity-60 p-2 rounded-md items-center justify-center"
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
-                <div className="mt-2 hover:underline">
+                <div className="mt-2 hover:underline text-white">
                   <Link
                     href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
                     target="_blank"
