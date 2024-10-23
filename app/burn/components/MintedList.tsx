@@ -1,20 +1,23 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {AlchemyToken} from "@/app/lib/types/alchemy";
-import {useGetNFTs} from "@/app/lib/hooks/useGetNFT";
+import { useEffect, useState } from "react";
+import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { useGetNFTs } from "@/app/lib/hooks/useGetNFT";
+import Link from "next/link";
 
-export const MintedList = () => {
-  const [pageKey, setPageKey] = useState<string | undefined>(undefined);
+interface Props {
+  contract: string;
+}
+
+export const MintedList = ({ contract }: Props) => {
+  const [pageKey, setPageKey] = useState<string>("");
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
 
   const { data, isLoading, isPlaceholderData } = useGetNFTs({
-    address: "0x628cb4601CB45Fb4daCDE367041fC49a74Da8020",
+    address: contract,
     pageKey: pageKey,
     size: 42,
   });
-
-  console.log(data);
 
   useEffect(() => {
     if (data && data.pageKey !== pageKey) {
@@ -31,7 +34,7 @@ export const MintedList = () => {
   }, [data, pageKey]);
 
   if (isLoading) {
-    return "Loading minted NFTs...";
+    return "Loading ...";
   }
 
   return (
@@ -39,6 +42,7 @@ export const MintedList = () => {
       <div>
         <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
           {tokens.map((nft, index) => {
+            console.log(nft);
             return (
               <div
                 key={index}
@@ -48,7 +52,14 @@ export const MintedList = () => {
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
-                <div className="mt-2">{nft.name}</div>
+                <div className="mt-2 hover:underline">
+                  <Link
+                    href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
+                    target="_blank"
+                  >
+                    {nft.name}
+                  </Link>
+                </div>
               </div>
             );
           })}
