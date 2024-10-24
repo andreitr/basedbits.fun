@@ -1,9 +1,10 @@
-export const dynamic = "force-dynamic";
-
+import { NextRequest } from "next/server";
 import { Contract, JsonRpcProvider, parseUnits, Wallet } from "ethers";
 import { BBitsBurnerAbi } from "@/app/lib/abi/BBitsBurner.abi";
 
-export async function GET(req: Request) {
+export const dynamic = "force-dynamic";
+
+export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
