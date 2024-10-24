@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       });
     }
 
-    const minAmountToBurn = parseUnits("0.0001", 18);
+    const minAmountToBurn = parseUnits("0.0004", 18);
 
     contract.burn(minAmountToBurn, {
       value: minAmountToBurn,
