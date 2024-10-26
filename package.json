@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.34.1",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-sdk": "^3.18.1",
     "@web3modal/wagmi": "^4.1.11",
     "connectkit": "^1.7.3",
     "ethers": "^6.13.1",

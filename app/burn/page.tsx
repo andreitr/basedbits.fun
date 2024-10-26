@@ -7,6 +7,7 @@ import { MintedList } from "@/app/burn/components/MintedList";
 import { getNFTCollectionMetadata } from "@/app/lib/api/getNFTCollectionMetadata";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 import Link from "next/link";
+import { MintPrice } from "@/app/burn/components/MintPrice";
 
 export default async function Page() {
   const collection = await getNFTCollectionMetadata({
@@ -48,6 +49,8 @@ export default async function Page() {
               />
             </div>
           </div>
+
+          <MintPrice />
 
           <div className="mt-10 mb-5 flex flex-row justify-between">
             <div>Burned supply {collection.totalSupply}</div>
