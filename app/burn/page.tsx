@@ -29,7 +29,7 @@ export default async function Page() {
                 reached.
               </div>
               <div className="my-10 text-yellow-400">
-                <TokenPrice />
+                Mint Price: <TokenPrice />
               </div>
               <div className="flex flex-row mt-6 gap-6">
                 <div className="bg-red-500 p-4 rounded-lg">Mint and Burn!</div>

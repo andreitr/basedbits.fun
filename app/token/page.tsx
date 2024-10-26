@@ -6,6 +6,7 @@ import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import Link from "next/link";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { TokenSwap } from "@/app/token/components/TokenSwap";
+import { TokenPrice } from "@/app/lib/components/TokenPrice";
 
 export default async function Page() {
   const tokens = await getTokenTotalSupply();
@@ -46,6 +47,13 @@ export default async function Page() {
               >
                 traded on Uniswap.
               </Link>
+            </div>
+            <div className="text-gray-600">
+              Exchange Rate:{" "}
+              <span className="font-semibold">
+                <TokenPrice />
+              </span>{" "}
+              for 1024 BBITS
             </div>
           </div>
         </div>
