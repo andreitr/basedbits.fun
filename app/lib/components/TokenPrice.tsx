@@ -1,29 +1,32 @@
-import { Contract, JsonRpcProvider, parseUnits } from "ethers";
+import { Contract, formatUnits, JsonRpcProvider, parseUnits } from "ethers";
 import IUniswapV3PoolABI from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
-import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json";
+import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 
 const provider = new JsonRpcProvider(
   `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
 );
 
-export const MintPrice = async () => {
+export const TokenPrice = async () => {
   const quoterContract = new Contract(
-    "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+    "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
     Quoter.abi,
     provider,
   );
 
   const poolConstants = await getPoolConstants();
 
-  return await quoterContract.quoteExactInputSingle.staticCall(
-    poolConstants.token0,
-    poolConstants.token1,
-    poolConstants.fee,
-    parseUnits("1024", 18),
-    0,
-  );
+  const params = {
+    tokenIn: poolConstants.token1,
+    tokenOut: poolConstants.token0,
+    amountIn: parseUnits("1024", 18),
+    fee: poolConstants.fee,
+    sqrtPriceLimitX96: 0,
+  };
+  const amount = await quoterContract.quoteExactInputSingle.staticCall(params);
 
-  return <div>{"TEST X"}</div>;
+  return (
+    <div>Mint Price: {formatUnits(amount[0].toString(), 18).slice(0, 6)}Ξ</div>
+  );
 };
 
 async function getPoolConstants(): Promise<{
