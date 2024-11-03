@@ -8,10 +8,12 @@ import { getNFTCollectionMetadata } from "@/app/lib/api/getNFTCollectionMetadata
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 import Link from "next/link";
 import { TokenPrice } from "@/app/lib/components/TokenPrice";
+import { MintButton } from "@/app/burn/components/MintButton";
+import { revalidatePath } from "next/cache";
 
 export default async function Page() {
   const collection = await getNFTCollectionMetadata({
-    contract: "0x617978b8af11570c2dab7c39163a8bde1d282407",
+    contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,
     path: ALCHEMY_API_PATH.MAINNET,
   });
 
@@ -32,7 +34,12 @@ export default async function Page() {
                 Mint Price: <TokenPrice />
               </div>
               <div className="flex flex-row mt-6 gap-6">
-                <div className="bg-red-500 p-4 rounded-lg">Mint and Burn!</div>
+                <MintButton
+                  revalidate={async () => {
+                    "use server";
+                    revalidatePath(`/burn`, "layout");
+                  }}
+                />
               </div>
             </div>
 
@@ -48,17 +55,21 @@ export default async function Page() {
           </div>
 
           <div className="mt-10 mb-5 flex flex-row justify-between">
-            <div>Burned supply {collection.totalSupply}</div>
+            <div>Minted Bits {collection.totalSupply}</div>
             <div className="hover:underline">
               <Link
-                href={`https://opensea.io/assets/base/0x617978b8af11570c2dab7c39163a8bde1d282407`}
+                href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS}`}
                 target="_blank"
               >
                 view on OpenSea
               </Link>
             </div>
           </div>
-          <MintedList contract="0x617978b8af11570c2dab7c39163a8bde1d282407" />
+          <div className="mb-10">
+            <MintedList
+              contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!}
+            />
+          </div>
         </div>
       </div>
 

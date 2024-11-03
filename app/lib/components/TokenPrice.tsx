@@ -9,31 +9,20 @@ const provider = new JsonRpcProvider(
   `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
 );
 
+const quoterContract = new Contract(
+  "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
+  Quoter.abi,
+  provider,
+);
+
 export const TokenPrice = () => {
   const [price, setPrice] = useState<string>("0.00");
 
   useEffect(() => {
-    const quoterContract = new Contract(
-      "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
-      Quoter.abi,
-      provider,
-    );
-
     const fetchPrice = async () => {
-      console.log("Fetch...");
-
       try {
-        const poolConstants = await getPoolConstants();
-        const params = {
-          tokenIn: poolConstants.token1,
-          tokenOut: poolConstants.token0,
-          amountIn: parseUnits("1024", 18),
-          fee: poolConstants.fee,
-          sqrtPriceLimitX96: 0,
-        };
-        const amount =
-          await quoterContract.quoteExactInputSingle.staticCall(params);
-        setPrice(formatUnits(amount[0].toString(), 18).slice(0, 7));
+        const amount = await fetchTokenPrice();
+        setPrice(formatUnits(amount, 18).slice(0, 7));
       } catch (error) {
         console.error("Error fetching price:", error);
       }
@@ -48,6 +37,24 @@ export const TokenPrice = () => {
   }, []);
 
   return <>{price}Ξ</>;
+};
+
+export const fetchTokenPrice = async () => {
+  try {
+    const poolConstants = await getPoolConstants();
+    const params = {
+      tokenIn: poolConstants.token1,
+      tokenOut: poolConstants.token0,
+      amountIn: parseUnits("1024", 18),
+      fee: poolConstants.fee,
+      sqrtPriceLimitX96: 0,
+    };
+    const amount =
+      await quoterContract.quoteExactInputSingle.staticCall(params);
+    return amount[0].toString();
+  } catch (error) {
+    console.error("Error fetching price:", error);
+  }
 };
 
 async function getPoolConstants(): Promise<{
