@@ -14,7 +14,7 @@ export async function generateMetadata() {
   const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/burn`;
 
   const title = "Burned Bits";
-  const description = "Mint one Burned Bit ";
+  const description = "Mint a Burned Bit to burn a Based Bit!";
 
   return {
     title: title,

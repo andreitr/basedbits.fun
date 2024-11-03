@@ -66,7 +66,7 @@ export async function GET(request: Request) {
             </svg>
 
             <div tw="flex flex-col items-center justify-center w-[570px]">
-              <div tw="text-7xl font-bold p-4 text-[#FFAA00]">Burned Bits</div>
+              <div tw="text-7xl font-bold p-4 text-[#FF0000]">Burned Bits</div>
               <div tw="text-5xl font-bold mb-20 text-[#FFD84C]">
                 Minting Now
               </div>
