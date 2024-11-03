@@ -45,7 +45,7 @@ export const MintedList = ({ contract }: Props) => {
             return (
               <div
                 key={index}
-                className="flex flex-col bg-black bg-opacity-60 p-2 rounded-md items-center justify-center"
+                className="flex flex-col bg-black bg-opacity-80 p-2 rounded-md items-center justify-center"
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"

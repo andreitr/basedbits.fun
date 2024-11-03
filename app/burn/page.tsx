@@ -7,7 +7,6 @@ import { MintedList } from "@/app/burn/components/MintedList";
 import { getNFTCollectionMetadata } from "@/app/lib/api/getNFTCollectionMetadata";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 import Link from "next/link";
-import { TokenPrice } from "@/app/lib/components/TokenPrice";
 import { MintButton } from "@/app/burn/components/MintButton";
 import { revalidatePath } from "next/cache";
 
@@ -22,7 +21,7 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <div className="w-full flex flex-col md:flex-row gap-20 justify-between bg-black bg-opacity-90 text-white rounded-lg p-6">
+          <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black bg-opacity-90 text-white rounded-lg p-6">
             <div>
               <div className="text-5xl mb-2">Burned Bits</div>
               <div>
@@ -30,10 +29,7 @@ export default async function Page() {
                 on the BBITS token. The max supply of 8,000 will never be
                 reached.
               </div>
-              <div className="my-10 text-yellow-400">
-                Mint Price: <TokenPrice />
-              </div>
-              <div className="flex flex-row mt-6 gap-6">
+              <div className="mt-10 mb-5">
                 <MintButton
                   revalidate={async () => {
                     "use server";
@@ -41,15 +37,27 @@ export default async function Page() {
                   }}
                 />
               </div>
+              <div className="text-sm text-yellow-500">
+                The mint price is derived from the exchange rate of BBITS to ETH
+                on{" "}
+                <a
+                  className="underline"
+                  href="https://app.uniswap.org/explore/tokens/base/0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666?chain=base"
+                  target="_blank"
+                >
+                  Uniswap
+                </a>{" "}
+                and includes a 1% slippage.
+              </div>
             </div>
 
             <div>
               <Image
                 className="rounded-lg"
-                src={"/images/burnedbit.avif"}
+                src={"/images/burnedbit.png"}
                 alt="Preview"
-                width="360"
-                height="360"
+                width="540"
+                height="540"
               />
             </div>
           </div>
@@ -61,7 +69,7 @@ export default async function Page() {
                 href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS}`}
                 target="_blank"
               >
-                view on OpenSea
+                View on OpenSea
               </Link>
             </div>
           </div>

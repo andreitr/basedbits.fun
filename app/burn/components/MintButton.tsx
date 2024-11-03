@@ -6,7 +6,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
-import { formatUnits } from "ethers";
+import { formatUnits, parseUnits } from "ethers";
 import { Button } from "@/app/lib/components/Button";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -36,7 +36,12 @@ export const MintButton = ({ revalidate }: Props) => {
     const fetchPrice = async () => {
       try {
         const amount = await fetchTokenPrice();
-        setMintPrice(amount);
+
+        // Add slippage
+        const priceWithSlippage = (
+          parseFloat(formatUnits(amount, 18)) * 1.0274
+        ).toString();
+        setMintPrice(priceWithSlippage);
       } catch (error) {
         console.error("Error fetching price:", error);
       }
@@ -108,18 +113,12 @@ export const MintButton = ({ revalidate }: Props) => {
       toast.error("Unable to calculate mint price. Please try again later.");
       return;
     }
-    // Add slippage
-    const adjustedMintPrice = (
-      parseFloat(formatUnits(mintPrice, 18)) * 1.0274
-    ).toString();
-
-    console.log(adjustedMintPrice);
 
     writeContract({
       abi: BurnedBitsABI,
       address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
       functionName: "mint",
-      value: adjustedMintPrice as any,
+      value: parseUnits(mintPrice, 18) as any,
     });
   };
 
@@ -132,7 +131,7 @@ export const MintButton = ({ revalidate }: Props) => {
   }, [isSuccess, revalidate, refresh]);
 
   const label = mintPrice
-    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
+    ? `Mint for ${mintPrice.slice(0, 7)}Ξ`
     : `Calculating your mint price...`;
 
   if (!isConnected) {
@@ -140,16 +139,15 @@ export const MintButton = ({ revalidate }: Props) => {
   }
 
   return (
-    <div className="bg-red-500 p-4 rounded-lg">
-      <Button
-        onClick={() => {
-          mint();
-          setRefresh(false);
-        }}
-        loading={isFetching}
-      >
-        {isFetching ? "Minting..." : label}
-      </Button>
-    </div>
+    <button
+      className="bg-red-500 hover:bg-red-800 text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
+      onClick={() => {
+        mint();
+        setRefresh(false);
+      }}
+      disabled={isFetching}
+    >
+      {isFetching ? "Minting..." : label}
+    </button>
   );
 };

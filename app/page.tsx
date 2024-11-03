@@ -59,10 +59,10 @@ export default async function Home() {
               link={`/bit98/${mintId}`}
             />
             <FeatureCard
-              title="Coming soon"
-              description="Burned Bits"
-              image={"/images/burnedbit.avif"}
-              link="https://warpcast.com/andreitr.eth/0xf9f4abcf"
+              title="Burned Bits"
+              description="Minting now"
+              image={"/images/burnedbit.png"}
+              link="/burn"
             />
             <FeatureCard
               title="Earn tokens"
