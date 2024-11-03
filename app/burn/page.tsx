@@ -10,6 +10,43 @@ import Link from "next/link";
 import { MintButton } from "@/app/burn/components/MintButton";
 import { revalidatePath } from "next/cache";
 
+export async function generateMetadata() {
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/burn`;
+
+  const title = "Burned Bits";
+  const description = "Mint one Burned Bit ";
+
+  return {
+    title: title,
+    description: description,
+    other: {
+      ["fc:frame"]: "vNext",
+      ["fc:frame:image"]: ogPreviewPath,
+      ["fc:frame:button:1"]: `Learn More`,
+      ["fc:frame:button:1:action"]: "link",
+      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/burn`,
+
+      ["fc:frame:button:2"]: `Mint`,
+      ["fc:frame:button:2:action"]: "tx",
+      ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/burn`,
+    },
+    openGraph: {
+      images: [
+        {
+          url: ogPreviewPath,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description,
+    },
+  };
+}
+
 export default async function Page() {
   const collection = await getNFTCollectionMetadata({
     contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,

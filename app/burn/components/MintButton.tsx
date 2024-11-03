@@ -7,7 +7,6 @@ import {
 } from "wagmi";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { formatUnits, parseUnits } from "ethers";
-import { Button } from "@/app/lib/components/Button";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -15,8 +14,8 @@ import XIcon from "@/app/lib/icons/x.svg";
 import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
 import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import Image from "next/image";
-import { fetchTokenPrice } from "@/app/lib/components/TokenPrice";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
+import { fetchTokenPrice } from "@/app/lib/utils/uniswap";
 
 interface Props {
   revalidate: () => void;
