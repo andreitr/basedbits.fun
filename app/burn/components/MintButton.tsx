@@ -54,7 +54,7 @@ export const MintButton = ({ revalidate }: Props) => {
 
   const socialDisplay = () => {
     const encodedText = encodeURIComponent(
-      "I just minted a burned Burned Bit! Burn some BBITs to mint your own!",
+      "I just minted a Burned Bit and burned a Based Bit 🔥",
     );
 
     toast.custom(
