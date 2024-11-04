@@ -18,7 +18,7 @@ export async function POST(
     const rawMintPrice = await fetchTokenPrice();
     // Add slippage
     const mintPrice = (
-      parseFloat(formatUnits(rawMintPrice, 18)) * 1.0274
+      parseFloat(formatUnits(rawMintPrice, 18)) * 1.0354
     ).toString();
 
     return transaction({

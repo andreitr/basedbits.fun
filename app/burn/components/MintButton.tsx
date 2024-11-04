@@ -38,7 +38,7 @@ export const MintButton = ({ revalidate }: Props) => {
 
         // Add slippage
         const priceWithSlippage = (
-          parseFloat(formatUnits(amount, 18)) * 1.0274
+          parseFloat(formatUnits(amount, 18)) * 1.0354
         ).toString();
         setMintPrice(priceWithSlippage);
       } catch (error) {
@@ -112,6 +112,8 @@ export const MintButton = ({ revalidate }: Props) => {
       toast.error("Unable to calculate mint price. Please try again later.");
       return;
     }
+
+    console.log(mintPrice);
 
     writeContract({
       abi: BurnedBitsABI,
