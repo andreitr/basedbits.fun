@@ -15,7 +15,7 @@ import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
 import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import Image from "next/image";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
-import { fetchTokenPrice } from "@/app/lib/utils/uniswap";
+import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 
 interface Props {
   revalidate: () => void;
@@ -34,13 +34,8 @@ export const MintButton = ({ revalidate }: Props) => {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const amount = await fetchTokenPrice();
-
-        // Add slippage
-        const priceWithSlippage = (
-          parseFloat(formatUnits(amount, 18)) * 1.0354
-        ).toString();
-        setMintPrice(priceWithSlippage);
+        const amount = await fetchMintPrice();
+        setMintPrice(amount);
       } catch (error) {
         console.error("Error fetching price:", error);
       }
@@ -113,13 +108,11 @@ export const MintButton = ({ revalidate }: Props) => {
       return;
     }
 
-    console.log(mintPrice);
-
     writeContract({
       abi: BurnedBitsABI,
       address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
       functionName: "mint",
-      value: parseUnits(mintPrice, 18) as any,
+      value: mintPrice as any,
     });
   };
 
@@ -132,7 +125,7 @@ export const MintButton = ({ revalidate }: Props) => {
   }, [isSuccess, revalidate, refresh]);
 
   const label = mintPrice
-    ? `Mint for ${mintPrice.slice(0, 7)}Ξ`
+    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
     : `Calculating your mint price...`;
 
   if (!isConnected) {
