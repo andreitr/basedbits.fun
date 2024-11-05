@@ -77,10 +77,19 @@ export const MintComponent = ({ meta, mint, revalidate }: Props) => {
       );
     }
 
-    if (hasEnded && !hasWinner) {
-      return <SettleButton revalidate={invalidateQueries} />;
-    }
-    return <MintButton meta={meta} revalidate={invalidateQueries} />;
+    return (
+      <div>
+        The Bit98 collection is minted out! Shop on secondaries on{" "}
+        <Link
+          className="hover:no-underline underline text-[#0000FF]"
+          href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BB_BIT98_ADDRESS}`}
+          target="_blank"
+        >
+          OpenSea
+        </Link>
+        .
+      </div>
+    );
   };
 
   return (
@@ -97,7 +106,7 @@ export const MintComponent = ({ meta, mint, revalidate }: Props) => {
           <ArrowNav
             id={Number(meta.id)}
             path={"bit98"}
-            hasNext={hasEnded || isOneOfOne}
+            hasNext={Number(meta.id) <= 511}
           />
           <div>
             {!isOneOfOne ? (
@@ -170,9 +179,6 @@ export const MintComponent = ({ meta, mint, revalidate }: Props) => {
                 startTitle={"Mint ends in"}
                 endTitle={"Mint ended on"}
               />
-            </div>
-            <div className="text-[#677467] mb-5">
-              {<MintEntries mint={mint} />}
             </div>
             {mintButton()}
           </>
