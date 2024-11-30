@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TabUser } from "@/app/punks/components/TabUser";
-import { CollectionList } from "@/app/punks/components/CollectionList";
+import { TabAll } from "@/app/punks/components/TabAll";
 
 enum TABS {
   USER,
@@ -32,9 +32,7 @@ export const Tabs = () => {
         {tab === TABS.USER ? (
           <TabUser contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!} />
         ) : (
-          <CollectionList
-            contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!}
-          />
+          <TabAll contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!} />
         )}
       </div>
     </div>

@@ -65,7 +65,7 @@ export const TabUser = ({ contract }: Props) => {
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
                 <div className="mt-2 hover:underline text-white">
-                  REMIX {nft.tokenId}
+                  {nft.name}
                 </div>
               </div>
             );

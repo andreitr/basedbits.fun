@@ -2,8 +2,6 @@
 
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { getNFTCollectionMetadata } from "@/app/lib/api/getNFTCollectionMetadata";
-import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 import { revalidatePath } from "next/cache";
 import { MintComponent } from "@/app/burn/components/MintComponent";
 import { Tabs } from "@/app/burn/components/Tabs";
