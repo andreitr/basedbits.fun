@@ -10,7 +10,7 @@ import Link from "next/link";
 export const CheckInComponent = () => {
   const { address, isConnected } = useAccount();
   const { data: userNFTs } = useGetUserNFTs({
-    contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,
+    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
     address,
     size: 1,
   });

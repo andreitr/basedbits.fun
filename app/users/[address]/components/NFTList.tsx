@@ -12,7 +12,7 @@ export const NFTList = ({ address }: Props) => {
   const [pageKey, setPageKey] = useState<string | undefined>(undefined);
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
   const { data, isLoading, isPlaceholderData } = useGetUserNFTs({
-    contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,
+    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
     address: address,
     pageKey: pageKey,
     size: 42,

@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
+import { useShuffleTraits } from "@/app/lib/hooks/useShuffleTraits";
 
 interface Props {
   contract: string;
@@ -14,8 +15,15 @@ export const TabUser = ({ contract }: Props) => {
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
   const { isConnected, address } = useAccount();
 
+  const {
+    write: shuffleTraits,
+    isFetching,
+    isSuccess,
+    isError,
+  } = useShuffleTraits();
+
   const { data, isPlaceholderData, isLoading } = useGetUserNFTs({
-    address: address,
+    address: "0x1d671d1B191323A38490972D58354971E5c1cd2A",
     contract: contract,
     pageKey: pageKey,
     size: 42,
@@ -46,7 +54,7 @@ export const TabUser = ({ contract }: Props) => {
   if (data?.totalCount === 0) {
     return (
       <div className="text-[#677467] text-sm">
-        There are no Punksalot in your wallet! Mint one now 👆
+        There are no Burned Bits in your wallet! Mint one now 👆
       </div>
     );
   }
@@ -63,15 +71,17 @@ export const TabUser = ({ contract }: Props) => {
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
+                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
                 ></div>
                 <div className="mt-2 hover:underline text-white">
-                    <Link
-                        href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
-                        target="_blank"
-                    >
-                        {nft.name}
-                    </Link>
+                  <Link
+                    href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
+                    target="_blank"
+                  >
+                    {nft.name}
+                  </Link>
+                  {/*<button*/}
+                  {/*    onClick={() => shuffleTraits(nft.tokenId)}>{isFetching ? "Shuffling" : nft.name}</button>*/}
                 </div>
               </div>
             );
