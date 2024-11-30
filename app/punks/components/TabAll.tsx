@@ -12,11 +12,11 @@ interface Props {
   label: string;
 }
 
-export const TokenList = ({ action, address, label }: Props) => {
+export const TabAll = ({ action, address, label }: Props) => {
   const [pageKey, setPageKey] = useState<string | undefined>(undefined);
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
   const { data, isLoading, isPlaceholderData } = useGetUserNFTs({
-    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
+    contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,
     address: address,
     pageKey: pageKey,
     size: 42,

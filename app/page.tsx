@@ -8,8 +8,6 @@ import { revalidatePath } from "next/cache";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 
 import chatBubble from "@/app/lib/icons/social.svg";
-import { MintButton } from "@/app/burn/components/MintButton";
-import Image from "next/image";
 import { MintComponent } from "@/app/burn/components/MintComponent";
 
 export default async function Home() {

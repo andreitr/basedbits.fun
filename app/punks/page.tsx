@@ -2,17 +2,15 @@
 
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { getNFTCollectionMetadata } from "@/app/lib/api/getNFTCollectionMetadata";
-import { ALCHEMY_API_PATH } from "@/app/lib/constants";
+import { Tabs } from "@/app/punks/components/Tabs";
 import { revalidatePath } from "next/cache";
-import { MintComponent } from "@/app/burn/components/MintComponent";
-import { Tabs } from "@/app/burn/components/Tabs";
+import { MintComponent } from "@/app/punks/components/MintComponent";
 
 export async function generateMetadata() {
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/burn`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/punks`;
 
-  const title = "Burned Bits";
-  const description = "Mint a Burned Bit to burn a Based Bit!";
+  const title = "Punksalot";
+  const description = "Mint a Punksalot and shuffle your traits!";
 
   return {
     title: title,
@@ -22,11 +20,11 @@ export async function generateMetadata() {
       ["fc:frame:image"]: ogPreviewPath,
       ["fc:frame:button:1"]: `Learn More`,
       ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/burn`,
+      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/punks`,
 
       ["fc:frame:button:2"]: `Mint`,
       ["fc:frame:button:2:action"]: "tx",
-      ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/burn`,
+      ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/punks`,
     },
     openGraph: {
       images: [
@@ -57,7 +55,6 @@ export default async function Page() {
               revalidatePath(`/burn`, "layout");
             }}
           />
-
           <div className="mt-10 mb-10">
             <Tabs />
           </div>

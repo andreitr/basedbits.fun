@@ -1,25 +1,25 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { type AlchemyUserResponse } from "@/app/lib/types/alchemy";
 
-const nftContract = process.env.NEXT_PUBLIC_BB_NFT_ADDRESS;
-
 interface Props {
   address: string | undefined;
+  contract: string;
   pageKey?: string;
   size: number;
 }
 
 export const queryKey = (
   address: string | undefined,
+  contract: string,
   pageKey: string | undefined,
-) => `${address}/nfts?pageKey=${pageKey}`;
+) => `${contract}/${address}/${pageKey}`;
 
-export const useGetUserNFTs = ({ address, pageKey, size }: Props) => {
+export const useGetUserNFTs = ({ address, contract, pageKey, size }: Props) => {
   return useQuery({
-    queryKey: [queryKey(address, pageKey)],
+    queryKey: [queryKey(address, contract, pageKey)],
     queryFn: async (): Promise<AlchemyUserResponse> => {
       const response = await fetch(
-        `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${nftContract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}`,
+        `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}`,
       );
       return await response.json();
     },

@@ -9,9 +9,6 @@ interface Props {
 export const getNFTCollectionMetadata = async ({ contract, path }: Props) => {
   const meta: AlchemyCollection = await fetch(
     `https://${path}.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getContractMetadata?contractAddress=${contract}`,
-    {
-      next: { revalidate: 60 },
-    },
   ).then((res) => res.json());
   return meta;
 };

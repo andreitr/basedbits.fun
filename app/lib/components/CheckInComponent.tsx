@@ -9,7 +9,11 @@ import Link from "next/link";
 
 export const CheckInComponent = () => {
   const { address, isConnected } = useAccount();
-  const { data: userNFTs } = useGetUserNFTs({ address, size: 1 });
+  const { data: userNFTs } = useGetUserNFTs({
+    contract: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!,
+    address,
+    size: 1,
+  });
   const holder = Boolean(userNFTs && userNFTs.totalCount > 0);
 
   return (

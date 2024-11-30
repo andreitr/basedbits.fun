@@ -1,23 +1,21 @@
-"use client";
-
-import { DepositNFT } from "@/app/token/components/DepositNFT";
-import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
-import { RedeemNFT } from "@/app/token/components/RedeemNFT";
+import { useAccount } from "wagmi";
+import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { ConnectAction } from "@/app/lib/components/ConnectAction";
 
 interface Props {
-  action: "SWAP" | "REDEEM";
-  address: `0x${string}` | undefined;
-  label: string;
+  contract: string;
 }
 
-export const TokenList = ({ action, address, label }: Props) => {
-  const [pageKey, setPageKey] = useState<string | undefined>(undefined);
+export const TabUser = ({ contract }: Props) => {
+  const [pageKey, setPageKey] = useState<string>("");
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
-  const { data, isLoading, isPlaceholderData } = useGetUserNFTs({
-    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
+  const { isConnected, address } = useAccount();
+
+  const { data, isPlaceholderData, isLoading } = useGetUserNFTs({
     address: address,
+    contract: contract,
     pageKey: pageKey,
     size: 42,
   });
@@ -25,7 +23,7 @@ export const TokenList = ({ action, address, label }: Props) => {
   useEffect(() => {
     if (data && data.pageKey !== pageKey) {
       setTokens((prevState) => {
-        const newTokens = data.ownedNfts.filter(
+        const newTokens = data?.ownedNfts.filter(
           (nft) =>
             !prevState.some(
               (existingNft) => existingNft.tokenId === nft.tokenId,
@@ -36,30 +34,39 @@ export const TokenList = ({ action, address, label }: Props) => {
     }
   }, [data, pageKey]);
 
+  if (!isConnected) {
+    return <ConnectAction action={"to see your NFTs"} />;
+  }
+
   if (isLoading) {
-    return "Loading...";
+    return "Loading ...";
+  }
+
+  if (data?.totalCount === 0) {
+    return (
+      <div className="text-[#677467] text-sm">
+        There are no Punksalot in your wallet! Mint one now 👆
+      </div>
+    );
   }
 
   return (
     <>
       <div>
-        <div className="text-xl my-4 text-gray-600">
-          {data?.totalCount} Based Bits {label}
-        </div>
-
         <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
           {tokens.map((nft, index) => {
             return (
               <div
                 key={index}
-                className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center"
+                className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center"
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
-                {action === "SWAP" && <DepositNFT tokenId={nft.tokenId} />}
-                {action === "REDEEM" && <RedeemNFT tokenId={nft.tokenId} />}
+                <div className="mt-2 hover:underline text-white">
+                  REMIX {nft.tokenId}
+                </div>
               </div>
             );
           })}
