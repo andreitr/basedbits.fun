@@ -3,6 +3,7 @@ import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { useAccount } from "wagmi";
 import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
+import Link from "next/link";
 
 interface Props {
   contract: string;
@@ -65,7 +66,12 @@ export const TabUser = ({ contract }: Props) => {
                   style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
                 ></div>
                 <div className="mt-2 hover:underline text-white">
-                  {nft.name}
+                    <Link
+                        href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
+                        target="_blank"
+                    >
+                        {nft.name}
+                    </Link>
                 </div>
               </div>
             );
