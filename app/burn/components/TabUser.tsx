@@ -3,8 +3,12 @@ import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { useAccount } from "wagmi";
 import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
-import Link from "next/link";
 import { useShuffleTraits } from "@/app/lib/hooks/useShuffleTraits";
+import toast from "react-hot-toast";
+import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
+import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
+import { RawMetadata } from "@/app/lib/types/types";
+import Link from "next/link";
 
 interface Props {
   contract: string;
@@ -13,7 +17,9 @@ interface Props {
 export const TabUser = ({ contract }: Props) => {
   const [pageKey, setPageKey] = useState<string>("");
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
+  const [tokenId, setTokenId] = useState<number | undefined>();
   const { isConnected, address } = useAccount();
+  const [newMeta, setNewMeta] = useState<RawMetadata>();
 
   const {
     write: shuffleTraits,
@@ -23,11 +29,43 @@ export const TabUser = ({ contract }: Props) => {
   } = useShuffleTraits();
 
   const { data, isPlaceholderData, isLoading } = useGetUserNFTs({
-    address: "0x1d671d1B191323A38490972D58354971E5c1cd2A",
+    address: address,
     contract: contract,
     pageKey: pageKey,
     size: 42,
   });
+
+  const onShuffleTraits = (tokenId: number) => {
+    setTokenId(tokenId);
+    shuffleTraits(tokenId);
+  };
+
+  const isSameToken = (id: string) => {
+    return tokenId === Number(id);
+  };
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("There was an error shuffling traits. Please try again.", {
+        duration: 6000,
+      });
+    }
+    if (isSuccess) {
+      getNFTRawMetadata({
+        abi: BurnedBitsABI,
+        address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
+        id: Number(tokenId),
+      })
+        .then((meta) => {
+          setNewMeta(meta);
+        })
+        .finally(() => {
+          toast.success("Traits shuffled successfully!", {
+            duration: 6000,
+          });
+        });
+    }
+  }, [isSuccess, isError, tokenId]);
 
   useEffect(() => {
     if (data && data.pageKey !== pageKey) {
@@ -71,7 +109,9 @@ export const TabUser = ({ contract }: Props) => {
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
+                  style={{
+                    backgroundImage: `url(${isSameToken(nft.tokenId) && newMeta ? newMeta.image : nft.image.originalUrl})`,
+                  }}
                 ></div>
                 <div className="mt-2 hover:underline text-white">
                   <Link
@@ -81,7 +121,7 @@ export const TabUser = ({ contract }: Props) => {
                     {nft.name}
                   </Link>
                   {/*<button*/}
-                  {/*    onClick={() => shuffleTraits(nft.tokenId)}>{isFetching ? "Shuffling" : nft.name}</button>*/}
+                  {/*    onClick={() => onShuffleTraits(Number(nft.tokenId))}>{isFetching && isSameToken(nft.tokenId) ? "Shuffling" : nft.name}</button>*/}
                 </div>
               </div>
             );

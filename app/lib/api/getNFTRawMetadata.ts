@@ -12,7 +12,7 @@ export const getNFTRawMetadata = async ({ abi, id, address }: Props) => {
   const uri = await readContract(baseConfig, {
     abi,
     address,
-    functionName: "uri",
+    functionName: abi?.uri ? "uri" : "tokenURI",
     args: [id],
   });
 
