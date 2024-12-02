@@ -26,7 +26,7 @@ export default async function Home() {
             <FeatureCard
               title="Burned Bits"
               description="Minting now"
-              image={"/images/burnedbit.png"}
+              image={"/images/burnedbit.svg"}
               link="/burn"
             />
             <FeatureCard

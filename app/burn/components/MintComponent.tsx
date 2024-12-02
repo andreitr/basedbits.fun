@@ -33,7 +33,7 @@ export const MintComponent = ({ revalidate }: Props) => {
       <div>
         <Image
           className="rounded-lg"
-          src={"/images/burnedbit.png"}
+          src={"/images/burnedbit.svg"}
           alt="Preview"
           width="540"
           height="540"

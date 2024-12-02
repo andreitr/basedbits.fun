@@ -20,8 +20,9 @@ export const MintComponent = ({ revalidate }: Props) => {
       <div>
         <div className="text-5xl mb-2 text-[#DBAEB4]">Punksalot</div>
         <div className="">
-          Every minted punk can be endlessly remixed to create a unique trait
-          combination. The traits are randomized to ensure maximum vibe!
+          Every minted punk can be endlessly remixed to create a unique
+          combination of traits. The art is fully onchain, with a total supply
+          of 1K.
         </div>
         <div className="mt-10 mb-5">
           <MintButton revalidate={revalidate} />

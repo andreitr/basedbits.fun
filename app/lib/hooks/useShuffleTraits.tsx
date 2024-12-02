@@ -1,8 +1,10 @@
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useShuffleTraits = () => {
+  const queryClient = useQueryClient();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess, isError } = useWaitForTransactionReceipt({
     hash: data,
@@ -16,7 +18,18 @@ export const useShuffleTraits = () => {
       fetch(
         `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/invalidateContract?contractAddress=${process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS}`,
       ).then(() => {
-        console.log("invalidateContract called");
+        queryClient.invalidateQueries({
+          queryKey: [
+            "getNFTsForOwner",
+            process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+          ],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "getNFTsForCollection",
+            process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+          ],
+        });
       });
     }
   }, [isSuccess, isClearingMeta]);
