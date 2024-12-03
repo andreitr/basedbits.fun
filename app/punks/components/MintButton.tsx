@@ -2,6 +2,7 @@
 
 import {
   useAccount,
+  useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
@@ -9,20 +10,25 @@ import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { formatUnits } from "ethers";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
-import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
+import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
 
-interface Props {
-  revalidate: () => void;
-}
-
-export const MintButton = ({ revalidate }: Props) => {
+export const MintButton = () => {
   const [refresh, setRefresh] = useState(false);
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
+  });
+
+  const { data: mintPrice, isFetched: hasMintPrice } = useReadContract({
+    abi: PunkalotABI,
+    address: process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS as `0x${string}`,
+    functionName: "userMintPrice",
+    args: [address],
+    query: {
+      enabled: isConnected,
+    },
   });
 
   const { show } = useSocialDisplay({
@@ -32,24 +38,6 @@ export const MintButton = ({ revalidate }: Props) => {
     url: "https://basedbits.fun/punks",
   });
 
-  const [mintPrice, setMintPrice] = useState<string>();
-
-  useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        const amount = await fetchMintPrice();
-        setMintPrice(amount);
-      } catch (error) {
-        console.error("Error fetching price:", error);
-      }
-    };
-    fetchPrice().then();
-    const interval = setInterval(fetchPrice, 6000);
-
-    // Clean up interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
-
   const mint = () => {
     if (!mintPrice) {
       toast.error("Unable to calculate mint price. Please try again later.");
@@ -57,8 +45,8 @@ export const MintButton = ({ revalidate }: Props) => {
     }
 
     writeContract({
-      abi: BurnedBitsABI,
-      address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
+      abi: PunkalotABI,
+      address: process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS as `0x${string}`,
       functionName: "mint",
       value: mintPrice as any,
     });
@@ -67,12 +55,11 @@ export const MintButton = ({ revalidate }: Props) => {
   useEffect(() => {
     if (isSuccess && !refresh) {
       show();
-      revalidate();
       setRefresh(true);
     }
-  }, [isSuccess, revalidate, refresh]);
+  }, [isSuccess, refresh]);
 
-  const label = mintPrice
+  const label = hasMintPrice
     ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
     : `Calculating your mint price...`;
 

@@ -34,7 +34,7 @@ export const MintComponent = ({ revalidate }: Props) => {
             href="https://warpcast.com/gretagremplin"
             target="_blank"
           >
-            @gretagremplin
+            gretagremplin.eth
           </a>{" "}
           and Based Bits burn!
         </div>

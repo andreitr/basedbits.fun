@@ -30,9 +30,9 @@ export const Tabs = () => {
       </div>
       <div className="mt-5">
         {tab === TABS.USER ? (
-          <TabUser contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!} />
+          <TabUser contract={process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS!} />
         ) : (
-          <TabAll contract={process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS!} />
+          <TabAll contract={process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS!} />
         )}
       </div>
     </div>

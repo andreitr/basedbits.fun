@@ -46,7 +46,7 @@ export const TabUser = ({ contract }: Props) => {
   if (data?.totalCount === 0) {
     return (
       <div className="text-[#677467] text-sm">
-        There are no Burned Bits in your wallet! Mint one now 👆
+        There are no Punks in your wallet! Mint one now 👆
       </div>
     );
   }
