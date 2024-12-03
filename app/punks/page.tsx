@@ -9,8 +9,8 @@ import { MintComponent } from "@/app/punks/components/MintComponent";
 export async function generateMetadata() {
   const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/punks`;
 
-  const title = "Punksalot";
-  const description = "Mint a Punksalot and shuffle your traits!";
+  const title = "Punkalot";
+  const description = "Mint a Punk and make it your own!";
 
   return {
     title: title,
@@ -49,12 +49,7 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <MintComponent
-            revalidate={async () => {
-              "use server";
-              revalidatePath(`/burn`, "layout");
-            }}
-          />
+          <MintComponent />
           <div className="mt-10 mb-10">
             <Tabs />
           </div>

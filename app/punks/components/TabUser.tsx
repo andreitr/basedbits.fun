@@ -6,8 +6,8 @@ import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { useShuffleTraits } from "@/app/lib/hooks/useShuffleTraits";
 import toast from "react-hot-toast";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
-import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
 import { RawMetadata } from "@/app/lib/types/types";
+import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
 
 interface Props {
   contract: string;
@@ -51,8 +51,8 @@ export const TabUser = ({ contract }: Props) => {
     }
     if (isSuccess) {
       getNFTRawMetadata({
-        abi: BurnedBitsABI,
-        address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
+        abi: PunkalotABI,
+        address: process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS as `0x${string}`,
         id: Number(tokenId),
       })
         .then((meta) => {
@@ -91,7 +91,7 @@ export const TabUser = ({ contract }: Props) => {
   if (data?.totalCount === 0) {
     return (
       <div className="text-[#677467] text-sm">
-        There are no Burned Bits in your wallet! Mint one now 👆
+        There are no Punks in your wallet! Mint one now 👆
       </div>
     );
   }
@@ -113,10 +113,13 @@ export const TabUser = ({ contract }: Props) => {
                   }}
                 ></div>
                 <div className="mt-2 hover:underline text-white">
-                  <button onClick={() => onShuffleTraits(Number(nft.tokenId))}>
+                  <button
+                    className="hover:underline"
+                    onClick={() => onShuffleTraits(Number(nft.tokenId))}
+                  >
                     {isFetching && isSameToken(nft.tokenId)
-                      ? "Shuffling"
-                      : nft.name}
+                      ? "Shuffling..."
+                      : `Shuffle #${nft.tokenId}`}
                   </button>
                 </div>
               </div>

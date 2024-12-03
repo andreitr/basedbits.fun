@@ -12,11 +12,13 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const MintButton = () => {
   const [refresh, setRefresh] = useState(false);
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
+  const queryClient = useQueryClient();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
   });
@@ -33,8 +35,8 @@ export const MintButton = () => {
 
   const { show } = useSocialDisplay({
     message:
-      "I just minted a Punksalot and burned some Based Bits! Check it out!",
-    title: "Punksalot minted! Please spread the word 🙏",
+      "I just minted a Punkalot and burned some Based Bits! Check it out!",
+    title: "Punkalot minted! Please spread the word 🙏",
     url: "https://basedbits.fun/punks",
   });
 
@@ -55,13 +57,24 @@ export const MintButton = () => {
   useEffect(() => {
     if (isSuccess && !refresh) {
       show();
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getNFTsForCollection",
+          process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
+        ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["getNFTsForOwner", process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS],
+      });
       setRefresh(true);
     }
   }, [isSuccess, refresh]);
 
-  const label = hasMintPrice
-    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
-    : `Calculating your mint price...`;
+  const label =
+    hasMintPrice && mintPrice
+      ? `Mint for ${formatUnits(mintPrice as any, 18).slice(0, 7)}Ξ`
+      : `Calculating your mint price...`;
 
   if (!isConnected) {
     return <ConnectAction action={"to mint"} />;

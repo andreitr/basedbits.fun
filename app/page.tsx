@@ -4,11 +4,10 @@ import { Header } from "@/app/lib/components/client/Header";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";
-import { revalidatePath } from "next/cache";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 
 import chatBubble from "@/app/lib/icons/social.svg";
-import { MintComponent } from "@/app/burn/components/MintComponent";
+import { MintComponent } from "@/app/punks/components/MintComponent";
 
 export default async function Home() {
   return (
@@ -30,11 +29,11 @@ export default async function Home() {
               link="/burn"
             />
             <FeatureCard
-              title="Punksalot"
-              description="Upcoming mint"
-              image={"/images/punkalot.png"}
+              title="Punkalot"
+              description="Minting now"
+              image={"/images/punkalot.svg"}
               style={"rounded-lg"}
-              link="https://warpcast.com/andreitr.eth/0x117d0ffd"
+              link="/punks"
             />
             <FeatureCard
               title="Earn tokens"
@@ -55,12 +54,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
-          <MintComponent
-            revalidate={async () => {
-              "use server";
-              revalidatePath(`/`, "layout");
-            }}
-          />
+          <MintComponent />
         </div>
       </div>
 

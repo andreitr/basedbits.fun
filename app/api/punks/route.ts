@@ -1,8 +1,8 @@
 import { getFrameMessage } from "frames.js";
 import { transaction } from "frames.js/core";
 import { encodeFunctionData } from "viem";
-import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
-import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
+import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
+import { getPunksUserMintPrice } from "@/app/lib/api/getPunksUserMintPrice";
 
 export async function POST(
   req: Request,
@@ -14,16 +14,18 @@ export async function POST(
   const btnIdx = message?.buttonIndex || 0;
 
   if (btnIdx === 2) {
-    const mintPrice = await fetchMintPrice();
+    const mintPrice = message.address
+      ? await getPunksUserMintPrice(message.address)
+      : "0.0015";
 
     return transaction({
       chainId: "eip155:8453",
       method: "eth_sendTransaction",
       params: {
-        abi: BurnedBitsABI as any,
-        to: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
+        abi: PunkalotABI as any,
+        to: process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS as `0x${string}`,
         data: encodeFunctionData({
-          abi: BurnedBitsABI,
+          abi: PunkalotABI,
           functionName: "mint",
         }),
         value: mintPrice.toString(),
