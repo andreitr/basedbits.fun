@@ -47,18 +47,16 @@ export async function GET(request: Request) {
               <path d="M12 15H15V16H12V15Z" fill="#3B7AFF" />
               <path d="M7 7H8V9H7V7Z" fill="#82BCFC" />
               <path d="M8 6H9V7H8V6Z" fill="#82BCFC" />
-              <path d="M2 10H3V11H2V10Z" fill="#CEDFFB" />
-              <path d="M4 2H5V3H4V2Z" fill="#CEDFFB" />
-              <path d="M20 2H21V3H20V2Z" fill="#CEDFFB" />
-              <path d="M19 8H20V9H19V8Z" fill="#CEDFFB" />
-              <path d="M18 10H19V11H18V10Z" fill="#CEDFFB" />
-              <path
-                d="M5 17H6V15H7V11H8V9H10V8H15V9H17V10H18V8H19V7H20V5H19V4H20V3H18V4H17V3H16V1H15V2H14V1H13V2H12V3H11V2H9V1H8V2H6V3H5V4H4V5H3V7H2V8H3V10H4V12H3V14H4V15H5V17Z"
-                fill="#CEDFFB"
-              />
-              <path d="M9 19H10V18H16V17H9V19Z" fill="#3B7AFF" />
+              <path d="M6 9H22V8H17V5H16V4H15V3H7V4H6V9Z" fill="#303135" />
+              <path d="M13 5H15V7H13V5Z" fill="#52535A" />
+              <path d="M10 18V19H9V17H16V18H10Z" fill="#3B7AFF" />
               <path d="M10 19H16V20H10V19Z" fill="#3B7AFF" />
-              <path d="M10 18H16V19H10V18Z" fill="#CEDFFB" />
+              <path d="M10 18H11V19H10V18Z" fill="#CEDFFB" />
+              <path d="M12 18H13V19H12V18Z" fill="#CEDFFB" />
+              <path d="M14 18H15V19H14V18Z" fill="#CEDFFB" />
+              <path d="M11 18H12V19H11V18Z" fill="#303135" />
+              <path d="M13 18H14V19H13V18Z" fill="#303135" />
+              <path d="M15 18H16V19H15V18Z" fill="#303135" />
               <path d="M9 12V11H11V10H12V12H9Z" fill="#3B7AFF" />
               <path d="M17 12H14V10H15V11H17V12Z" fill="#3B7AFF" />
               <path d="M8 12H9V14H8V12Z" fill="#3B7AFF" />
