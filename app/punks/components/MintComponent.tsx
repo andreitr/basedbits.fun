@@ -1,5 +1,5 @@
-import { MintButton } from "@/app/punks/components/MintButton";
 import Image from "next/image";
+import Link from "next/link";
 
 export const MintComponent = () => {
   return (
@@ -21,7 +21,12 @@ export const MintComponent = () => {
           of 1K.
         </div>
         <div className="mt-10 mb-5">
-          <MintButton />
+          <Link
+            className="bg-[#53A3FC] hover:bg-[#3B7AFF] text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
+            href="/punks"
+          >
+            Sold Out - Shuffle Traits!
+          </Link>
         </div>
         <div className="text-sm text-[#82BCFC]">
           The mint proceeds are split between{" "}
