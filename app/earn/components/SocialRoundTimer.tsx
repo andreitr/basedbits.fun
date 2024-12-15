@@ -46,7 +46,7 @@ export const SocialRoundTimer = ({ endTime }: Props) => {
         </div>
       ) : (
         <div className="flex flex-col">
-          <div className="text-gray-500 text-xs uppercase">rewards paid on</div>
+          <div className="text-gray-500 text-xs uppercase">round ended on</div>
           <div className="text-2xl font-semibold text-[#363E36]">
             {endTime.monthShort} {endTime.day},{endTime.year}
           </div>

@@ -25,7 +25,7 @@ export const MintComponent = () => {
             className="bg-[#53A3FC] hover:bg-[#3B7AFF] text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
             href="/punks"
           >
-            Sold Out - Shuffle Traits!
+            Sold Out!
           </Link>
         </div>
         <div className="text-sm text-[#82BCFC]">
