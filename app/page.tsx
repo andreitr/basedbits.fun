@@ -7,7 +7,8 @@ import { Social } from "@/app/lib/components/Social";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 
 import chatBubble from "@/app/lib/icons/social.svg";
-import { MintComponent } from "@/app/punks/components/MintComponent";
+import { MintComponent } from "@/app/burn/components/MintComponent";
+import { revalidatePath } from "next/cache";
 
 export default async function Home() {
   return (
@@ -54,7 +55,12 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
-          <MintComponent />
+          <MintComponent
+            revalidate={async () => {
+              "use server";
+              revalidatePath(`/`, "layout");
+            }}
+          />
         </div>
       </div>
 

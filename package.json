@@ -21,8 +21,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
-    "viem": "^2.9.31",
-    "wagmi": "^2.8.1"
+    "viem": "^2.21.55",
+    "wagmi": "^2.14.3"
   },
   "devDependencies": {
     "@types/luxon": "^3.4.2",
