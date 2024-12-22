@@ -37,11 +37,11 @@ export default async function Home() {
               link="/punks"
             />
             <FeatureCard
-              title="Earn tokens"
-              description="Share → Earn"
-              image={chatBubble}
-              style={"bg-[#DDF5DD] w-[80px] h-[80px] rounded-lg"}
-              link="/earn"
+              title="Base Race"
+              description="Coming soon"
+              image={"/images/race.svg"}
+              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
+              link="/race"
             />
             <FeatureCard
               title="Swap tokens"

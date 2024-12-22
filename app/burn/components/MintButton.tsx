@@ -41,7 +41,7 @@ export const MintButton = ({ revalidate }: Props) => {
       }
     };
     fetchPrice().then();
-    const interval = setInterval(fetchPrice, 6000);
+    const interval = setInterval(fetchPrice, 60000);
 
     // Clean up interval on component unmount
     return () => clearInterval(interval);

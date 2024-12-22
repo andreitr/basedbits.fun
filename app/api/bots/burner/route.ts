@@ -16,10 +16,7 @@ export async function GET(req: NextRequest) {
       `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
     );
 
-    const signer = new Wallet(
-      process.env.NEXT_PUBLIC_BURNER_BOT_PK as string,
-      provider,
-    );
+    const signer = new Wallet(process.env.BURNER_BOT_PK as string, provider);
 
     const contract = new Contract(
       process.env.NEXT_PUBLIC_BB_BURNER_ADDRESS as string,

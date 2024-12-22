@@ -19,7 +19,7 @@ export const TokenPrice = () => {
 
     // Fetch price every 3 seconds
     fetchPrice().then();
-    const interval = setInterval(fetchPrice, 6000);
+    const interval = setInterval(fetchPrice, 60000);
 
     // Clean up interval on component unmount
     return () => clearInterval(interval);
