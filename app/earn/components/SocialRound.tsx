@@ -47,13 +47,17 @@ export const SocialRound = ({ id, round, reward, duration }: Props) => {
         </div>
 
         <div className="mt-10 mb-10">
-          <NewEntry
-            onNewEntry={() => {
-              setEntries((prevState) => {
-                return [...prevState, 0];
-              });
-            }}
-          />
+          <div className="bg-white p-10 rounded-lg">
+            Social rewards are paused until further notice. Rumor has it that{" "}
+            <a
+              href="https://warpcast.com/andreitr.eth/0x2dfd961b"
+              target="_blank"
+              className="hover:no-underline underline text-[#0000FF]"
+            >
+              @andreitr
+            </a>{" "}
+            plans to replace them with direct check-in airdrops.
+          </div>
         </div>
 
         <div className="mb-2">{entriesLabel}</div>
