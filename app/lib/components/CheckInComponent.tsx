@@ -7,7 +7,11 @@ import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
 
-export const CheckInComponent = () => {
+interface Props {
+  checkins: string[];
+}
+
+export const CheckInComponent = ({ checkins }: Props) => {
   const { address, isConnected } = useAccount();
   const { data: userNFTs } = useGetUserNFTs({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
@@ -17,7 +21,7 @@ export const CheckInComponent = () => {
   const holder = Boolean(userNFTs && userNFTs.totalCount > 0);
 
   return (
-    <div className="flex flex-col justify-between mt-8 sm:flex-row">
+    <div className="flex flex-col justify-between mt-8 gap-20 sm:flex-row">
       <Image
         className="w-auto max-w-72 m-auto sm:m-0"
         src="/images/developer.png"
@@ -32,7 +36,8 @@ export const CheckInComponent = () => {
           Hold Based Bits? Check-in!
         </div>
         <div className="text-[#677467]">
-          Daily check-ins unlock mint discounts, free raffle entries, and more.
+          {checkins.length} Based Bits holders have checked-in today! Daily
+          check-ins unlock mint discounts and other goodies.
         </div>
 
         <div className="mt-6 md:mt-10">

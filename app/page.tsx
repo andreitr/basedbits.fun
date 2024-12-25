@@ -5,18 +5,19 @@ import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { Social } from "@/app/lib/components/Social";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
-
-import chatBubble from "@/app/lib/icons/social.svg";
 import { MintComponent } from "@/app/burn/components/MintComponent";
 import { revalidatePath } from "next/cache";
+import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 
 export default async function Home() {
+  const checkins = await getRecentCheckIns();
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <CheckInComponent />
+          <CheckInComponent checkins={checkins} />
         </div>
       </div>
 
