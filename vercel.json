@@ -5,8 +5,8 @@
       "schedule": "0 * * * *"
     },
     {
-      "path": "/api/bots/airdropper",
-      "schedule": "0 10 * * *"
+      "path": "/api/bots/airdrop",
+      "schedule": "0 7 * * *"
     }
   ]
 }
