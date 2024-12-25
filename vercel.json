@@ -3,6 +3,10 @@
     {
       "path": "/api/bots/burner",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/bots/airdropper",
+      "schedule": "0 10 * * *"
     }
   ]
 }
