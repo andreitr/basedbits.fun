@@ -1,5 +1,4 @@
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
-import IUniswapV3PoolABI from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
 import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 import { QUOTER_ADDRESSES } from "@uniswap/sdk-core";
 import { base } from "wagmi/chains";
@@ -16,7 +15,12 @@ const quoterContract = new Contract(
 
 export const fetchTokenPrice = async () => {
   try {
-    const poolConstants = await getPoolConstants();
+    const poolConstants = {
+      token0: "0x4200000000000000000000000000000000000006",
+      token1: "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
+      fee: BigInt("3000"),
+    };
+
     const params = {
       tokenIn: poolConstants.token1,
       tokenOut: poolConstants.token0,
@@ -31,27 +35,3 @@ export const fetchTokenPrice = async () => {
     console.error("Error fetching price:", error);
   }
 };
-
-async function getPoolConstants(): Promise<{
-  token0: string;
-  token1: string;
-  fee: number;
-}> {
-  const poolContract = new Contract(
-    "0xc229495845BBB34997e2143799856Af61448582F",
-    IUniswapV3PoolABI.abi,
-    provider,
-  );
-
-  const [token0, token1, fee] = await Promise.all([
-    "0x4200000000000000000000000000000000000006",
-    "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
-    poolContract.fee(),
-  ]);
-
-  return {
-    token0,
-    token1,
-    fee,
-  };
-}
