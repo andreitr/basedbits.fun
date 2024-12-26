@@ -3,11 +3,12 @@
 import { Header } from "@/app/lib/components/client/Header";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
-import { Social } from "@/app/lib/components/Social";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { MintComponent } from "@/app/burn/components/MintComponent";
 import { revalidatePath } from "next/cache";
 import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
+import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
+import Link from "next/link";
 
 export default async function Home() {
   const checkins = await getRecentCheckIns();
@@ -66,8 +67,18 @@ export default async function Home() {
       </div>
 
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
-        <div className="container max-w-screen-lg">
-          <Social />
+        <div className="container max-w-screen-lg mb-10 mt-10">
+          <div className="text-5xl font-semibold text-[#080908] mb-4">
+            Next Airdrop in <AirdropTimer />
+          </div>
+          <div>
+            The daily BBITS allocation is evenly distributed among all active,
+            checked-in wallets. Being active in this community literally pays!{" "}
+            <Link href="/token" className="underline">
+              Learn more
+            </Link>{" "}
+            about the BBITS token.
+          </div>
         </div>
       </div>
 

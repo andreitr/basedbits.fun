@@ -36,8 +36,9 @@ export const CheckInComponent = ({ checkins }: Props) => {
           Hold Based Bits? Check-in!
         </div>
         <div className="text-[#677467]">
-          {checkins.length} Based Bits holders have checked-in today! Daily
-          check-ins unlock mint discounts and other goodies.
+          Check in to receive the daily BBITS airdrop and other goodies!{" "}
+          {checkins.length} Based Bits holders checked in the previous 24hr
+          period.
         </div>
 
         <div className="mt-6 md:mt-10">
