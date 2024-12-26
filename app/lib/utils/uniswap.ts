@@ -15,17 +15,12 @@ const quoterContract = new Contract(
 
 export const fetchTokenPrice = async () => {
   try {
-    const poolConstants = {
-      token0: "0x4200000000000000000000000000000000000006",
-      token1: "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
-      fee: BigInt("3000"),
-    };
 
     const params = {
-      tokenIn: poolConstants.token1,
-      tokenOut: poolConstants.token0,
+      tokenIn: "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
+      tokenOut: "0x4200000000000000000000000000000000000006",
       amountIn: parseUnits("1024", 18),
-      fee: poolConstants.fee,
+      fee: BigInt("3000"),
       sqrtPriceLimitX96: 0,
     };
     const amount =
