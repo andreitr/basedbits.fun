@@ -1,13 +1,14 @@
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import IUniswapV3PoolABI from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
 import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
+import { QUOTER_ADDRESSES } from "@uniswap/sdk-core";
+import { base } from "wagmi/chains";
 
 const provider = new JsonRpcProvider(
   `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
 );
-
 const quoterContract = new Contract(
-  "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
+  QUOTER_ADDRESSES[base.id],
   Quoter.abi,
   provider,
 );
