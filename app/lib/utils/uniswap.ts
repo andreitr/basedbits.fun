@@ -7,7 +7,6 @@ const provider = new JsonRpcProvider(
   `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
 );
 
-
 const quoterContract = new Contract(
   QUOTER_ADDRESSES[base.id],
   Quoter.abi,

@@ -4,6 +4,8 @@ import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { isAddress } from "viem";
 
+const DAILY_AIRDROP_AMOUNT = 200;
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -19,7 +21,7 @@ export async function GET(req: NextRequest) {
       return new Response("No recent check-ins found", { status: 200 });
     }
 
-    const reward = 100 / checkins.length;
+    const reward = DAILY_AIRDROP_AMOUNT / checkins.length;
     const rewardAmount = parseUnits(reward.toString(), 18);
 
     const provider = new JsonRpcProvider(
