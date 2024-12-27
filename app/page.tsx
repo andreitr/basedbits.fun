@@ -1,13 +1,12 @@
 "use server";
 
-import { Header } from "@/app/lib/components/client/Header";
-import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
-import { Footer } from "@/app/lib/components/Footer";
-import { FeatureCard } from "@/app/lib/components/FeatureCard";
-import { MintComponent } from "@/app/burn/components/MintComponent";
-import { revalidatePath } from "next/cache";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
-import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
+import {Header} from "@/app/lib/components/client/Header";
+import {CheckInComponent} from "@/app/lib/components/CheckInComponent";
+import {Footer} from "@/app/lib/components/Footer";
+import {FeatureCard} from "@/app/lib/components/FeatureCard";
+import {MintComponent} from "@/app/burn/components/MintComponent";
+import {revalidatePath} from "next/cache";
+import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
 import Link from "next/link";
 
 export default async function Home() {
@@ -69,7 +68,7 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
           <div className="text-5xl font-semibold text-[#080908] mb-4">
-            Next Airdrop in <AirdropTimer />
+            Next Airdrop at 7UTC
           </div>
           <div>
             The daily BBITS allocation is evenly distributed among all active,

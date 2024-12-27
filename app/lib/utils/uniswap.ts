@@ -7,6 +7,7 @@ const provider = new JsonRpcProvider(
   `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
 );
 
+
 const quoterContract = new Contract(
   QUOTER_ADDRESSES[base.id],
   Quoter.abi,
@@ -15,7 +16,6 @@ const quoterContract = new Contract(
 
 export const fetchTokenPrice = async () => {
   try {
-
     const params = {
       tokenIn: "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
       tokenOut: "0x4200000000000000000000000000000000000006",
