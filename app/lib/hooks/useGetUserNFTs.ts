@@ -1,5 +1,6 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { type AlchemyUserResponse } from "@/app/lib/types/alchemy";
+import { baseNFTUrl } from "@/app/lib/Web3Configs";
 
 interface Props {
   address: string | undefined;
@@ -13,7 +14,7 @@ export const useGetUserNFTs = ({ address, contract, pageKey, size }: Props) => {
     queryKey: ["getNFTsForOwner", contract, address, pageKey],
     queryFn: async (): Promise<AlchemyUserResponse> => {
       const response = await fetch(
-        `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}`,
+        `${baseNFTUrl}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}`,
       );
       return await response.json();
     },

@@ -69,7 +69,7 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
           <div className="text-5xl font-semibold text-[#080908] mb-4">
-            Next Airdrop at <AirdropTimer />
+            Next Airdrop in <AirdropTimer />
           </div>
           <div>
             The daily BBITS allocation is evenly distributed among all active,

@@ -1,16 +1,13 @@
-import { Contract, JsonRpcProvider, parseUnits } from "ethers";
+import { Contract, parseUnits } from "ethers";
 import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 import { QUOTER_ADDRESSES } from "@uniswap/sdk-core";
 import { base } from "wagmi/chains";
-
-const provider = new JsonRpcProvider(
-  `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-);
+import { baseProvider } from "@/app/lib/Web3Configs";
 
 const quoterContract = new Contract(
   QUOTER_ADDRESSES[base.id],
   Quoter.abi,
-  provider,
+  baseProvider,
 );
 
 export const fetchTokenPrice = async () => {

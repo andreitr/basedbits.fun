@@ -56,7 +56,7 @@ export const TokenList = ({ action, address, label }: Props) => {
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
+                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
                 ></div>
                 {action === "SWAP" && <DepositNFT tokenId={nft.tokenId} />}
                 {action === "REDEEM" && <RedeemNFT tokenId={nft.tokenId} />}

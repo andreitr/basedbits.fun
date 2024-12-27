@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
-import { Contract, JsonRpcProvider, parseUnits, Wallet } from "ethers";
+import { Contract, parseUnits, Wallet } from "ethers";
 import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { isAddress } from "viem";
+import { baseProvider } from "@/app/lib/Web3Configs";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
@@ -24,11 +25,10 @@ export async function GET(req: NextRequest) {
     const reward = DAILY_AIRDROP_AMOUNT / checkins.length;
     const rewardAmount = parseUnits(reward.toString(), 18);
 
-    const provider = new JsonRpcProvider(
-      `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
+    const signer = new Wallet(
+      process.env.AIRDROP_BOT_PK as string,
+      baseProvider,
     );
-
-    const signer = new Wallet(process.env.AIRDROP_BOT_PK as string, provider);
 
     const contract = new Contract(
       process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as string,
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
-    let nonce = await provider.getTransactionCount(signer.address);
+    let nonce = await baseProvider.getTransactionCount(signer.address);
 
     for (const checkin of checkins) {
       if (isAddress(checkin)) {

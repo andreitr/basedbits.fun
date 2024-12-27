@@ -48,7 +48,7 @@ export const NFTList = ({ address }: Props) => {
               >
                 <div
                   className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.thumbnailUrl})` }}
+                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
                 ></div>
                 <div className="mt-2">{nft.name}</div>
               </div>

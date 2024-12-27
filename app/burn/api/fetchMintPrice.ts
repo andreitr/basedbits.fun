@@ -1,14 +1,11 @@
-import { Contract, JsonRpcProvider } from "ethers";
+import { Contract } from "ethers";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
-
-const provider = new JsonRpcProvider(
-  `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-);
+import { baseProvider } from "@/app/lib/Web3Configs";
 
 const minter = new Contract(
   process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
   BurnedBitsABI,
-  provider,
+  baseProvider,
 );
 
 export const fetchMintPrice = async () => {

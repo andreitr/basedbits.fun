@@ -2,6 +2,7 @@ import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
+import { baseNFTUrl } from "@/app/lib/Web3Configs";
 
 export const useShuffleTraits = () => {
   const queryClient = useQueryClient();
@@ -16,7 +17,7 @@ export const useShuffleTraits = () => {
     if (isSuccess && !isClearingMeta) {
       setIsClearingMeta(true);
       fetch(
-        `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}/invalidateContract?contractAddress=${process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS}`,
+        `${baseNFTUrl}/invalidateContract?contractAddress=${process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS}`,
       ).then(() => {
         queryClient.invalidateQueries({
           queryKey: [

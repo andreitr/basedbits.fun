@@ -6,12 +6,13 @@ import {
   cookieToInitialState,
   createConfig,
   createStorage,
+  http,
   WagmiProvider,
-  webSocket,
 } from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+import { baseRpcUrl } from "@/app/lib/Web3Configs";
 
 const wagmiConfig = createConfig(
   getDefaultConfig({
@@ -21,12 +22,7 @@ const wagmiConfig = createConfig(
     }),
     chains: [base, baseSepolia],
     transports: {
-      [base.id]: webSocket(
-        `wss://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-      ),
-      [baseSepolia.id]: webSocket(
-        `wss://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-      ),
+      [base.id]: http(baseRpcUrl),
     },
     walletConnectProjectId: process.env
       .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
