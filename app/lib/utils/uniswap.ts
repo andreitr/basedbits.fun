@@ -5,10 +5,12 @@ import { base } from "wagmi/chains";
 import { baseProvider } from "@/app/lib/Web3Configs";
 
 const quoterContract = new Contract(
-  QUOTER_ADDRESSES[base.id],
+  "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",
   Quoter.abi,
   baseProvider,
 );
+
+console.log(QUOTER_ADDRESSES[base.id]);
 
 export const fetchTokenPrice = async () => {
   try {
