@@ -1,13 +1,14 @@
 "use server";
 
-import {Header} from "@/app/lib/components/client/Header";
-import {CheckInComponent} from "@/app/lib/components/CheckInComponent";
-import {Footer} from "@/app/lib/components/Footer";
-import {FeatureCard} from "@/app/lib/components/FeatureCard";
-import {MintComponent} from "@/app/burn/components/MintComponent";
-import {revalidatePath} from "next/cache";
-import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
+import { Header } from "@/app/lib/components/client/Header";
+import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
+import { Footer } from "@/app/lib/components/Footer";
+import { FeatureCard } from "@/app/lib/components/FeatureCard";
+import { MintComponent } from "@/app/burn/components/MintComponent";
+import { revalidatePath } from "next/cache";
+import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import Link from "next/link";
+import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
 
 export default async function Home() {
   const checkins = await getRecentCheckIns();
@@ -68,7 +69,7 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
           <div className="text-5xl font-semibold text-[#080908] mb-4">
-            Next Airdrop at 7 UTC
+            Next Airdrop in <AirdropTimer />
           </div>
           <div>
             The daily BBITS allocation is evenly distributed among all active,
