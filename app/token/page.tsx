@@ -7,8 +7,10 @@ import Link from "next/link";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { TokenSwap } from "@/app/token/components/TokenSwap";
 import { TokenPrice } from "@/app/lib/components/TokenPrice";
+import {fetchTokenPrice} from "@/app/lib/utils/uniswap";
 
 export default async function Page() {
+  const amount = await fetchTokenPrice();
   const tokens = await getTokenTotalSupply();
   const burned = await getUserTokenBalance(
     "0x000000000000000000000000000000000000dEaD",
@@ -64,6 +66,7 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
         <Footer />
       </div>
+      {amount}
     </div>
   );
 }

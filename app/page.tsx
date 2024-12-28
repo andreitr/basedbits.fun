@@ -13,6 +13,7 @@ import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
 export default async function Home() {
   const checkins = await getRecentCheckIns();
 
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">

@@ -22,6 +22,6 @@ export const fetchTokenPrice = async () => {
 
         return amountOut.toString();
     } catch (error) {
-        console.error("Error fetching price:", error);
+        console.error("Error fetching quote:", error);
     }
 };
