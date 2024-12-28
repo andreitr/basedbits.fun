@@ -1,3 +1,5 @@
+"use server";
+
 import {Contract} from "ethers";
 import {BurnedBitsABI} from "@/app/lib/abi/BurnedBits.abi";
 import {baseProvider} from "@/app/lib/Web3Configs";

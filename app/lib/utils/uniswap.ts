@@ -1,3 +1,5 @@
+"use server";
+
 import {Contract, parseUnits} from "ethers";
 import {baseProvider} from "@/app/lib/Web3Configs";
 import {QuoterV2Abi} from "@/app/lib/abi/QuoterV2.abi";
