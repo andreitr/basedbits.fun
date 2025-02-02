@@ -3,7 +3,7 @@
 import { useGetSocialRewardsRoundEntry } from "@/app/lib/hooks/useGetSocialRewardsRoundEntry";
 import { SocialRewardsRoundEntry } from "@/app/lib/types/types";
 import Link from "next/link";
-import { AddressToEns } from "@/app/lib/components/client/AddressToEns";
+import { ENSName } from "@/app/lib/components/client/ENSName";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { BBitsSocialRewardsAbi } from "@/app/lib/abi/BBitsSocialRewards.abi";
 import { useEffect } from "react";
@@ -60,7 +60,7 @@ export const SocialRoundEntry = ({ roundId, entryId, reward }: Props) => {
       <div className="flex flex-col">
         <div className="text-[#677467] text-xs  uppercase">by</div>
         <Link href={`/users/${entry.user}`}>
-          <AddressToEns address={entry.user} />
+          <ENSName address={entry.user} />
         </Link>
       </div>
 

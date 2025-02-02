@@ -8,7 +8,7 @@ interface Props {
   address: `0x${string}`;
 }
 
-export const AddressToEns = ({ address }: Props) => {
+export const ENSName = ({ address }: Props) => {
   const { data: ensName, isSuccess } = useEnsName({
     chainId: mainnet.id,
     address,

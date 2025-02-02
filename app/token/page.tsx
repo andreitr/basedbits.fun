@@ -7,7 +7,7 @@ import Link from "next/link";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { TokenSwap } from "@/app/token/components/TokenSwap";
 import { TokenPrice } from "@/app/lib/components/TokenPrice";
-import {fetchTokenPrice} from "@/app/lib/utils/uniswap";
+import { fetchTokenPrice } from "@/app/lib/utils/uniswap";
 
 export default async function Page() {
   const tokens = await getTokenTotalSupply();
