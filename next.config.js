@@ -25,6 +25,15 @@ module.exports = {
                     },
                 ],
             },
+            {
+                source: '/here',
+                headers: [
+                    {
+                        key: "cache-control",
+                        value: "public, immutable, no-transform, max-age=600",
+                    },
+                ],
+            },
         ]
     },
 }
