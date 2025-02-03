@@ -9,6 +9,8 @@ import { revalidatePath } from "next/cache";
 import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import Link from "next/link";
 import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
+import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
+import { UserList } from "@/app/here/components/UserList";
 
 export default async function Home() {
   const checkins = await getRecentCheckIns();
@@ -74,10 +76,16 @@ export default async function Home() {
           <div>
             The daily BBITS allocation is evenly distributed among all active,
             checked-in wallets. Being active in this community literally pays!{" "}
-            <Link href="/token" className="underline">
-              Learn more
-            </Link>{" "}
-            about the BBITS token.
+            <span className={"font-semibold"}>
+              {" "}
+              {checkins.length} Based Bits
+            </span>{" "}
+            users are here!
+          </div>
+          <div className="mt-4">
+            <ClientWrapper>
+              <UserList users={checkins} />
+            </ClientWrapper>
           </div>
         </div>
       </div>
