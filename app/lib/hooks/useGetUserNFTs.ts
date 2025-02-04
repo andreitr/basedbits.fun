@@ -2,6 +2,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { type AlchemyUserResponse } from "@/app/lib/types/alchemy";
 import { baseNFTUrl } from "@/app/lib/Web3Configs";
 
+const CACHE_TIME = 1000 * 60 * 10; // 10 minutes
+
 interface Props {
   address: string | undefined;
   contract: string;
@@ -20,5 +22,6 @@ export const useGetUserNFTs = ({ address, contract, pageKey, size }: Props) => {
     },
     placeholderData: keepPreviousData,
     enabled: !!address,
+    staleTime: CACHE_TIME,
   });
 };
