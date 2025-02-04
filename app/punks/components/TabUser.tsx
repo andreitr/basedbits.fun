@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { useAccount } from "wagmi";
-import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { useShuffleTraits } from "@/app/lib/hooks/useShuffleTraits";
 import toast from "react-hot-toast";
@@ -27,7 +27,7 @@ export const TabUser = ({ contract }: Props) => {
     isError,
   } = useShuffleTraits();
 
-  const { data, isPlaceholderData, isLoading } = useGetUserNFTs({
+  const { data, isPlaceholderData, isLoading } = useGetOwnerNFTs({
     address: address,
     contract: contract,
     pageKey: pageKey,

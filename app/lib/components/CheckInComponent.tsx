@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { MyStreak } from "@/app/lib/components/MyStreak";
 import { useAccount } from "wagmi";
-import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ interface Props {
 
 export const CheckInComponent = ({ checkins }: Props) => {
   const { address, isConnected } = useAccount();
-  const { data: userNFTs } = useGetUserNFTs({
+  const { data: userNFTs } = useGetOwnerNFTs({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
     address,
     size: 1,

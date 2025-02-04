@@ -10,9 +10,7 @@ interface Props {
 }
 
 export const UserInfo = ({ checkin, address }: Props) => {
-  const title = `${checkin.streak}-DAY STREAK 🔥 ${checkin.count} total check-in${checkin.count === 1 ? "" : "s"}`;
-  // const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens. Mint discount: ${streakToDiscount(lastCheckin.streak)}% OFF`;
-  // const balance = await getUserTokenBalance(address as `0x${string}`);
+  const title = `${checkin.streak}-day streak 🔥 ${checkin.count} check-in${checkin.count === 1 ? "" : "s"}`;
 
   return (
     <div>
@@ -27,7 +25,6 @@ export const UserInfo = ({ checkin, address }: Props) => {
           <div className="text-[#363E36] uppercase">{title}</div>
         </div>
       </div>
-      {/*<div className="mb-8 mt-2">{description}</div>*/}
     </div>
   );
 };

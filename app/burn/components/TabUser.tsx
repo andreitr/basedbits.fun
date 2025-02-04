@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { useAccount } from "wagmi";
-import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export const TabUser = ({ contract }: Props) => {
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
   const { isConnected, address } = useAccount();
 
-  const { data, isPlaceholderData, isLoading } = useGetUserNFTs({
+  const { data, isPlaceholderData, isLoading } = useGetOwnerNFTs({
     address: address,
     contract: contract,
     pageKey: pageKey,

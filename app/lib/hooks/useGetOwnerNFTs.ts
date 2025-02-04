@@ -11,7 +11,12 @@ interface Props {
   size?: number;
 }
 
-export const useGetUserNFTs = ({ address, contract, pageKey, size }: Props) => {
+export const useGetOwnerNFTs = ({
+  address,
+  contract,
+  pageKey,
+  size,
+}: Props) => {
   return useQuery({
     queryKey: ["getNFTsForOwner", contract, address, pageKey],
     queryFn: async (): Promise<AlchemyUserResponse> => {

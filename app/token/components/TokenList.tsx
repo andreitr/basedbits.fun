@@ -1,7 +1,7 @@
 "use client";
 
 import { DepositNFT } from "@/app/token/components/DepositNFT";
-import { useGetUserNFTs } from "@/app/lib/hooks/useGetUserNFTs";
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { RedeemNFT } from "@/app/token/components/RedeemNFT";
@@ -15,7 +15,7 @@ interface Props {
 export const TokenList = ({ action, address, label }: Props) => {
   const [pageKey, setPageKey] = useState<string | undefined>(undefined);
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
-  const { data, isLoading, isPlaceholderData } = useGetUserNFTs({
+  const { data, isLoading, isPlaceholderData } = useGetOwnerNFTs({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
     address: address,
     pageKey: pageKey,

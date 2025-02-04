@@ -16,6 +16,9 @@ export type AlchemyCollection = {
 export type AlchemyToken = {
   tokenId: string;
   name: string;
+  contract: {
+    address: string;
+  };
   image: {
     pngUrl: string;
     thumbnailUrl: string;
