@@ -5,7 +5,7 @@ import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { isAddress } from "viem";
 import { baseProvider } from "@/app/lib/Web3Configs";
 
-const DAILY_AIRDROP_AMOUNT = 2000;
+const DAILY_AIRDROP_AMOUNT = 200;
 
 export async function GET(req: NextRequest) {
   try {
