@@ -1,16 +1,15 @@
 "use server";
 
-import { Header } from "@/app/lib/components/client/Header";
-import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
-import { Footer } from "@/app/lib/components/Footer";
-import { FeatureCard } from "@/app/lib/components/FeatureCard";
-import { MintComponent } from "@/app/burn/components/MintComponent";
-import { revalidatePath } from "next/cache";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
-import Link from "next/link";
-import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
-import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
-import { UserList } from "@/app/here/components/UserList";
+import {Header} from "@/app/lib/components/client/Header";
+import {CheckInComponent} from "@/app/lib/components/CheckInComponent";
+import {Footer} from "@/app/lib/components/Footer";
+import {FeatureCard} from "@/app/lib/components/FeatureCard";
+import {MintComponent} from "@/app/burn/components/MintComponent";
+import {revalidatePath} from "next/cache";
+import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
+import {AirdropTimer} from "@/app/lib/components/client/AirdropTimer";
+import {ClientWrapper} from "@/app/lib/components/ClientWrapper";
+import {UserList} from "@/app/here/components/UserList";
 
 export default async function Home() {
   const checkins = await getRecentCheckIns();
