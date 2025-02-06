@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { MyStreak } from "@/app/lib/components/MyStreak";
 import { useAccount } from "wagmi";
-import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
+import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
 
 interface Props {
   checkins: string[];
@@ -13,12 +13,11 @@ interface Props {
 
 export const CheckInComponent = ({ checkins }: Props) => {
   const { address, isConnected } = useAccount();
-  const { data: userNFTs } = useGetOwnerNFTs({
-    contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS!,
+
+  const { data: isEligible } = useCheckinEligibility({
     address,
-    size: 1,
+    enabled: isConnected,
   });
-  const holder = Boolean(userNFTs && userNFTs.totalCount > 0);
 
   return (
     <div className="flex flex-col justify-between mt-8 gap-20 sm:flex-row">
@@ -42,10 +41,10 @@ export const CheckInComponent = ({ checkins }: Props) => {
         </div>
 
         <div className="mt-6 md:mt-10">
-          {holder ? (
+          {isEligible ? (
             <>
               {isConnected ? (
-                <MyStreak address={address!} holder={holder} />
+                <MyStreak address={address!} />
               ) : (
                 <ConnectAction action={"to check-in"} />
               )}
@@ -61,8 +60,8 @@ export const CheckInComponent = ({ checkins }: Props) => {
                   target="_blank"
                 >
                   OpenSea
-                </Link>{" "}
-                or try your luck in the raffle!
+                </Link>
+                {"."}
               </div>
             </div>
           )}

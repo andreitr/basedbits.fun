@@ -4,7 +4,7 @@ import { CheckInButton } from "@/app/lib/components/CheckInButton";
 import { DateTime } from "luxon";
 import BigNumber from "bignumber.js";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetUserCheckIn } from "@/app/lib/hooks/useGetUserCheckIn";
+import { useCheckin } from "@/app/lib/hooks/useCheckin";
 import { CheckInGoodies } from "@/app/lib/components/CheckInGoodies";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -12,24 +12,33 @@ import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import Link from "next/link";
 import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
 import XIcon from "@/app/lib/icons/x.svg";
+import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinAbility";
 
 interface Props {
-  holder: boolean;
   address: string;
 }
 
-export const MyStreak = ({ address, holder }: Props) => {
+export const MyStreak = ({ address }: Props) => {
   const queryClient = useQueryClient();
 
   const {
     data: checkIn,
     queryKey,
     isFetched: isCheckInFetched,
-  } = useGetUserCheckIn({ address, enabled: holder });
+  } = useCheckin({ address, enabled: true });
+
+  const { data: canChecking } = useCheckinEligibility({
+    address,
+    enabled: true,
+  });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey });
-    socialDisplay();
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey }),
+      queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }),
+    ]).finally(() => {
+      socialDisplay();
+    });
   };
 
   const socialDisplay = () => {
@@ -92,10 +101,8 @@ export const MyStreak = ({ address, holder }: Props) => {
 
     const lastCheckinTime = DateTime.fromMillis(Number(lastCheckin) * 1000);
     const nextCheckinTime = lastCheckinTime.plus({ days: 1 });
-    const now = DateTime.now();
-    const hoursSinceLastCheckIn = now.diff(lastCheckinTime, "hours").hours;
 
-    if (hoursSinceLastCheckIn > 24) {
+    if (canChecking) {
       return (
         <div className="flex flex-col gap-2 text-[#677467]">
           <CheckInGoodies streak={streak} address={address} />
