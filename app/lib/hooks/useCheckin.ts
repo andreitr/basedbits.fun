@@ -6,7 +6,7 @@ interface Props {
   enabled: boolean;
 }
 
-export const useGetUserCheckIn = ({ address, enabled }: Props) => {
+export const useCheckin = ({ address, enabled }: Props) => {
   return useReadContract({
     abi: BBitsCheckInABI,
     address: process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS as `0x${string}`,

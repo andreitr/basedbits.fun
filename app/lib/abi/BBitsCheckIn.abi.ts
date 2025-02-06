@@ -3,7 +3,7 @@ export const BBitsCheckInABI = [
     inputs: [
       {
         internalType: "address",
-        name: "_collection",
+        name: "_initialCollection",
         type: "address",
       },
       { internalType: "address", name: "_initialOwner", type: "address" },
@@ -42,8 +42,46 @@ export const BBitsCheckInABI = [
         name: "timestamp",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "streak",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint16",
+        name: "totalCheckIns",
+        type: "uint16",
+      },
     ],
     name: "CheckIn",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "collectionAddress",
+        type: "address",
+      },
+    ],
+    name: "CollectionAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "collectionAddress",
+        type: "address",
+      },
+    ],
+    name: "CollectionRemoved",
     type: "event",
   },
   {
@@ -92,6 +130,15 @@ export const BBitsCheckInABI = [
     type: "event",
   },
   {
+    inputs: [
+      { internalType: "address", name: "newCollection", type: "address" },
+    ],
+    name: "addCollection",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "address", name: "_address", type: "address" }],
     name: "ban",
     outputs: [],
@@ -135,9 +182,16 @@ export const BBitsCheckInABI = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "collections",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
-    name: "collection",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "getCollections",
+    outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
     stateMutability: "view",
     type: "function",
   },
@@ -146,6 +200,27 @@ export const BBitsCheckInABI = [
     name: "isBanned",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "_address", type: "address" }],
+    name: "isEligible",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "oldContract", type: "address" },
+      {
+        internalType: "address[]",
+        name: "users",
+        type: "address[]",
+      },
+    ],
+    name: "migrateOldCheckIns",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -167,6 +242,15 @@ export const BBitsCheckInABI = [
     name: "paused",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "existingCollection", type: "address" },
+    ],
+    name: "removeCollection",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -193,15 +277,6 @@ export const BBitsCheckInABI = [
   {
     inputs: [],
     name: "unpause",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "newCollection", type: "address" },
-    ],
-    name: "updateCollection",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -1,5 +1,4 @@
-const INDEX_SUPPLY_PATH =
-  "https://api.indexsupply.net/query?query=select+%0A++sender%2C+%0A++timestamp%0Afrom+checkin%0Awhere+address+%3D+0xE842537260634175891925F058498F9099C102eB%0Aorder+by+2+desc+limit+100%3B&event_signatures=CheckIn%28address+indexed+sender%2C+uint256+timestamp%29&event_signatures=&chain=8453&network=mainnet&variables=%7B%7D";
+const INDEX_SUPPLY_PATH = `https://api.indexsupply.net/query?query=select+%0A++sender%2C+%0A++timestamp%0Afrom+checkin%0Awhere+address+%3D+${process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS}%0Aorder+by+2+desc+limit+100%3B&event_signatures=CheckIn%28address+indexed+sender%2C+uint256+timestamp%29&event_signatures=&chain=8453&network=mainnet&variables=%7B%7D`;
 
 export const getRecentCheckIns = async () => {
   const json = await fetch(INDEX_SUPPLY_PATH, {
