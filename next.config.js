@@ -4,11 +4,6 @@ module.exports = {
         domains: ['ipfs.raribleuserdata.com', 'res.cloudinary.com'],
     },
 
-    experimental: {
-        useCache: true,
-    },
-
-
     headers: async () => {
 
         return [
