@@ -115,15 +115,6 @@ export const Footer = () => {
               @andreitr on x
             </Link>
           </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href="mailto:andrei.taraschuk@gmail.com"
-              target="_blank"
-            >
-              email andrei
-            </Link>
-          </div>
         </div>
 
         <div>
@@ -180,7 +171,7 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://basescan.org/address/0xe842537260634175891925f058498f9099c102eb"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS}`}
               target="_blank"
             >
               Check-in Contract

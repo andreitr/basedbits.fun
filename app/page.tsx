@@ -1,18 +1,21 @@
 "use server";
 
-import {Header} from "@/app/lib/components/client/Header";
-import {CheckInComponent} from "@/app/lib/components/CheckInComponent";
-import {Footer} from "@/app/lib/components/Footer";
-import {FeatureCard} from "@/app/lib/components/FeatureCard";
-import {MintComponent} from "@/app/burn/components/MintComponent";
-import {revalidatePath} from "next/cache";
-import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
-import {AirdropTimer} from "@/app/lib/components/client/AirdropTimer";
-import {ClientWrapper} from "@/app/lib/components/ClientWrapper";
-import {UserList} from "@/app/here/components/UserList";
+import { Header } from "@/app/lib/components/client/Header";
+import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
+import { Footer } from "@/app/lib/components/Footer";
+import { FeatureCard } from "@/app/lib/components/FeatureCard";
+import { MintComponent } from "@/app/burn/components/MintComponent";
+import { revalidatePath } from "next/cache";
+import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
+import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
+import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
+import { UserList } from "@/app/lib/components/client/UserList";
+import { getRecentCheckInsLegacy } from "@/app/lib/api/getRecentCheckInsLegacy";
 
 export default async function Home() {
-  const checkins = await getRecentCheckIns();
+  const new_checkins = await getRecentCheckIns();
+  const legacy_checkins = await getRecentCheckInsLegacy();
+  const checkins = [...new_checkins, ...legacy_checkins];
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
