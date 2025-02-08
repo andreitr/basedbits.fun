@@ -4,7 +4,6 @@ import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { isAddress } from "viem";
 import { baseProvider } from "@/app/lib/Web3Configs";
-import { getRecentCheckInsLegacy } from "@/app/lib/api/getRecentCheckInsLegacy";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
@@ -17,9 +16,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const new_checkins = await getRecentCheckIns();
-    const legacy_checkins = await getRecentCheckInsLegacy();
-    const checkins = [...new_checkins, ...legacy_checkins];
+    const checkins = await getRecentCheckIns();
 
     if (checkins.length === 0) {
       return new Response("No recent check-ins found", { status: 200 });

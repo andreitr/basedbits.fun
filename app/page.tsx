@@ -10,12 +10,9 @@ import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
-import { getRecentCheckInsLegacy } from "@/app/lib/api/getRecentCheckInsLegacy";
 
 export default async function Home() {
-  const new_checkins = await getRecentCheckIns();
-  const legacy_checkins = await getRecentCheckInsLegacy();
-  const checkins = [...new_checkins, ...legacy_checkins];
+  const checkins = await getRecentCheckIns();
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
     const discount = `Mint discount ${streakToDiscount(lastCheckin.streak)}% OFF`;
 
-    const preview = token.image.pngUrl;
+    const preview = token.image.originalUrl;
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),

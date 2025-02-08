@@ -2,12 +2,10 @@ import { Header } from "@/app/lib/components/client/Header";
 import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
-import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
-import { formatUnits } from "ethers";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { formatUnits, getAddress } from "ethers";
 import { NFTList } from "@/app/users/[address]/components/NFTList";
 import { Footer } from "@/app/lib/components/Footer";
-import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
-import { Avatar } from "connectkit";
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 
 interface Props {
@@ -17,14 +15,13 @@ interface Props {
 }
 
 export async function generateMetadata({ params: { address } }: Props) {
-  const lastCheckin = await getUserCheckIns(address);
-  const contractNFTs = await getNFTsForAddress({ address, size: 1 });
-  const balance = await getUserTokenBalance(address as `0x${string}`);
+  const checksumedAddress = getAddress(address);
+  const lastCheckin = await getUserCheckIns(checksumedAddress);
 
   const title = `${lastCheckin.streak}-DAY STREAK 🔥`;
-  const description = `This wallet holds ${contractNFTs.totalCount} Based Bits and ${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS tokens`;
+  const description = `Check-in ${lastCheckin.count} times into Based Bits!`;
 
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/user?address=${address}`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/user?address=${checksumedAddress}`;
 
   return {
     title: title,
@@ -34,7 +31,7 @@ export async function generateMetadata({ params: { address } }: Props) {
       ["fc:frame:image"]: ogPreviewPath,
       ["fc:frame:button:1"]: `View Profile`,
       ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${address}`,
+      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${checksumedAddress}`,
 
       // ["fc:frame:button:2"]: `Your Stats`,
       // ["fc:frame:button:2:action"]: "post",
@@ -57,14 +54,12 @@ export async function generateMetadata({ params: { address } }: Props) {
     twitter: {
       card: "summary_large_image",
       title: title,
-      description,
+      description: description,
     },
   };
 }
 
 export default async function Page({ params: { address } }: Props) {
-  const lastCheckin = await getUserCheckIns(address);
-
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
@@ -74,8 +69,8 @@ export default async function Page({ params: { address } }: Props) {
       </div>
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="flex flex-col gap-8 container max-w-screen-lg mb-10">
-          <UserInfo checkin={lastCheckin} address={address} />
-          <NFTList address={address as `0x${string}`} />
+          <UserInfo address={getAddress(address)} />
+          <NFTList address={getAddress(address) as `0x${string}`} />
         </div>
       </div>
 
