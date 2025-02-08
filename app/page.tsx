@@ -47,7 +47,7 @@ export default async function Home() {
               link="/race"
             />
             <FeatureCard
-              title="Swap tokens"
+              title="BBITS Token"
               description="NFTs → BBITS"
               image="/images/icon.png"
               link="/token"

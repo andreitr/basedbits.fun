@@ -60,9 +60,7 @@ export const CheckInComponent = ({ checkins }: Props) => {
 
         <div className="mt-6 md:mt-10">
           {!isConnected && <ConnectAction action={"to check-in"} />}
-
           {isConnected && isEligible === true && <MyStreak />}
-
           {isConnected && isEligible === false && (
             <div className="flex flex-col text-[#677467]">
               <div>
