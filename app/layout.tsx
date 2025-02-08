@@ -3,6 +3,7 @@ import { Web3Provider } from "@/app/lib/Web3Provider";
 import { headers } from "next/headers";
 import { Toaster } from "react-hot-toast";
 import "./global.css";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: "Based Bits",
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-mono">
         <Toaster />
+        <SpeedInsights />
         <Web3Provider>{children}</Web3Provider>
       </body>
     </html>
