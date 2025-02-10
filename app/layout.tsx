@@ -3,7 +3,7 @@ import { Web3Provider } from "@/app/lib/Web3Provider";
 import { headers } from "next/headers";
 import { Toaster } from "react-hot-toast";
 import "./global.css";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Based Bits",

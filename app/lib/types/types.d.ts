@@ -44,7 +44,7 @@ export type Raffle = {
 };
 
 export type CheckIn = {
-  lastCheckin: BigNumber;
+  lastCheckin: number;
   streak: number;
   count: number;
 };

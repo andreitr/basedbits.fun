@@ -1,12 +1,9 @@
 import { Header } from "@/app/lib/components/client/Header";
-import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
-import { getUserCheckIns } from "@/app/lib/api/getUserCheckIns";
-import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
-import { humanizeNumber } from "@/app/lib/utils/numberUtils";
-import { formatUnits, getAddress } from "ethers";
+import { getAddress } from "ethers";
 import { NFTList } from "@/app/users/[address]/components/NFTList";
 import { Footer } from "@/app/lib/components/Footer";
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
+import { getCheckin } from "@/app/lib/api/getCheckin";
 
 interface Props {
   params: {
@@ -15,13 +12,13 @@ interface Props {
 }
 
 export async function generateMetadata({ params: { address } }: Props) {
-  const checksumedAddress = getAddress(address);
-  const lastCheckin = await getUserCheckIns(checksumedAddress);
+  const csAddress = getAddress(address);
+  const lastCheckin = await getCheckin(getAddress(address));
 
   const title = `${lastCheckin.streak}-DAY STREAK 🔥`;
   const description = `Check-in ${lastCheckin.count} times into Based Bits!`;
 
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/user?address=${checksumedAddress}`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/user?address=${csAddress}`;
 
   return {
     title: title,
@@ -31,16 +28,7 @@ export async function generateMetadata({ params: { address } }: Props) {
       ["fc:frame:image"]: ogPreviewPath,
       ["fc:frame:button:1"]: `View Profile`,
       ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${checksumedAddress}`,
-
-      // ["fc:frame:button:2"]: `Your Stats`,
-      // ["fc:frame:button:2:action"]: "post",
-      // ["fc:frame:button:2:post_url]: `Your Stats`,
-      // ["fc:frame:button:2:post_url"]: `${process.env.NEXT_PUBLIC_URL}/api/checkin`,
-
-      // ["fc:frame:button:2"]: `Check-In`,
-      // ["fc:frame:button:2:action"]: "tx",
-      // ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/checkin`,
+      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${csAddress}`,
     },
     openGraph: {
       images: [
@@ -60,6 +48,8 @@ export async function generateMetadata({ params: { address } }: Props) {
 }
 
 export default async function Page({ params: { address } }: Props) {
+  const lastCheckin = await getCheckin(getAddress(address));
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
@@ -69,7 +59,7 @@ export default async function Page({ params: { address } }: Props) {
       </div>
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="flex flex-col gap-8 container max-w-screen-lg mb-10">
-          <UserInfo address={getAddress(address)} />
+          <UserInfo checkin={lastCheckin} address={getAddress(address)} />
           <NFTList address={getAddress(address) as `0x${string}`} />
         </div>
       </div>

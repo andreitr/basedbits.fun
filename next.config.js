@@ -1,7 +1,7 @@
 module.exports = {
 
     images: {
-        domains: ['ipfs.raribleuserdata.com', 'res.cloudinary.com'],
+        domains: ['ipfs.raribleuserdata.com', 'res.cloudinary.com', 'cloudflare-eth.com'],
     },
 
     headers: async () => {

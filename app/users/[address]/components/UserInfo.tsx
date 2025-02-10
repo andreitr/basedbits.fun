@@ -3,21 +3,15 @@
 import { CheckIn } from "@/app/lib/types/types";
 import { Avatar } from "connectkit";
 import { ENSName } from "@/app/lib/components/client/ENSName";
-import { useCheckin } from "@/app/lib/hooks/useCheckin";
-import BigNumber from "bignumber.js";
 
 interface Props {
   address: string;
+  checkin: CheckIn;
 }
 
-export const UserInfo = ({ address }: Props) => {
-  const { data: checkIn } = useCheckin({ address, enabled: true });
-  let title = `0-day streak 🔥 0 check-ins`;
-
-  if (checkIn) {
-    let [, streak, count] = checkIn as [BigNumber, number, number];
-    title = `${streak}-day streak 🔥 ${count} check-in${count === 1 ? "" : "s"}`;
-  }
+export const UserInfo = ({ address, checkin }: Props) => {
+  const { streak, count } = checkin;
+  const title = `${streak}-day streak 🔥 ${count} check-in${count === 1 ? "" : "s"}`;
 
   return (
     <div>
