@@ -8,23 +8,7 @@ export const Footer = () => {
       <div className="text-5xl text-[#363E36] mb-4">Based Bits</div>
       <div className="text-[#677467]">
         Based Bits is a community centered around building experimental and fun
-        NFT use cases. Join us! Grab a Based Bit NFT on{" "}
-        <Link
-          className="hover:underline text-sm"
-          href="https://opensea.io/collection/based-bits"
-          target="_blank"
-        >
-          OpenSea
-        </Link>{" "}
-        or{" "}
-        <Link
-          className="hover:underline text-sm"
-          href="https://rarible.com/BasedBits/items"
-          target="_blank"
-        >
-          Rarible
-        </Link>{" "}
-        and start checking in.
+        NFT use cases. Join us! Grab a Based Bit NFT and start checking in.
       </div>
 
       <div className="flex sm:flex-row gap-8 flex-col justify-between mt-16 text-[#677467]">

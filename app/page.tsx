@@ -12,7 +12,8 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
 
 export default async function Home() {
-  const checkins = await getRecentCheckIns();
+  const hrs = 48;
+  const checkins = await getRecentCheckIns(hrs);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -74,13 +75,11 @@ export default async function Home() {
           </div>
           <div>
             The daily BBITS allocation is evenly distributed among all active,
-            checked-in wallets. Being active in this community literally pays!{" "}
-            <span className={"font-semibold"}>
-              {" "}
-              {checkins.length} Based Bits
-            </span>{" "}
-            users are here!
+            checked-in wallets.
+            <span className={"font-semibold"}> {checkins.length}</span> users{" "}
+            checked in within the last {hrs}hrs.
           </div>
+          <div></div>
           <div className="mt-4">
             <ClientWrapper>
               <UserList users={checkins} />
