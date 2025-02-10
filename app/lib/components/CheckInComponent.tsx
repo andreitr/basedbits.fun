@@ -7,11 +7,7 @@ import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
 import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
 
-interface Props {
-  checkins: string[];
-}
-
-export const CheckInComponent = ({ checkins }: Props) => {
+export const CheckInComponent = () => {
   const { address, isConnected } = useAccount();
   const { data: isEligible } = useCheckinEligibility({
     address,

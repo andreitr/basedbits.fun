@@ -32,10 +32,11 @@ export const MyStreak = () => {
     Promise.all([
       // Server
       revalidateTags([`checkIns-${address}`]), // User checkin data
-      revalidateTags(["checkins"]), // List of all recent checkins
+      revalidateTags(["checkins"]), // Indexed checkins
       // Client
       queryClient.invalidateQueries({ queryKey: ["checkIns", address] }), //User checkin data in hook
       queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }), // Can checkin hook
+      queryClient.invalidateQueries({ queryKey: ["checkins", address] }), // Indexed checkins hook
     ]).finally(() => {
       show();
     });

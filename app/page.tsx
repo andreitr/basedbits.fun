@@ -6,21 +6,17 @@ import { Footer } from "@/app/lib/components/Footer";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { MintComponent } from "@/app/burn/components/MintComponent";
 import { revalidatePath } from "next/cache";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
 
 export default async function Home() {
-  const hrs = 48;
-  const checkins = await getRecentCheckIns(hrs);
-
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <CheckInComponent checkins={checkins} />
+          <CheckInComponent />
         </div>
       </div>
 
@@ -76,13 +72,11 @@ export default async function Home() {
           <div>
             The daily BBITS allocation is evenly distributed among all active,
             checked-in wallets.
-            <span className={"font-semibold"}> {checkins.length}</span> users{" "}
-            checked in within the last {hrs}hrs.
           </div>
           <div></div>
           <div className="mt-4">
             <ClientWrapper>
-              <UserList users={checkins} />
+              <UserList />
             </ClientWrapper>
           </div>
         </div>
