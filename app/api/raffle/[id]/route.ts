@@ -5,7 +5,10 @@ import { encodeFunctionData } from "viem";
 import { BBitsRaffleABI } from "@/app/lib/abi/BBitsRaffle.abi";
 import { getRaffleEligibility } from "@/app/lib/api/getRaffleEligibility";
 
-export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+export async function POST(
+  req: Request,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   const data = await req.json();
   const message = await getFrameMessage(data, { fetchHubContext: false });

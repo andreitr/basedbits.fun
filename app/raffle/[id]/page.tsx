@@ -19,9 +19,7 @@ interface Props {
 export async function generateMetadata(props: Props) {
   const params = await props.params;
 
-  const {
-    id
-  } = params;
+  const { id } = params;
 
   const raffle = await getRaffleById(id);
   const token: AlchemyToken = await getNFTMetadata({
@@ -72,9 +70,7 @@ export async function generateMetadata(props: Props) {
 export default async function Page(props: Props) {
   const params = await props.params;
 
-  const {
-    id
-  } = params;
+  const { id } = params;
 
   const raffle = await getRaffleById(id);
 

@@ -4,7 +4,10 @@ import { encodeFunctionData } from "viem";
 import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
 import { getPunksUserMintPrice } from "@/app/lib/api/getPunksUserMintPrice";
 
-export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+export async function POST(
+  req: Request,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   const data = await req.json();
   const message = await getFrameMessage(data, { fetchHubContext: false });

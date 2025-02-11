@@ -19,9 +19,7 @@ interface Props {
 export async function generateMetadata(props: Props) {
   const params = await props.params;
 
-  const {
-    id
-  } = params;
+  const { id } = params;
 
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
@@ -72,9 +70,7 @@ export async function generateMetadata(props: Props) {
 export default async function Page(props: Props) {
   const params = await props.params;
 
-  const {
-    id
-  } = params;
+  const { id } = params;
 
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
