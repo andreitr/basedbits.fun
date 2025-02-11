@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/bots/cache",
-      "schedule": "*/10 * * * *"
+      "schedule": "*/5 * * * *"
     }
   ]
 }

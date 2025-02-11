@@ -8,7 +8,7 @@ interface Props {
 
 const CAN_CHECKIN_KEY = "canCheckIn";
 
-export const useCheckinEligibility = ({ address, enabled }: Props) => {
+export const useCheckinAbility = ({ address, enabled }: Props) => {
   return useQuery({
     queryKey: [CAN_CHECKIN_KEY, address],
     queryFn: async () => await getCheckinAbility(address as string),

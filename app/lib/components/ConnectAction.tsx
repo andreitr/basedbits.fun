@@ -3,5 +3,5 @@ interface ConnectActionProps {
 }
 
 export const ConnectAction = ({ action }: ConnectActionProps) => {
-  return <div className="text-[#677467] mt-4">connect wallet → {action}</div>;
+  return <div className="text-[#677467]">connect wallet → {action}</div>;
 };

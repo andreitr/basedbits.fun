@@ -5,14 +5,9 @@ import { MyStreak } from "@/app/lib/components/MyStreak";
 import { useAccount } from "wagmi";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
-import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
 
 export const CheckInComponent = () => {
-  const { address, isConnected } = useAccount();
-  const { data: isEligible } = useCheckinEligibility({
-    address,
-    enabled: isConnected,
-  });
+  const { isConnected, address } = useAccount();
 
   return (
     <div className="flex flex-col justify-between mt-8 gap-20 sm:flex-row">
@@ -54,23 +49,11 @@ export const CheckInComponent = () => {
           NFT.
         </div>
 
-        <div className="mt-6 md:mt-10">
-          {!isConnected && <ConnectAction action={"to check-in"} />}
-          {isConnected && isEligible === true && <MyStreak />}
-          {isConnected && isEligible === false && (
-            <div className="flex flex-col text-[#677467]">
-              <div>
-                You do not hold any eligible NFTs to check in.{" "}
-                <Link
-                  className="underline text-[#0000FF]"
-                  href="/burn"
-                  target="_blank"
-                >
-                  Mint one now
-                </Link>
-                .
-              </div>
-            </div>
+        <div className="mt-6 md:mt-10 h-[200px]">
+          {isConnected && address ? (
+            <MyStreak address={address} />
+          ) : (
+            <ConnectAction action={"to check-in"} />
           )}
         </div>
       </div>
