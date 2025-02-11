@@ -19,6 +19,12 @@ export const fetchNFTsForOwner = async ({
 }: Props) => {
   const response = await fetch(
     `${baseNFTUrl}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}&orderBy=null`,
+    {
+      next: {
+        revalidate: 43_200, // 12 hours
+        tags: [`getNFTsForOwner-${address}`],
+      },
+    },
   );
   return (await response.json()) as AlchemyUserResponse;
 };
