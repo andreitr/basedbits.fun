@@ -1,11 +1,8 @@
 import { MintButton } from "@/app/burn/components/MintButton";
 import Image from "next/image";
 
-interface Props {
-  revalidate: () => void;
-}
 
-export const MintComponent = ({ revalidate }: Props) => {
+export const MintComponent = () => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black bg-opacity-90 text-white rounded-lg p-6">
       <div>
@@ -15,7 +12,7 @@ export const MintComponent = ({ revalidate }: Props) => {
           the BBITS token. The max supply of 8,000 will never be reached.
         </div>
         <div className="mt-10 mb-5">
-          <MintButton revalidate={revalidate} />
+          <MintButton />
         </div>
         <div className="text-sm text-yellow-500">
           The mint price is derived from the exchange rate of BBITS to ETH on{" "}
