@@ -13,9 +13,9 @@ import {
 import {Suspense} from "react";
 
 interface Props {
-    params: {
+    params: Promise<{
         address: string;
-    };
+    }>;
 }
 
 export async function generateMetadata({params}: Props) {
@@ -55,7 +55,13 @@ export async function generateMetadata({params}: Props) {
     };
 }
 
-export default async function Page({params: {address}}: Props) {
+export default async function Page(props: Props) {
+    const params = await props.params;
+
+    const {
+        address
+    } = params;
+
     const csAddress = getAddress(address);
     const lastCheckin = await getCheckin(csAddress);
     const userNFTs = await getNFTsForOwner({

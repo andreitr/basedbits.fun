@@ -5,10 +5,8 @@ import { getEmojiUserMintPrice } from "@/app/lib/api/getEmojiUserMintPrice";
 import { getEmojiMintPrice } from "@/app/lib/api/getEmojiMintPrice";
 import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const data = await req.json();
   const message = await getFrameMessage(data, { fetchHubContext: false });
 

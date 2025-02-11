@@ -11,12 +11,14 @@ export const metadata: Metadata = {
     "8000 Based Bits causing byte-sized mischief on the BASE chain, a nerdy collection by andreitr.eth and gretagremplin.eth",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const cookie = headers().get("cookie");
+export default async function RootLayout(
+  {
+    children,
+  }: Readonly<{
+    children: React.ReactNode;
+  }>
+) {
+  const cookie = (await headers()).get("cookie");
 
   return (
     <html lang="en">

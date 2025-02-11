@@ -4,10 +4,8 @@ import { encodeFunctionData } from "viem";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
 import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const data = await req.json();
   const message = await getFrameMessage(data, { fetchHubContext: false });
 

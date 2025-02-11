@@ -11,12 +11,18 @@ import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { ALCHEMY_API_PATH } from "@/app/lib/constants";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: number;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params: { id } }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const raffle = await getRaffleById(id);
   const token: AlchemyToken = await getNFTMetadata({
     contract: process.env.NEXT_PUBLIC_BB_NFT_ADDRESS as string,
@@ -63,7 +69,13 @@ export async function generateMetadata({ params: { id } }: Props) {
   };
 }
 
-export default async function Page({ params: { id } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const raffle = await getRaffleById(id);
 
   return (

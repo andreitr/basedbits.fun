@@ -11,12 +11,18 @@ import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: number;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params: { id } }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
     abi: Bit98ABI,
@@ -63,7 +69,13 @@ export async function generateMetadata({ params: { id } }: Props) {
   };
 }
 
-export default async function Page({ params: { id } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const mint = await getBit98MintById({ id });
   const meta = await getNFTRawMetadata({
     abi: Bit98ABI,

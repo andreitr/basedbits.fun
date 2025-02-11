@@ -10,12 +10,18 @@ import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 import { EmojiBitsABI } from "@/app/lib/abi/EmojiBits.abi";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: number;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params: { id } }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const mint = await getEmojiMintById({ id });
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,
@@ -62,7 +68,13 @@ export async function generateMetadata({ params: { id } }: Props) {
   };
 }
 
-export default async function Page({ params: { id } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const mint = await getEmojiMintById({ id });
   const meta = await getNFTRawMetadata({
     abi: EmojiBitsABI,

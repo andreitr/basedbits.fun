@@ -5,10 +5,8 @@ import { getBit98UserMintPrice } from "@/app/lib/api/getBit98UserMintPrice";
 import { getBit98MintPrice } from "@/app/lib/api/getBit98MintPrice";
 import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const data = await req.json();
   const message = await getFrameMessage(data, { fetchHubContext: false });
 

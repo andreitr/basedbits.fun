@@ -1,21 +1,15 @@
 module.exports = {
 
     images: {
-        // remotePatterns: ['ipfs.raribleuserdata.com', 'res.cloudinary.com', 'cloudflare-eth.com'],
+        remotePatterns: [
+            {protocol: 'https', hostname: 'ipfs.raribleuserdata.com'},
+            {protocol: 'https', hostname: 'res.cloudinary.com'},
+        ],
     },
 
     headers: async () => {
 
         return [
-            {
-                source: '/raffle/:id',
-                headers: [
-                    {
-                        key: "cache-control",
-                        value: "public, immutable, no-transform, max-age=600",
-                    },
-                ],
-            },
             // {
             //     source: '/users/[:address]',
             //     headers: [
