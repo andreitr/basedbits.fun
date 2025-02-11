@@ -68,7 +68,7 @@ export async function GET(request: Request) {
           <div tw="flex flex-row justify-between">
             {preview && (
               <img
-                tw="my-[75px] ml-[45px]"
+                tw="my-[75px] ml-[45px] rounded-[25px]"
                 src={preview}
                 width={500}
                 height={500}
