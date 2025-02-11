@@ -7,7 +7,10 @@ import {
 import { Footer } from "@/app/lib/components/Footer";
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 import { getCheckin } from "@/app/lib/api/getCheckin";
-import { fetchNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import {
+  fetchNFTsForOwner,
+  getNFTsForOwner,
+} from "@/app/lib/api/getNFTsForOwner";
 import { Suspense } from "react";
 
 interface Props {
@@ -55,7 +58,7 @@ export async function generateMetadata({ params: { address } }: Props) {
 export default async function Page({ params: { address } }: Props) {
   const csAddress = getAddress(address);
   const lastCheckin = await getCheckin(csAddress);
-  const userNFTs = await fetchNFTsForOwner({
+  const userNFTs = await getNFTsForOwner({
     address: csAddress,
     contract: [
       process.env.NEXT_PUBLIC_BB_NFT_ADDRESS,

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     revalidateTag("checkins");
-    const checkins = await getRecentCheckIns(24);
+    const checkins = await getRecentCheckIns(86400); // 24 hours
 
     if (checkins.length === 0) {
       return new Response("No recent check-ins found", { status: 200 });

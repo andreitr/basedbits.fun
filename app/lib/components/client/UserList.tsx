@@ -6,7 +6,7 @@ import { getAddress } from "ethers";
 import { useCheckins } from "@/app/lib/hooks/useCheckins";
 
 export const UserList = () => {
-  const { data: users, isError } = useCheckins({ hours: 24, enabled: true });
+  const { data: users, isError } = useCheckins({ enabled: true });
 
   if (isError) {
     return null;

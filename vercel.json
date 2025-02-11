@@ -7,6 +7,10 @@
     {
       "path": "/api/bots/airdrop",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/bots/cache",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 
 interface Props {
-  hours?: number;
+  seconds?: number;
   enabled: boolean;
 }
 
-export const useCheckins = ({ hours, enabled }: Props) => {
+export const useCheckins = ({ seconds, enabled }: Props) => {
   return useQuery({
     queryKey: ["checkins"],
-    queryFn: async () => getRecentCheckIns(hours),
+    queryFn: async () => getRecentCheckIns(seconds),
     enabled: enabled,
     staleTime: 60000, // 5 minute
   });
