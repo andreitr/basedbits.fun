@@ -1,9 +1,14 @@
 import { Header } from "@/app/lib/components/client/Header";
 import { getAddress } from "ethers";
-import { NFTList } from "@/app/users/[address]/components/NFTList";
+import {
+  NFTList,
+  NFTListSkeleton,
+} from "@/app/users/[address]/components/NFTList";
 import { Footer } from "@/app/lib/components/Footer";
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 import { getCheckin } from "@/app/lib/api/getCheckin";
+import { fetchNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { Suspense } from "react";
 
 interface Props {
   params: {
@@ -48,7 +53,16 @@ export async function generateMetadata({ params: { address } }: Props) {
 }
 
 export default async function Page({ params: { address } }: Props) {
-  const lastCheckin = await getCheckin(getAddress(address));
+  const csAddress = getAddress(address);
+  const lastCheckin = await getCheckin(csAddress);
+  const userNFTs = await fetchNFTsForOwner({
+    address: csAddress,
+    contract: [
+      process.env.NEXT_PUBLIC_BB_NFT_ADDRESS,
+      process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
+      process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+    ].toString(),
+  });
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -60,7 +74,9 @@ export default async function Page({ params: { address } }: Props) {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="flex flex-col gap-8 container max-w-screen-lg mb-10">
           <UserInfo checkin={lastCheckin} address={getAddress(address)} />
-          <NFTList address={getAddress(address) as `0x${string}`} />
+          <Suspense fallback={<NFTListSkeleton />}>
+            <NFTList list={userNFTs.ownedNfts} />
+          </Suspense>
         </div>
       </div>
 

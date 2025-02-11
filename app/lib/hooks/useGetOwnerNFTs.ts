@@ -1,8 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { type AlchemyUserResponse } from "@/app/lib/types/alchemy";
-import { baseNFTUrl } from "@/app/lib/Web3Configs";
-
-const CACHE_TIME = 1000 * 60 * 10; // 10 minutes
+import { fetchNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 
 interface Props {
   address: string | undefined;
@@ -19,14 +16,10 @@ export const useGetOwnerNFTs = ({
 }: Props) => {
   return useQuery({
     queryKey: ["getNFTsForOwner", contract, address, pageKey],
-    queryFn: async (): Promise<AlchemyUserResponse> => {
-      const response = await fetch(
-        `${baseNFTUrl}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}`,
-      );
-      return await response.json();
-    },
+    queryFn: async () =>
+      fetchNFTsForOwner({ address, contract, pageKey, size }),
     placeholderData: keepPreviousData,
     enabled: !!address,
-    staleTime: CACHE_TIME,
+    staleTime: 3600000, // 1 hour
   });
 };
