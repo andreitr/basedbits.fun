@@ -4,6 +4,7 @@ import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 import { getCheckin } from "@/app/lib/api/getCheckin";
+import { fetchNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 
 export const runtime = "edge";
 
@@ -19,7 +20,15 @@ export async function GET(request: Request) {
     }
 
     const lastCheckin = await getCheckin(address);
-    const contractNFTs = await getNFTsForAddress({ address, size: 1 });
+    const contractNFTs = await fetchNFTsForOwner({
+      address: address,
+      contract: [
+        process.env.NEXT_PUBLIC_BB_NFT_ADDRESS,
+        process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
+        process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+      ].toString(),
+      size: 1,
+    });
     const token = contractNFTs.ownedNfts[0];
     const balance = await getUserTokenBalance(address as `0x${string}`);
 

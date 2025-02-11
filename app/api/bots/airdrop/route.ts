@@ -6,7 +6,7 @@ import { isAddress } from "viem";
 import { baseProvider } from "@/app/lib/Web3Configs";
 import { revalidateTag } from "next/cache";
 
-const DAILY_AIRDROP_AMOUNT = 600;
+const DAILY_AIRDROP_AMOUNT = 200;
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     revalidateTag("checkins");
-    const checkins = await getRecentCheckIns(48);
+    const checkins = await getRecentCheckIns(24);
 
     if (checkins.length === 0) {
       return new Response("No recent check-ins found", { status: 200 });
