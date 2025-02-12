@@ -49,7 +49,7 @@ export const CheckInComponent = () => {
           NFT.
         </div>
 
-        <div className="mt-6 md:mt-10 h-[200px]">
+        <div className="mt-6 md:mt-10 md:h-[200px]">
           {isConnected && address ? (
             <MyStreak address={address} />
           ) : (

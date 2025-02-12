@@ -1,13 +1,9 @@
 import { ImageResponse } from "next/og";
-import { getNFTsForAddress } from "@/app/lib/api/getNFTsForAddress";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 import { getCheckin } from "@/app/lib/api/getCheckin";
-import {
-  fetchNFTsForOwner,
-  getNFTsForOwner,
-} from "@/app/lib/api/getNFTsForOwner";
+import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 
 export const runtime = "edge";
 
@@ -32,7 +28,7 @@ export async function GET(request: Request) {
       ].toString(),
       size: 1,
     });
-    const token = contractNFTs.ownedNfts[0];
+    const token = contractNFTs?.ownedNfts[0];
     const balance = await getUserTokenBalance(address as `0x${string}`);
 
     const streak = `${lastCheckin.streak}-DAY STREAK 🔥`;
@@ -41,7 +37,9 @@ export async function GET(request: Request) {
     const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
     const discount = `Mint discount ${streakToDiscount(lastCheckin.streak)}% OFF`;
 
-    const preview = token.image.originalUrl;
+    const preview = token
+      ? token.image.originalUrl
+      : `${process.env.NEXT_PUBLIC_URL}/images/burnedbit.svg`;
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),

@@ -28,7 +28,7 @@ export const MyStreak = ({ address }: Props) => {
   const { show } = useSocialDisplay({
     message: "I just checked-in into Based Bits!",
     title: "You are checked-in! Spread the word 🙏",
-    url: "https://basedbits.fun",
+    url: `https://basedbits.fun/users/${address}`,
   });
 
   const invalidate = () => {
