@@ -1,5 +1,14 @@
 import BigNumber from "bignumber.js";
 
+export type BaseRace = {
+  entries: number;
+  startedAt: number;
+  endedAt: number;
+  currentLap: number;
+  prize: string;
+  winner: string;
+};
+
 export type RawMetadata = {
   id: number;
   image: string;
