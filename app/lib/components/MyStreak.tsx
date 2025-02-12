@@ -1,15 +1,15 @@
 "use client";
 
-import {CheckInButton} from "@/app/lib/components/CheckInButton";
-import {DateTime} from "luxon";
-import {useQueryClient} from "@tanstack/react-query";
-import {useCheckin} from "@/app/lib/hooks/useCheckin";
-import {CheckInGoodies} from "@/app/lib/components/CheckInGoodies";
-import {useCheckinAbility} from "@/app/lib/hooks/useCheckinAbility";
-import {useSocialDisplay} from "@/app/lib/hooks/useSocialDisplay";
-import {useRevalidateTags} from "@/app/lib/hooks/useRevalidateTags";
-import {useCheckinEligibility} from "@/app/lib/hooks/useCheckinEligibility";
-import {useHydrateUser} from "@/app/lib/hooks/useHydrateUser";
+import { CheckInButton } from "@/app/lib/components/CheckInButton";
+import { DateTime } from "luxon";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCheckin } from "@/app/lib/hooks/useCheckin";
+import { CheckInGoodies } from "@/app/lib/components/CheckInGoodies";
+import { useCheckinAbility } from "@/app/lib/hooks/useCheckinAbility";
+import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
+import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
+import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
+import { useHydrateUser } from "@/app/lib/hooks/useHydrateUser";
 
 interface Props {
   address: string;
