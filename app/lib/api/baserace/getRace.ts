@@ -14,6 +14,8 @@ export const fetchRace = async (race: number) => {
     args: [race],
   });
 
+  console.log(result);
+
   return {
     entries: Number(result[0].toString()),
     startedAt: Number(result[1].toString()),
@@ -34,6 +36,6 @@ export const getRace = (race: number) =>
     [`${BASE_RACE_QKS.RACE}-${race}`],
     {
       tags: [`${BASE_RACE_QKS.RACE}-${race}`],
-      revalidate: 86_400, //24 hours
+      // revalidate: 86_400, //24 hours
     },
   )();
