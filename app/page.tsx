@@ -5,7 +5,6 @@ import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { MintComponent } from "@/app/burn/components/MintComponent";
-import { revalidatePath } from "next/cache";
 import { AirdropTimer } from "@/app/lib/components/client/AirdropTimer";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
