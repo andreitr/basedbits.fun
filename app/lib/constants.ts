@@ -4,6 +4,7 @@ export enum ALCHEMY_API_PATH {
 
 export enum BASE_RACE_QKS {
   COUNT = "raceCount",
-  RACE = `getRace`,
+  RACE = "getRace",
+  LAP = "getLap",
   MINT_FEE = "mintFee",
 }

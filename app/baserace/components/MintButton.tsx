@@ -41,8 +41,6 @@ export const MintButton = ({ mintPrice }: Props) => {
     });
   };
 
-  console.log(isSuccess);
-
   useEffect(() => {
     if (isSuccess) {
       revalidateTags([`getNFTsForOwner-${address}`]).finally(() => {
@@ -55,7 +53,7 @@ export const MintButton = ({ mintPrice }: Props) => {
   }, [isSuccess, isError, error]);
 
   const label = mintPrice
-    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
+    ? `Mint Rance Entry ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
     : `Calculating your mint price...`;
 
   if (!isConnected) {
@@ -64,7 +62,7 @@ export const MintButton = ({ mintPrice }: Props) => {
 
   return (
     <button
-      className="bg-red-500 hover:bg-red-800 text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
+      className="bg-blue-500 hover:bg-blue-800 text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
       onClick={() => {
         mint();
       }}

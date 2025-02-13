@@ -3,20 +3,28 @@
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 
-export const AirdropTimer = () => {
+interface Props {
+  hour: number;
+}
+
+export const CountDownTimer = ({ hour }: Props) => {
   const [remainingTimeString, setRemainingTimeString] = useState("00:00:00");
 
   useEffect(() => {
     const calculateRemainingTime = () => {
       const now = DateTime.utc();
-      const next7UTC =
-        now.hour >= 7
+      const nextTargetHour =
+        now.hour >= hour
           ? now
               .plus({ days: 1 })
-              .set({ hour: 7, minute: 0, second: 0, millisecond: 0 })
-          : now.set({ hour: 7, minute: 0, second: 0, millisecond: 0 });
+              .set({ hour: hour, minute: 0, second: 0, millisecond: 0 })
+          : now.set({ hour: hour, minute: 0, second: 0, millisecond: 0 });
 
-      const remainingTime = next7UTC.diff(now, ["hours", "minutes", "seconds"]);
+      const remainingTime = nextTargetHour.diff(now, [
+        "hours",
+        "minutes",
+        "seconds",
+      ]);
       setRemainingTimeString(remainingTime.toFormat("hh:mm:ss"));
     };
 
@@ -25,7 +33,7 @@ export const AirdropTimer = () => {
     calculateRemainingTime();
 
     return () => clearInterval(interval);
-  }, []);
+  }, [hour]);
 
   return remainingTimeString;
 };

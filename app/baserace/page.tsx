@@ -9,7 +9,7 @@ import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
-  const title = `BaseRace - ${race}`;
+  const title = `BaseRace #${race}`;
   const description = "Run, Boost, Win!";
 
   return {
@@ -19,8 +19,9 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  // const currentRace = await getRaceCount();
+  const currentRace = await getRaceCount();
   // const nextRace = await getRace(1);
+  // Hard code
   const price = await getMintFee();
 
   return (
@@ -29,7 +30,7 @@ export default async function Page() {
         <div className="container max-w-screen-lg">
           <Header />
           <ClientWrapper>
-            <MintComponent id={1} price={price} />
+            <MintComponent id={currentRace} price={price} />
           </ClientWrapper>
         </div>
       </div>

@@ -9,6 +9,12 @@ export type BaseRace = {
   winner: string;
 };
 
+export type BaseRaceLap = {
+  startedAt: number;
+  endedAt: number;
+  positions: string[];
+};
+
 export type RawMetadata = {
   id: number;
   image: string;
