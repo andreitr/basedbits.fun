@@ -1,12 +1,12 @@
-import { NextRequest } from "next/server";
-import { Contract, parseUnits, Wallet } from "ethers";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
-import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { isAddress } from "viem";
-import { baseProvider } from "@/app/lib/Web3Configs";
-import { revalidateTag } from "next/cache";
+import {NextRequest} from "next/server";
+import {Contract, parseUnits, Wallet} from "ethers";
+import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
+import {BBitsTokenAbi} from "@/app/lib/abi/BBitsToken.abi";
+import {isAddress} from "viem";
+import {baseProvider} from "@/app/lib/Web3Configs";
+import {revalidateTag} from "next/cache";
 
-const DAILY_AIRDROP_AMOUNT = 200;
+const DAILY_AIRDROP_AMOUNT = 400;
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     revalidateTag("checkins");
-    const checkins = await getRecentCheckIns(86400); // 24 hours
+    const checkins = await getRecentCheckIns(172800); // 48 hours
 
     if (checkins.length === 0) {
       return new Response("No recent check-ins found", { status: 200 });
