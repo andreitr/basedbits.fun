@@ -13,6 +13,7 @@ import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
 import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
+import { Button } from "@/app/lib/components/Button";
 
 export const MintButton = () => {
   const [refresh, setRefresh] = useState(false);
@@ -72,22 +73,22 @@ export const MintButton = () => {
 
   const label = mintPrice
     ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
-    : `Calculating your mint price...`;
+    : `Calculating mint price...`;
 
   if (!isConnected) {
     return <ConnectAction action={"to mint"} />;
   }
 
   return (
-    <button
-      className="bg-red-500 hover:bg-red-800 text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
+    <Button
+      className={"bg-red-500 hover:bg-red-800"}
+      loading={false}
       onClick={() => {
         mint();
         setRefresh(false);
       }}
-      disabled={isFetching}
     >
-      {isFetching ? "Minting..." : label}
-    </button>
+      {label}
+    </Button>
   );
 };

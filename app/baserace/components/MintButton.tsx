@@ -12,6 +12,7 @@ import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
 import toast from "react-hot-toast";
+import { Button } from "@/app/lib/components/Button";
 
 interface Props {
   mintPrice: string;
@@ -53,7 +54,7 @@ export const MintButton = ({ mintPrice }: Props) => {
   }, [isSuccess, isError, error]);
 
   const label = mintPrice
-    ? `Mint Rance Entry ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
+    ? `Enter Race ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
     : `Calculating your mint price...`;
 
   if (!isConnected) {
@@ -61,14 +62,12 @@ export const MintButton = ({ mintPrice }: Props) => {
   }
 
   return (
-    <button
-      className="bg-blue-500 hover:bg-blue-800 text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
-      onClick={() => {
-        mint();
-      }}
-      disabled={isFetching}
+    <Button
+      onClick={() => mint()}
+      loading={isFetching}
+      className="flex w-[320px] items-center justify-center"
     >
-      {isFetching ? "Minting..." : label}
-    </button>
+      {label}
+    </Button>
   );
 };
