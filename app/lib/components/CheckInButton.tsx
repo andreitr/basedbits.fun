@@ -31,7 +31,7 @@ export const CheckInButton = ({ onSuccess }: CheckInButtonProps) => {
   };
 
   return (
-    <Button onClick={checkIn} loading={isFetching}>
+    <Button onClick={checkIn} loading={isFetching} className="w-full sm:w-full">
       {isFetching ? "Checking In..." : "Check In"}
     </Button>
   );

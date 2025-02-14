@@ -5,7 +5,6 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { formatUnits } from "ethers";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,11 +13,14 @@ import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { Button } from "@/app/lib/components/Button";
+import { useModal } from "connectkit";
 
 export const MintButton = () => {
+  const { setOpen } = useModal();
   const [refresh, setRefresh] = useState(false);
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
+
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
   });
@@ -76,19 +78,25 @@ export const MintButton = () => {
     : `Calculating mint price...`;
 
   if (!isConnected) {
-    return <ConnectAction action={"to mint"} />;
+    return (
+      <Button
+        className={"bg-black/20 hover:bg-black text-white/70 font-regular"}
+        onClick={() => setOpen(true)}
+      >
+        Connect to Mint
+      </Button>
+    );
   }
 
   return (
     <Button
       className={"bg-red-500 hover:bg-red-800"}
-      loading={false}
       onClick={() => {
         mint();
         setRefresh(false);
       }}
     >
-      {label}
+      {isFetching ? "Minting..." : label}
     </Button>
   );
 };
