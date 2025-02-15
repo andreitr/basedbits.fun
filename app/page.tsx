@@ -8,6 +8,9 @@ import { MintComponent } from "@/app/burn/components/MintComponent";
 import { CountDownTimer } from "@/app/lib/components/client/CountDownTimer";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
+import NumberFlow from "@number-flow/react";
+
+
 
 export default async function Home() {
   return (
