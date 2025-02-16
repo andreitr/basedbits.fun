@@ -8,7 +8,7 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { fetchLap } from "@/app/lib/api/baserace/getLap";
-import { DateTime } from "luxon";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
@@ -34,20 +34,12 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          Current {currentRace}
-          Entries {race.entries}
-          <div>
-            <div className="font-semibold">Lap {race.currentLap}</div>
-            <div>
-              Started{" "}
-              {DateTime.fromSeconds(lap.startedAt).toLocaleString(
-                DateTime.DATETIME_MED,
-              )}
-            </div>
-            <div>Ended {lap.endedAt}</div>
-            <div>Positions {lap.positions}</div>
-          </div>
+          Current Race {currentRace} Current Lap {race.currentLap}
           <ClientWrapper>
+            <CountDownToDate
+              targetDate={lap.startedAt + 3000}
+              message={"Lap Ended"}
+            />
             <MintComponent id={currentRace} price={price} />
           </ClientWrapper>
         </div>

@@ -5,12 +5,10 @@ import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { MintComponent } from "@/app/burn/components/MintComponent";
-import { CountDownTimer } from "@/app/lib/components/client/CountDownTimer";
+import { CountDown } from "@/app/lib/components/client/CountDown";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
 import NumberFlow from "@number-flow/react";
-
-
 
 export default async function Home() {
   return (
@@ -63,8 +61,9 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
-          <div className="text-5xl font-semibold text-[#080908] mb-4">
-            Airdrop in <CountDownTimer hour={7} />
+          <div className="text-5xl font-semibold text-[#080908] mb-4 flex flex-row gap-6 items-center">
+            <div>Airdrop in</div>
+            <CountDown hour={7} />
           </div>
           <div>
             The daily allocation of 200 BBITS is evenly distributed among all

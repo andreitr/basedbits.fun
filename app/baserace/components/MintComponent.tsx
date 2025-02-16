@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { MintButton } from "@/app/baserace/components/MintButton";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
-import { CountDownTimer } from "@/app/lib/components/client/CountDownTimer";
 import { formatUnits } from "ethers";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 
 interface Props {
   id: number;
@@ -23,7 +23,10 @@ export const MintComponent = ({ id, price }: Props) => {
       <div className="flex flex-col justify-between">
         <div>
           <div className="text-5xl mb-2 text-[#82BCFC]">
-            Race in <CountDownTimer hour={19} />
+            Race in{" "}
+            {race && (
+              <CountDownToDate targetDate={race.startedAt} message={"Count "} />
+            )}
           </div>
           <div>
             Survive 6 laps, use boosts strategically, and compete to win the{" "}

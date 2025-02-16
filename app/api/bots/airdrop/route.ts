@@ -1,10 +1,10 @@
-import {NextRequest} from "next/server";
-import {Contract, parseUnits, Wallet} from "ethers";
-import {getRecentCheckIns} from "@/app/lib/api/getRecentCheckIns";
-import {BBitsTokenAbi} from "@/app/lib/abi/BBitsToken.abi";
-import {isAddress} from "viem";
-import {baseProvider} from "@/app/lib/Web3Configs";
-import {revalidateTag} from "next/cache";
+import { NextRequest } from "next/server";
+import { Contract, parseUnits, Wallet } from "ethers";
+import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
+import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
+import { isAddress } from "viem";
+import { baseProvider } from "@/app/lib/Web3Configs";
+import { revalidateTag } from "next/cache";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
