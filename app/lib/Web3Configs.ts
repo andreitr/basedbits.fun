@@ -3,6 +3,7 @@ import { base, baseSepolia, mainnet } from "wagmi/chains";
 import { JsonRpcProvider } from "ethers";
 
 export const baseRpcUrl = `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`;
+export const baseTestnetRpcUrl = `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`;
 export const baseNFTUrl = `https://base-mainnet.g.alchemy.com/nft/v3/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`;
 
 export const baseProvider = new JsonRpcProvider(baseRpcUrl);
@@ -27,8 +28,6 @@ export const ethConfig = createConfig({
 export const baseSepoliaConfig = createConfig({
   chains: [baseSepolia],
   transports: {
-    [baseSepolia.id]: http(
-      `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-    ),
+    [baseSepolia.id]: http(baseTestnetRpcUrl),
   },
 });

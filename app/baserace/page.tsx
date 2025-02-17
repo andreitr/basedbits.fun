@@ -3,12 +3,16 @@
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { MintComponent } from "@/app/baserace/components/MintComponent";
-import { getRaceCount } from "@/app/lib/api/baserace/getRaceCount";
+import {
+  fetchRaceCount,
+  getRaceCount,
+} from "@/app/lib/api/baserace/getRaceCount";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { fetchLap } from "@/app/lib/api/baserace/getLap";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { UserList } from "@/app/lib/components/client/UserList";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
@@ -22,7 +26,7 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const currentRace = await getRaceCount();
+  const currentRace = await fetchRaceCount();
 
   // Hard code
   const price = await getMintFee();
@@ -34,14 +38,13 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          Current Race {currentRace} Current Lap {race.currentLap}
-          <ClientWrapper>
-            <CountDownToDate
-              targetDate={lap.startedAt + 3000}
-              message={"Lap Ended"}
-            />
-            <MintComponent id={currentRace} price={price} />
-          </ClientWrapper>
+          <MintComponent id={currentRace} price={price} />
+
+          <div className="flex flex-row my-8 gap-8">
+            <UserList />
+
+            <div className="border border-black w-[600px]">Sidebar</div>
+          </div>
         </div>
       </div>
 

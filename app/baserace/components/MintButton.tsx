@@ -26,7 +26,7 @@ export const MintButton = ({ mintPrice }: Props) => {
   });
 
   const { show } = useSocialDisplay({
-    message: "XXX",
+    message: "Entered Race!",
     title: "XXX",
     url: "https://basedbits.fun/baserace",
   });
@@ -53,9 +53,7 @@ export const MintButton = ({ mintPrice }: Props) => {
     }
   }, [isSuccess, isError, error]);
 
-  const label = mintPrice
-    ? `Enter Race ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
-    : `Calculating your mint price...`;
+  const label = `Enter Race ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`;
 
   if (!isConnected) {
     return <ConnectAction action={"to mint"} />;

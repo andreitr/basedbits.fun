@@ -4,6 +4,7 @@ import { Avatar } from "connectkit";
 import Link from "next/link";
 import { getAddress } from "ethers";
 import { useCheckins } from "@/app/lib/hooks/useCheckins";
+import { Tooltip } from "@/app/lib/components/client/Tooltip";
 
 export const UserList = () => {
   const { data: users, isError } = useCheckins({ enabled: true });

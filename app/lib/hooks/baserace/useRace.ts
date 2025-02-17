@@ -12,6 +12,6 @@ export const useRace = ({ id, enabled }: Props) => {
     queryKey: [BASE_RACE_QKS.RACE, id],
     queryFn: async () => await fetchRace(id),
     enabled: enabled,
-    refetchInterval: 1000 * 10, // 10 seconds,
+    refetchInterval: 1000 * 5, // 10 seconds,
   });
 };
