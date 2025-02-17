@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
+    await contract.finishGame();
     await contract.startGame();
 
     return new Response("Game Started", {

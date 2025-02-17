@@ -7,6 +7,34 @@
     {
       "path": "/api/bots/airdrop",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "10 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "20 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "30 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "40 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/lap/start",
+      "schedule": "50 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/race/start",
+      "schedule": "0 20 * * *"
     }
   ]
 }
