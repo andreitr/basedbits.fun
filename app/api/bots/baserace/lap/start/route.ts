@@ -3,7 +3,7 @@ import {Contract, JsonRpcProvider, Wallet} from "ethers";
 import {baseTestnetRpcUrl} from "@/app/lib/Web3Configs";
 import {BaseRaceAbi} from "@/app/lib/abi/BaseRace.abi";
 import {DateTime} from "luxon";
-import {fetchRaceCount, getRaceCount} from "@/app/lib/api/baserace/getRaceCount";
+import {getRaceCount} from "@/app/lib/api/baserace/getRaceCount";
 import {revalidateTag} from "next/cache";
 import {BASE_RACE_QKS} from "@/app/lib/constants";
 import {fetchRace} from "@/app/lib/api/baserace/getRace";

@@ -35,6 +35,6 @@ export const getRace = (race: number) =>
     [`${BASE_RACE_QKS.RACE}-${race}`],
     {
       tags: [`${BASE_RACE_QKS.RACE}-${race}`],
-      // revalidate: 86_400, //24 hours
+      revalidate: 43_200, //12 hours
     },
   )();
