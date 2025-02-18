@@ -29,7 +29,12 @@ export async function GET(req: NextRequest) {
         const currentRaceId = await getRaceCount();
         revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
 
-        await contract.finishGame();
+        try {
+            await contract.finishGame();
+        } catch (error) {
+            // Handle the initial game start
+            console.log("No game to finish");
+        }
         await contract.startGame();
 
         return new Response("Game Started", {
