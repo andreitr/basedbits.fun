@@ -46,19 +46,18 @@ export default async function Page() {
                         : `Registration for BaseRace #${currentRace + 1} opens soon!`
                     }
 
-                    {/*Racing*/}
-                    {isRacing &&
-                        <div className="grid grid-cols-4 my-8 gap-8 ">
-                            <div className="col-span-3">
-                                <Racers count={100} eliminated={25}/>
-                            </div>
 
-                            <div className="">
-                                <Racers count={7} eliminated={3}/>
-                                Boost
-                            </div>
+                    <div className="grid grid-cols-4 my-8 gap-8 ">
+                        <div className="col-span-3">
+                            <Racers count={100} eliminated={25}/>
                         </div>
-                    }
+
+                        <div className="">
+                            <Racers count={7} eliminated={3}/>
+                            Boost
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
