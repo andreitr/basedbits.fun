@@ -4,16 +4,16 @@ import Image from "next/image";
 import { MintButton } from "@/app/baserace/components/MintButton";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { formatUnits } from "ethers";
-import { CountDown } from "@/app/lib/components/client/CountDown";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 
 interface Props {
   id: number;
   price: string;
+  mintTime: number;
 }
 
-export const MintComponent = ({ id, price }: Props) => {
+export const MintComponent = ({ id, price, mintTime }: Props) => {
   const { data: race } = useRace({ id, enabled: true });
-
   const prize = race ? `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ` : "";
 
   return (
@@ -22,7 +22,12 @@ export const MintComponent = ({ id, price }: Props) => {
         <div>
           <div className="flex flex-row items-center text-5xl mb-2 text-[#82BCFC] gap-6">
             <div>Race #{id}</div>
-            {race && <CountDown hour={7} />}
+            {race && (
+              <CountDownToDate
+                message={"Mint ended"}
+                targetDate={1739895161 + mintTime}
+              />
+            )}
           </div>
           <div>
             {race?.entries} racers competing for {prize}

@@ -1,11 +1,11 @@
 import BigNumber from "bignumber.js";
 
 export type BaseRace = {
-  entries: number;
-  startedAt: number;
-  endedAt: number;
   currentLap: number;
+  endedAt: number;
+  entries: number;
   prize: string;
+  startedAt: number;
   winner: string;
 };
 
