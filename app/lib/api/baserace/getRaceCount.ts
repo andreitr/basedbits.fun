@@ -21,5 +21,5 @@ const cachedFetchRaceCount = cache(fetchRaceCount);
 export const getRaceCount = () =>
   unstable_cache(() => cachedFetchRaceCount(), [BASE_RACE_QKS.COUNT], {
     tags: [BASE_RACE_QKS.COUNT],
-    revalidate: 86_400, //24 hours
+    revalidate: 43_200, //12 hours
   })();
