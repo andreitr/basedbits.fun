@@ -17,8 +17,9 @@ interface Props {
 export const RacePending = ({ mintTime, price, race }: Props) => {
   const { address, isConnected } = useAccount();
 
-  const prize = race ? `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ` : "";
+  const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const isMinting = race.startedAt + mintTime > DateTime.now().toSeconds();
+
   const { data: userEntries } = useEntriesForAddress({
     address,
     id: race.id,

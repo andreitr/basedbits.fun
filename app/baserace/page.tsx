@@ -45,7 +45,9 @@ export default async function Page() {
         <div className="container max-w-screen-lg">
           <Header />
 
-          <RacePending race={race} mintTime={mintTime} price={price} />
+          {isPendingRace && (
+            <RacePending race={race} mintTime={mintTime} price={price} />
+          )}
 
           {isLiveRace && <RaceLive race={race} />}
 
