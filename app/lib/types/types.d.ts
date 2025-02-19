@@ -4,6 +4,7 @@ export type BaseRace = {
   currentLap: number;
   endedAt: number;
   entries: number;
+  id: number;
   prize: string;
   startedAt: number;
   winner: string;

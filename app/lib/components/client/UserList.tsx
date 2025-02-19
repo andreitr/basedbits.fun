@@ -14,7 +14,7 @@ export const UserList = () => {
   }
 
   if (!users) {
-    return <UserListSekeleton />;
+    return <UserListSkeleton />;
   }
 
   return (
@@ -34,7 +34,7 @@ export const UserList = () => {
   );
 };
 
-const UserListSekeleton = () => {
+const UserListSkeleton = () => {
   const placeholders = Array.from({ length: 38 });
   return (
     <div className="flex flex-wrap gap-2">

@@ -15,6 +15,7 @@ export const fetchRace = async (race: number) => {
   });
 
   return {
+    id: race,
     entries: Number(result[0].toString()),
     startedAt: Number(result[1].toString()),
     endedAt: Number(result[2].toString()),

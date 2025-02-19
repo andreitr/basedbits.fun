@@ -54,11 +54,15 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
 
   const handleClick = () => {
     const svg = d3.select(svgRef.current);
-    const arc = d3.arc().innerRadius(16).outerRadius(20).startAngle(0);
+    const arc = d3
+      .arc<d3.DefaultArcObject>()
+      .innerRadius(16)
+      .outerRadius(20)
+      .startAngle(0);
 
     const progress = svg
       .append("path")
-      .datum({ endAngle: 0 })
+      .datum({ innerRadius: 16, outerRadius: 20, startAngle: 0, endAngle: 0 })
       .attr("d", arc)
       .attr("fill", "black")
       .attr("transform", "translate(20, 20)");
@@ -66,11 +70,11 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
     progress
       .transition()
       .duration(1200)
-      .attrTween("d", (d: any) => {
+      .attrTween("d", (d) => {
         const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
-        return (t: any) => {
+        return (t) => {
           d.endAngle = interpolate(t);
-          return arc(d);
+          return arc(d) || "";
         };
       });
 
