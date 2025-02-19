@@ -21,7 +21,7 @@ interface Props {
 export const MintButton = ({ mintPrice }: Props) => {
   const { isConnected, address } = useAccount();
   const { data, writeContract, isError, error } = useWriteContract();
-  const { isFetching, isSuccess } = useWaitForTransactionReceipt({
+  const { isFetching, isSuccess, status } = useWaitForTransactionReceipt({
     hash: data,
   });
 

@@ -5,6 +5,8 @@ import { MintButton } from "@/app/baserace/components/MintButton";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { formatUnits } from "ethers";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { useAccount } from "wagmi";
+import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 
 interface Props {
   id: number;
@@ -14,7 +16,10 @@ interface Props {
 
 export const MintComponent = ({ id, price, mintTime }: Props) => {
   const { data: race } = useRace({ id, enabled: true });
+  const { address, isConnected } = useAccount();
+
   const prize = race ? `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ` : "";
+  const { data } = useEntriesForAddress({ address, id, enabled: isConnected });
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black bg-opacity-90 text-white rounded-lg p-6">
@@ -25,13 +30,14 @@ export const MintComponent = ({ id, price, mintTime }: Props) => {
             {race && (
               <CountDownToDate
                 message={"Mint ended"}
-                targetDate={1739895161 + mintTime}
+                targetDate={race.startedAt + mintTime}
               />
             )}
           </div>
           <div>
             {race?.entries} racers competing for {prize}
           </div>
+          <div>You minted {data?.length} entries.</div>
         </div>
         <MintButton mintPrice={price} />
       </div>

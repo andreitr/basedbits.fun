@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 interface Props {
@@ -43,7 +43,7 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
         .attr("stroke-width", "2")
         .attr("fill", "yellow");
 
-      const starSymbol = d3.symbol().type(d3.symbolStar).size(50);
+      const starSymbol = d3.symbol().type(d3.symbolStar).size(60);
       svg
         .append("path")
         .attr("transform", "translate(30, 35)")
@@ -65,7 +65,7 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
 
     progress
       .transition()
-      .duration(800)
+      .duration(1200)
       .attrTween("d", (d: any) => {
         const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
         return (t: any) => {
@@ -76,7 +76,7 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
 
     setTimeout(() => {
       onClick(idx);
-    }, 850);
+    }, 1200);
   };
 
   return (
