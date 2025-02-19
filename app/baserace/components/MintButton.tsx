@@ -49,7 +49,7 @@ export const MintButton = ({ mintPrice }: Props) => {
       });
     }
     if (isError) {
-      toast.error("Unabled to mint NFT");
+      toast.error("Unable to mint NFT");
     }
   }, [isSuccess, isError, error]);
 
