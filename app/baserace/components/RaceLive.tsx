@@ -9,6 +9,7 @@ import { DateTime } from "luxon";
 import { formatUnits } from "ethers";
 import { useAccount } from "wagmi";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
+import {RaceSkeleton} from "@/app/baserace/components/RaceSkeleton";
 
 interface Props {
   race: BaseRace;
@@ -33,14 +34,14 @@ export const RaceLive = ({ race }: Props) => {
     .set({ hour: 20, minute: 0 })
     .toFormat("h:mm a");
 
-  if (isLoading || !lap) return <div>Loading...</div>;
+  if (isLoading || !lap) return <RaceSkeleton />;
 
   return (
     <div>
       <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
         <div className="col-span-3 flex flex-col justify-between h-full">
           <div>
-            <div className="text-4xl mb-2">BaseRace #{race.id}</div>
+            <div className="text-4xl mb-2">BaseRace #{race.id} is LIVE</div>
             <div className="text-sm">
               A new race starts daily! Survive 6 laps and fight for the prize
               pool
