@@ -33,14 +33,16 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
     .toFormat("h:mm a");
 
   const [racers, setRacers] = useState<BaseRaceEntry[]>(
-    Array.from({ length: 35 }, (_, index) => ({
+    Array.from({ length: race.entries }, (_, index) => ({
       tokenId: index,
       index,
     })),
   );
 
-  const myEntries = [2, 4, 5, 6, 11, 18];
-  const newArray = racers.filter((racer) => myEntries.includes(racer.tokenId));
+  const myEntries = userEntries || [];
+  const newArray = racers.filter((racer) =>
+    myEntries.includes(racer.tokenId.toString()),
+  );
 
   const handleClick = (tokenId: number) => {
     setRacers((prevRacers) => {
