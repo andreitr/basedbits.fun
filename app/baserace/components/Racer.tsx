@@ -2,14 +2,13 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 interface Props {
-  idx: number;
   tokenId: number;
   eliminated: boolean;
   onClick: (idx: number) => void;
   popped: boolean; // Indicates if the racer was recently moved to the front
 }
 
-export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
+export const Racer = ({ tokenId, eliminated, onClick, popped }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
         .attr("d", starSymbol)
         .attr("fill", "blue");
     }
-  }, [eliminated]);
+  }, [eliminated, tokenId]);
 
   const handleClick = () => {
     const svg = d3.select(svgRef.current);
@@ -79,7 +78,7 @@ export const Racer = ({ idx, tokenId, eliminated, onClick, popped }: Props) => {
       });
 
     setTimeout(() => {
-      onClick(idx);
+      onClick(tokenId);
     }, 1200);
   };
 

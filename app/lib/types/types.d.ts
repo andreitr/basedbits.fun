@@ -10,6 +10,10 @@ export type BaseRace = {
   winner: string;
 };
 
+export type BaseRaceEntry = {
+  tokenId: number;
+};
+
 export type BaseRaceLap = {
   startedAt: number;
   endedAt: number;

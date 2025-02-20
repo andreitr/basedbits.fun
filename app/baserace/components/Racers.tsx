@@ -1,41 +1,40 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {Racer} from "@/app/baserace/components/Racer";
+import { useEffect, useState } from "react";
+import { Racer } from "@/app/baserace/components/Racer";
+import { BaseRaceEntry } from "@/app/lib/types/types";
 
 interface Props {
-    entries: number[];
-    eliminated: number;
-    onClick: (idx: number) => void;
+  entries: BaseRaceEntry[];
+  eliminated: number;
+  onClick: (idx: number) => void;
 }
 
-export const Racers = ({entries, onClick, eliminated}: Props) => {
+export const Racers = ({ entries, onClick, eliminated }: Props) => {
+  const [isAnimating, setIsAnimating] = useState(false);
 
-    const [isAnimating, setIsAnimating] = useState(false);
+  useEffect(() => {
+    if (isAnimating) {
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 500); // Match the duration of the CSS transition
+      return () => clearTimeout(timer);
+    }
+  }, [isAnimating]);
 
-    useEffect(() => {
-        if (isAnimating) {
-            const timer = setTimeout(() => {
-                setIsAnimating(false);
-            }, 500); // Match the duration of the CSS transition
-            return () => clearTimeout(timer);
-        }
-    }, [isAnimating]);
-
-    return (
-        <div>
-            <div className="flex flex-wrap">
-                {entries.map((index, i) => (
-                    <Racer
-                        key={index}
-                        tokenId={index}
-                        idx={i}
-                        popped={0 === i}
-                        eliminated={i > eliminated}
-                        onClick={onClick}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <div className="flex flex-wrap">
+        {entries.map((entry, i) => (
+          <Racer
+            key={i}
+            tokenId={entry.tokenId}
+            popped={0 === i}
+            eliminated={i > eliminated}
+            onClick={onClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };

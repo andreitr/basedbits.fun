@@ -9,7 +9,7 @@ import { DateTime } from "luxon";
 import { formatUnits } from "ethers";
 import { useAccount } from "wagmi";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
-import {RaceSkeleton} from "@/app/baserace/components/RaceSkeleton";
+import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 
 interface Props {
   race: BaseRace;
