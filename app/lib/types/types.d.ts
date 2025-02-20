@@ -12,6 +12,7 @@ export type BaseRace = {
 
 export type BaseRaceEntry = {
   tokenId: number;
+  index: number;
 };
 
 export type BaseRaceLap = {

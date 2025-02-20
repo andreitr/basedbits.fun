@@ -29,8 +29,7 @@ export const Racers = ({ entries, onClick, eliminated }: Props) => {
           <Racer
             key={i}
             tokenId={entry.tokenId}
-            popped={0 === i}
-            eliminated={i > eliminated}
+            eliminated={entry.index > eliminated}
             onClick={onClick}
           />
         ))}

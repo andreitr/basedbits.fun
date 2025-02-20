@@ -5,10 +5,9 @@ interface Props {
   tokenId: number;
   eliminated: boolean;
   onClick: (idx: number) => void;
-  popped: boolean; // Indicates if the racer was recently moved to the front
 }
 
-export const Racer = ({ tokenId, eliminated, onClick, popped }: Props) => {
+export const Racer = ({ tokenId, eliminated, onClick }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {

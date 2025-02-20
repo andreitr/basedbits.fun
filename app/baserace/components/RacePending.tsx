@@ -35,6 +35,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
   const [racers, setRacers] = useState<BaseRaceEntry[]>(
     Array.from({ length: 35 }, (_, index) => ({
       tokenId: index,
+      index,
     })),
   );
 
@@ -48,6 +49,9 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
       if (index > -1) {
         const [clickedItem] = newRacers.splice(index, 1);
         newRacers.unshift(clickedItem);
+        newRacers.forEach((racer, idx) => {
+          racer.index = idx;
+        });
       }
       return newRacers;
     });
@@ -95,18 +99,22 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
 
       <div>
         <div className="grid grid-cols-4 my-8 gap-8 ">
-          <div className="col-span-3">
+          <div className="col-span-3 flex flex-col gap-4">
+            <div className="text-xs uppercase">All Racers</div>
             <Racers
               onClick={handleClick}
               entries={racers}
               eliminated={eliminated}
             />
           </div>
-          <Racers
-            onClick={handleClick}
-            entries={newArray}
-            eliminated={eliminated}
-          />
+          <div className="flex flex-col gap-4">
+            <div className="text-xs uppercase">My Racers</div>
+            <Racers
+              onClick={handleClick}
+              entries={newArray}
+              eliminated={eliminated}
+            />
+          </div>
         </div>
       </div>
     </div>
