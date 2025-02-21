@@ -13,6 +13,7 @@ import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
 import toast from "react-hot-toast";
 import { Button } from "@/app/lib/components/Button";
+import { baseSepolia } from "wagmi/chains";
 
 interface Props {
   mintPrice: string;
@@ -21,8 +22,9 @@ interface Props {
 export const MintButton = ({ mintPrice }: Props) => {
   const { isConnected, address } = useAccount();
   const { data, writeContract, isError, error } = useWriteContract();
-  const { isFetching, isSuccess, status } = useWaitForTransactionReceipt({
+  const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
+    chainId: baseSepolia.id,
   });
 
   const { show } = useSocialDisplay({
@@ -35,6 +37,7 @@ export const MintButton = ({ mintPrice }: Props) => {
 
   const mint = () => {
     writeContract({
+      chainId: baseSepolia.id,
       abi: BaseRaceAbi,
       address: process.env.NEXT_PUBLIC_BASERACE_ADDRESS as `0x${string}`,
       functionName: "mint",

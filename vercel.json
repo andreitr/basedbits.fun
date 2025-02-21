@@ -9,7 +9,7 @@
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/bots/baserace/race/lap/start",
+      "path": "/api/bots/baserace/lap/start",
       "schedule": "0 19 * * *"
     },
     {

@@ -9,6 +9,7 @@ import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { DateTime } from "luxon";
 import { Racers } from "@/app/baserace/components/Racers";
 import { useState } from "react";
+import { useLap } from "@/app/lib/hooks/baserace/useLap";
 
 interface Props {
   mintTime: number;
@@ -18,7 +19,6 @@ interface Props {
 
 export const RacePending = ({ mintTime, price, race }: Props) => {
   const { address, isConnected } = useAccount();
-
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const isMinting = race.startedAt + mintTime > DateTime.now().toSeconds();
 
@@ -28,15 +28,21 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
     enabled: isConnected,
   });
 
+  const { data: lap } = useLap({
+    raceId: race.id,
+    lapId: race.currentLap,
+    enabled: true,
+  });
+
   const nextMint = DateTime.utc()
     .set({ hour: 20, minute: 0 })
     .toFormat("h:mm a");
 
   const [racers, setRacers] = useState<BaseRaceEntry[]>(
-    Array.from({ length: race.entries }, (_, index) => ({
-      tokenId: index,
+    lap?.positions.map((tokenId, index) => ({
+      tokenId: Number(tokenId),
       index,
-    })),
+    })) || [],
   );
 
   const myEntries = userEntries || [];

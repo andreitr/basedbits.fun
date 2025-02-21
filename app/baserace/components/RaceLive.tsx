@@ -1,15 +1,16 @@
 "use client";
 
-import { BaseRace } from "@/app/lib/types/types";
+import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { MintButton } from "@/app/baserace/components/MintButton";
-import { CountDown } from "@/app/lib/components/client/CountDown";
-import { DateTime } from "luxon";
 import { formatUnits } from "ethers";
-import { useAccount } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
+import { Racers } from "@/app/baserace/components/Racers";
+import { useEffect, useState } from "react";
+import { DateTime } from "luxon";
+import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
 
 interface Props {
   race: BaseRace;
@@ -18,23 +19,71 @@ interface Props {
 export const RaceLive = ({ race }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const { address, isConnected } = useAccount();
+
+  const nextMint = DateTime.utc()
+    .set({ hour: 20, minute: 0 })
+    .toFormat("h:mm a");
+
   const { data: userEntries } = useEntriesForAddress({
     address,
     id: race.id,
     enabled: isConnected,
   });
 
-  const { data: lap, isLoading } = useLap({
+  const { data: lap } = useLap({
     raceId: race.id,
     lapId: race.currentLap,
     enabled: true,
   });
 
-  const nextMint = DateTime.utc()
-    .set({ hour: 20, minute: 0 })
-    .toFormat("h:mm a");
+  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
+  const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
-  if (isLoading || !lap) return <RaceSkeleton />;
+  const { call: boost, data } = useBoost();
+  const { isFetching: isBoosting, isSuccess: hasBoosted } =
+    useWaitForTransactionReceipt({
+      hash: data,
+    });
+  const [boostedTokenId, setBoostedTokenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (lap && userEntries) {
+      const filtered = lap?.positions.map((tokenId, index) => ({
+        tokenId: Number(tokenId),
+        index,
+      }));
+
+      const myRacers = filtered.filter((racer) =>
+        userEntries.includes(racer.tokenId.toString()),
+      );
+
+      setUserRacers(myRacers);
+      setAllRacers(filtered);
+    }
+
+    // TODO: Figure out how to speed up the racer
+    // if (hasBoosted) {
+    //     setAllRacers((prevRacers) => {
+    //         const newRacers = [...prevRacers];
+    //         const index = newRacers.findIndex((racer) => racer.tokenId.toString() === boostedTokenId);
+    //         if (index > -1) {
+    //             const [clickedItem] = newRacers.splice(index, 1);
+    //             newRacers.unshift(clickedItem);
+    //             newRacers.forEach((racer, idx) => {
+    //                 racer.index = idx;
+    //             });
+    //         }
+    //         return newRacers;
+    //     });
+    // }
+  }, [lap, userEntries]);
+
+  const handleClick = (tokenId: number) => {
+    setBoostedTokenId(tokenId.toString());
+    boost(tokenId.toString());
+  };
+
+  if (!lap || allRacers.length === 0) return <RaceSkeleton />;
 
   return (
     <div>
@@ -67,15 +116,31 @@ export const RaceLive = ({ race }: Props) => {
           </div>
         </div>
       </div>
-
-      <div>Lap {race.currentLap}</div>
-      <div>Lap {lap.positions}</div>
       <div>
-        Lap Ends{" "}
-        <CountDownToDate
-          targetDate={lap.startedAt + 600}
-          message={"Lap ended"}
-        />
+        <div className="grid grid-cols-4 my-8 gap-8 ">
+          <div className="col-span-3 flex flex-col gap-4">
+            <div className="flex flex-row items-center text-xs uppercase">
+              All Racers -
+              <CountDownToDate
+                targetDate={lap.startedAt + 600}
+                message={" Lap ended"}
+              />
+            </div>
+            <Racers
+              onClick={handleClick}
+              entries={allRacers}
+              eliminated={lap.eliminations}
+            />
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="text-xs uppercase">My Racers</div>
+            <Racers
+              onClick={handleClick}
+              entries={userRacers}
+              eliminated={lap.eliminations}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

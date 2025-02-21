@@ -41,7 +41,6 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-
           {isPendingRace && (
             <RacePending race={race} mintTime={mintTime} price={price} />
           )}

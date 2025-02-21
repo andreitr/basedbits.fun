@@ -1,13 +1,17 @@
 export const BaseRaceAbi = [
   {
     inputs: [
-      { internalType: "address", name: "_owner", type: "address" },
       {
         internalType: "address",
-        name: "_admin",
+        name: "_owner",
         type: "address",
       },
-      { internalType: "address", name: "_burner", type: "address" },
+      { internalType: "address", name: "_admin", type: "address" },
+      {
+        internalType: "address",
+        name: "_burner",
+        type: "address",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -392,7 +396,12 @@ export const BaseRaceAbi = [
         name: "endedAt",
         type: "uint256",
       },
-      { internalType: "uint256[]", name: "positions", type: "uint256[]" },
+      { internalType: "uint256", name: "eliminations", type: "uint256" },
+      {
+        internalType: "uint256[]",
+        name: "positions",
+        type: "uint256[]",
+      },
     ],
     stateMutability: "view",
     type: "function",
