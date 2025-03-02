@@ -1,17 +1,9 @@
 export const BaseRaceAbi = [
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "_owner",
-        type: "address",
-      },
+      { internalType: "address", name: "_owner", type: "address" },
       { internalType: "address", name: "_admin", type: "address" },
-      {
-        internalType: "address",
-        name: "_burner",
-        type: "address",
-      },
+      { internalType: "address", name: "_burner", type: "address" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -19,11 +11,7 @@ export const BaseRaceAbi = [
   { inputs: [], name: "AccessControlBadConfirmation", type: "error" },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
       { internalType: "bytes32", name: "neededRole", type: "bytes32" },
     ],
     name: "AccessControlUnauthorizedAccount",
@@ -32,11 +20,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "sender", type: "address" },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
       { internalType: "address", name: "owner", type: "address" },
     ],
     name: "ERC721IncorrectOwner",
@@ -45,11 +29,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "operator", type: "address" },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "ERC721InsufficientApproval",
     type: "error",
@@ -85,41 +65,17 @@ export const BaseRaceAbi = [
     type: "error",
   },
   { inputs: [], name: "FinalLapNotReached", type: "error" },
-  {
-    inputs: [],
-    name: "HasBoosted",
-    type: "error",
-  },
+  { inputs: [], name: "HasBoosted", type: "error" },
   { inputs: [], name: "InsufficientETHPaid", type: "error" },
-  {
-    inputs: [],
-    name: "InvalidNode",
-    type: "error",
-  },
+  { inputs: [], name: "InvalidNode", type: "error" },
   { inputs: [], name: "InvalidPointer", type: "error" },
-  {
-    inputs: [],
-    name: "InvalidSetting",
-    type: "error",
-  },
+  { inputs: [], name: "InvalidSetting", type: "error" },
   { inputs: [], name: "IsFinalLap", type: "error" },
-  {
-    inputs: [],
-    name: "LapStillActive",
-    type: "error",
-  },
+  { inputs: [], name: "LapStillActive", type: "error" },
   { inputs: [], name: "MintingStillActive", type: "error" },
-  {
-    inputs: [],
-    name: "NotNFTOwner",
-    type: "error",
-  },
+  { inputs: [], name: "NotNFTOwner", type: "error" },
   { inputs: [], name: "ReentrancyGuardReentrantCall", type: "error" },
-  {
-    inputs: [],
-    name: "TransferFailed",
-    type: "error",
-  },
+  { inputs: [], name: "TransferFailed", type: "error" },
   { inputs: [], name: "WrongStatus", type: "error" },
   {
     anonymous: false,
@@ -293,12 +249,7 @@ export const BaseRaceAbi = [
     anonymous: false,
     inputs: [
       { indexed: true, internalType: "address", name: "from", type: "address" },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
+      { indexed: true, internalType: "address", name: "to", type: "address" },
       {
         indexed: true,
         internalType: "uint256",
@@ -326,11 +277,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "to", type: "address" },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "approve",
     outputs: [],
@@ -382,26 +329,14 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "uint256", name: "_raceId", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "_lapId",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "_lapId", type: "uint256" },
     ],
     name: "getLap",
     outputs: [
       { internalType: "uint256", name: "startedAt", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "endedAt",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "endedAt", type: "uint256" },
       { internalType: "uint256", name: "eliminations", type: "uint256" },
-      {
-        internalType: "uint256[]",
-        name: "positions",
-        type: "uint256[]",
-      },
+      { internalType: "uint256[]", name: "positions", type: "uint256[]" },
     ],
     stateMutability: "view",
     type: "function",
@@ -411,23 +346,12 @@ export const BaseRaceAbi = [
     name: "getRace",
     outputs: [
       { internalType: "uint256", name: "entries", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "startedAt",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "startedAt", type: "uint256" },
       { internalType: "uint256", name: "endedAt", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "currentLap",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "lapTotal", type: "uint256" },
+      { internalType: "uint256", name: "lapCount", type: "uint256" },
       { internalType: "uint256", name: "prize", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "winner",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "winner", type: "uint256" },
     ],
     stateMutability: "view",
     type: "function",
@@ -435,11 +359,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "uint256", name: "_raceId", type: "uint256" },
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
+      { internalType: "address", name: "_user", type: "address" },
     ],
     name: "getRaceEntries",
     outputs: [
@@ -458,11 +378,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "bytes32", name: "role", type: "bytes32" },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
     ],
     name: "grantRole",
     outputs: [],
@@ -472,11 +388,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "bytes32", name: "role", type: "bytes32" },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
     ],
     name: "hasRole",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -486,11 +398,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "owner", type: "address" },
-      {
-        internalType: "address",
-        name: "operator",
-        type: "address",
-      },
+      { internalType: "address", name: "operator", type: "address" },
     ],
     name: "isApprovedForAll",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -500,11 +408,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "uint256", name: "_raceId", type: "uint256" },
-      {
-        internalType: "uint256",
-        name: "_lapId",
-        type: "uint256",
-      },
+      { internalType: "uint256", name: "_lapId", type: "uint256" },
       { internalType: "uint256", name: "_tokenId", type: "uint256" },
     ],
     name: "isBoosted",
@@ -515,13 +419,6 @@ export const BaseRaceAbi = [
   {
     inputs: [],
     name: "lapTime",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "lapTotal",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -571,11 +468,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "bytes32", name: "role", type: "bytes32" },
-      {
-        internalType: "address",
-        name: "callerConfirmation",
-        type: "address",
-      },
+      { internalType: "address", name: "callerConfirmation", type: "address" },
     ],
     name: "renounceRole",
     outputs: [],
@@ -585,11 +478,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "bytes32", name: "role", type: "bytes32" },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
     ],
     name: "revokeRole",
     outputs: [],
@@ -599,11 +488,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "from", type: "address" },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
+      { internalType: "address", name: "to", type: "address" },
       { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "safeTransferFrom",
@@ -614,17 +499,9 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "from", type: "address" },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
+      { internalType: "address", name: "to", type: "address" },
       { internalType: "uint256", name: "tokenId", type: "uint256" },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
+      { internalType: "bytes", name: "data", type: "bytes" },
     ],
     name: "safeTransferFrom",
     outputs: [],
@@ -634,11 +511,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "operator", type: "address" },
-      {
-        internalType: "bool",
-        name: "approved",
-        type: "bool",
-      },
+      { internalType: "bool", name: "approved", type: "bool" },
     ],
     name: "setApprovalForAll",
     outputs: [],
@@ -657,15 +530,6 @@ export const BaseRaceAbi = [
   {
     inputs: [{ internalType: "uint256", name: "_newLapTime", type: "uint256" }],
     name: "setLapTime",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "_newLapTotal", type: "uint256" },
-    ],
-    name: "setLapTotal",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -740,11 +604,7 @@ export const BaseRaceAbi = [
   {
     inputs: [
       { internalType: "address", name: "from", type: "address" },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
+      { internalType: "address", name: "to", type: "address" },
       { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "transferFrom",
