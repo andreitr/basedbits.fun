@@ -30,9 +30,12 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
 
   const { data: lap } = useLap({
     raceId: race.id,
-    lapId: race.currentLap,
+    lapId: race.lapCount,
     enabled: true,
   });
+
+  console.log("user entries", userEntries);
+  console.log("lap", userEntries);
 
   const nextMint = DateTime.utc()
     .set({ hour: 20, minute: 0 })

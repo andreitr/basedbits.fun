@@ -1,17 +1,16 @@
 "use server";
 
-import { Header } from "@/app/lib/components/client/Header";
-import { Footer } from "@/app/lib/components/Footer";
+import { RaceLive } from "@/app/baserace/components/RaceLive";
 import { RacePending } from "@/app/baserace/components/RacePending";
+import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
+import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
+import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import {
   fetchRaceCount,
   getRaceCount,
 } from "@/app/lib/api/baserace/getRaceCount";
-import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
-import { fetchRace } from "@/app/lib/api/baserace/getRace";
-import { Racers } from "@/app/baserace/components/Racers";
-import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
-import { RaceLive } from "@/app/baserace/components/RaceLive";
+import { Header } from "@/app/lib/components/client/Header";
+import { Footer } from "@/app/lib/components/Footer";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
@@ -31,10 +30,8 @@ export default async function Page() {
   const race = await fetchRace(currentRace);
 
   const mintTime = await getMintTime();
-  const isPendingRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.currentLap === 0;
-  const isLiveRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.currentLap > 0;
+  const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
+  const isLiveRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

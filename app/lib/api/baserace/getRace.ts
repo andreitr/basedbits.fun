@@ -19,9 +19,10 @@ export const fetchRace = async (race: number) => {
     entries: Number(result[0].toString()),
     startedAt: Number(result[1].toString()),
     endedAt: Number(result[2].toString()),
-    currentLap: Number(result[3].toString()),
-    prize: result[4].toString(),
-    winner: result[5].toString(),
+    lapTotal: Number(result[3].toString()),
+    lapCount: Number(result[4].toString()),
+    prize: result[5].toString(),
+    winner: result[6].toString(),
   } as BaseRace;
 };
 

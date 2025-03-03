@@ -1,10 +1,10 @@
-import { NextRequest } from "next/server";
-import { Contract, parseUnits, Wallet } from "ethers";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { isAddress } from "viem";
+import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
 import { baseProvider } from "@/app/lib/Web3Configs";
+import { Contract, parseUnits, Wallet } from "ethers";
 import { revalidateTag } from "next/cache";
+import { NextRequest } from "next/server";
+import { isAddress } from "viem";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
       BBitsTokenAbi,
       signer,
     );
+
 
     let nonce = await baseProvider.getTransactionCount(signer.address);
 
