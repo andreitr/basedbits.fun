@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 
 export type BaseRace = {
   lapCount: number;
+  lapTotal: number;
   endedAt: number;
   entries: number;
   id: number;

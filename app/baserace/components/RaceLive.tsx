@@ -32,7 +32,7 @@ export const RaceLive = ({ race }: Props) => {
 
   const { data: lap } = useLap({
     raceId: race.id,
-    lapId: race.currentLap,
+    lapId: race.lapCount,
     enabled: true,
   });
 
@@ -92,7 +92,7 @@ export const RaceLive = ({ race }: Props) => {
           <div>
             <div className="text-4xl mb-2">BaseRace #{race.id} is LIVE</div>
             <div className="text-sm">
-              A new race starts daily! Survive 6 laps and fight for the prize
+              A new race starts daily! Survive {race.lapTotal} laps and fight for the prize
               pool
             </div>
           </div>
@@ -107,7 +107,7 @@ export const RaceLive = ({ race }: Props) => {
             <div>
               <div>Prize {prize}</div>
               <div>Entries {race.entries}</div>
-              <div>Lap {race.currentLap} of 6</div>
+              <div>Lap {race.lapCount} of {race.lapTotal}</div>
             </div>
 
             {address && userEntries && (
