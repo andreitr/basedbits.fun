@@ -40,6 +40,9 @@ export const RaceLive = ({ race }: Props) => {
   const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
   const { call: boost, data } = useBoost();
+
+  console.log(lap?.eliminations);
+
   const { isFetching: isBoosting, isSuccess: hasBoosted } =
     useWaitForTransactionReceipt({
       hash: data,
@@ -92,8 +95,8 @@ export const RaceLive = ({ race }: Props) => {
           <div>
             <div className="text-4xl mb-2">BaseRace #{race.id} is LIVE</div>
             <div className="text-sm">
-              A new race starts daily! Survive {race.lapTotal} laps and fight for the prize
-              pool
+              A new race starts daily! Survive {race.lapTotal} laps and fight
+              for the prize pool
             </div>
           </div>
 
@@ -107,7 +110,9 @@ export const RaceLive = ({ race }: Props) => {
             <div>
               <div>Prize {prize}</div>
               <div>Entries {race.entries}</div>
-              <div>Lap {race.lapCount} of {race.lapTotal}</div>
+              <div>
+                Lap {race.lapCount} of {race.lapTotal}
+              </div>
             </div>
 
             {address && userEntries && (

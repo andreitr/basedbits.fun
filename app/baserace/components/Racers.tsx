@@ -29,7 +29,7 @@ export const Racers = ({ entries, onClick, eliminated }: Props) => {
           <Racer
             key={i}
             tokenId={entry.tokenId}
-            eliminated={entry.index > eliminated}
+            eliminated={entry.index >= eliminated}
             onClick={onClick}
           />
         ))}

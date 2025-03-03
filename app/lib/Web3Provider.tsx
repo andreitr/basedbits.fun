@@ -12,7 +12,7 @@ import {
 import { base, baseSepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
-import { baseRpcUrl } from "@/app/lib/Web3Configs";
+import { baseRpcUrl, baseTestnetRpcUrl } from "@/app/lib/Web3Configs";
 
 const wagmiConfig = createConfig(
   getDefaultConfig({
@@ -23,6 +23,7 @@ const wagmiConfig = createConfig(
     chains: [base, baseSepolia],
     transports: {
       [base.id]: http(baseRpcUrl),
+      [baseSepolia.id]: http(baseTestnetRpcUrl),
     },
     walletConnectProjectId: process.env
       .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,

@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
-
     let nonce = await baseProvider.getTransactionCount(signer.address);
 
     for (const checkin of checkins) {

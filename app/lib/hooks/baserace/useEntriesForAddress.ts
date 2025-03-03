@@ -10,7 +10,7 @@ interface Props {
 
 export const useEntriesForAddress = ({ address, id, enabled }: Props) => {
   return useQuery({
-    queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address],
+    queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, id],
     queryFn: async () => await fetchRaceEntries(address || "", id),
     enabled: enabled,
   });

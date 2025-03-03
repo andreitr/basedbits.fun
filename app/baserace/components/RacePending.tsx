@@ -1,15 +1,15 @@
 "use client";
 
 import { MintButton } from "@/app/baserace/components/MintButton";
-import { formatUnits } from "ethers";
-import { useAccount } from "wagmi";
-import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
-import { CountDown } from "@/app/lib/components/client/CountDown";
-import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
-import { DateTime } from "luxon";
 import { Racers } from "@/app/baserace/components/Racers";
-import { useState } from "react";
+import { CountDown } from "@/app/lib/components/client/CountDown";
+import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
+import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
+import { formatUnits } from "ethers";
+import { DateTime } from "luxon";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 interface Props {
   mintTime: number;
@@ -34,41 +34,27 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
     enabled: true,
   });
 
-  console.log("user entries", userEntries);
-  console.log("lap", userEntries);
-
   const nextMint = DateTime.utc()
     .set({ hour: 20, minute: 0 })
     .toFormat("h:mm a");
 
-  const [racers, setRacers] = useState<BaseRaceEntry[]>(
-    lap?.positions.map((tokenId, index) => ({
-      tokenId: Number(tokenId),
-      index,
-    })) || [],
-  );
+  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
+  const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
-  const myEntries = userEntries || [];
-  const newArray = racers.filter((racer) =>
-    myEntries.includes(racer.tokenId.toString()),
-  );
+  useEffect(() => {
+    if (lap && userEntries) {
+      const filtered = lap?.positions.map((tokenId, index) => ({
+        tokenId: Number(tokenId),
+        index,
+      }));
 
-  const handleClick = (tokenId: number) => {
-    setRacers((prevRacers) => {
-      const newRacers = [...prevRacers];
-      const index = newRacers.findIndex((racer) => racer.tokenId === tokenId);
-      if (index > -1) {
-        const [clickedItem] = newRacers.splice(index, 1);
-        newRacers.unshift(clickedItem);
-        newRacers.forEach((racer, idx) => {
-          racer.index = idx;
-        });
-      }
-      return newRacers;
-    });
-  };
-
-  const eliminated = 4;
+      const myRacers = filtered.filter((racer) =>
+        userEntries.includes(racer.tokenId.toString()),
+      );
+      setUserRacers(myRacers);
+      setAllRacers(filtered);
+    }
+  }, [lap, userEntries]);
 
   return (
     <div>
@@ -82,7 +68,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
             </div>
           </div>
           {isMinting ? (
-            <MintButton mintPrice={price} />
+            <MintButton mintPrice={price} race={race} />
           ) : (
             <div className="text-sm text-gray-300">
               The next BaseRace opens for registration at {nextMint}
@@ -113,17 +99,17 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
-              onClick={handleClick}
-              entries={racers}
-              eliminated={eliminated}
+              onClick={() => {}}
+              entries={allRacers}
+              eliminated={lap?.eliminations || 0}
             />
           </div>
           <div className="flex flex-col gap-4">
             <div className="text-xs uppercase">My Racers</div>
             <Racers
-              onClick={handleClick}
-              entries={newArray}
-              eliminated={eliminated}
+              onClick={() => {}}
+              entries={userRacers}
+              eliminated={lap?.eliminations || 0}
             />
           </div>
         </div>

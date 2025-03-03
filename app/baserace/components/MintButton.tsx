@@ -14,12 +14,15 @@ import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
 import toast from "react-hot-toast";
 import { Button } from "@/app/lib/components/Button";
 import { baseSepolia } from "wagmi/chains";
+import { BASE_RACE_QKS } from "@/app/lib/constants";
+import { BaseRace } from "@/app/lib/types/types";
 
 interface Props {
   mintPrice: string;
+  race: BaseRace;
 }
 
-export const MintButton = ({ mintPrice }: Props) => {
+export const MintButton = ({ mintPrice, race }: Props) => {
   const { isConnected, address } = useAccount();
   const { data, writeContract, isError, error } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -46,15 +49,22 @@ export const MintButton = ({ mintPrice }: Props) => {
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      revalidateTags([`getNFTsForOwner-${address}`]).finally(() => {
+    if (isSuccess && data) {
+      Promise.all([
+        revalidateTags([
+          BASE_RACE_QKS.RACE_ENTRIES,
+          address!,
+          race.id.toString(),
+        ]),
+        revalidateTags([`getNFTsForOwner-${address}`]),
+      ]).then(() => {
         show();
       });
     }
     if (isError) {
       toast.error("Unable to mint NFT");
     }
-  }, [isSuccess, isError, error]);
+  }, [isSuccess, isError, error, data, address]);
 
   const label = `Enter Race ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`;
 
