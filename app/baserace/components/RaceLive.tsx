@@ -127,8 +127,8 @@ export const RaceLive = ({ race }: Props) => {
             <div className="flex flex-row items-center text-xs uppercase">
               All Racers -
               <CountDownToDate
-                targetDate={lap.startedAt + 600}
-                message={" Lap ended"}
+                targetDate={lap.startedAt + 300}
+                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 600).toFormat('h:mm a')}`}
               />
             </div>
             <Racers
