@@ -5,6 +5,7 @@ import { Racers } from "@/app/baserace/components/Racers";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
+import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
@@ -21,6 +22,11 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
   const { address, isConnected } = useAccount();
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const isMinting = race.startedAt + mintTime > DateTime.now().toSeconds();
+
+  const { data: loadedRace } = useRace({
+    id: race.id,
+    enabled: true,
+  });
 
   const { data: userEntries } = useEntriesForAddress({
     address,
@@ -56,19 +62,21 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
     }
   }, [lap, userEntries]);
 
+  const currentRace = loadedRace || race;
+
   return (
     <div>
       <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
         <div className="col-span-3 flex flex-col justify-between h-full">
           <div>
-            <div className="text-4xl mb-2">BaseRace #{race.id}</div>
+            <div className="text-4xl mb-2">BaseRace #{currentRace.id}</div>
             <div className="text-sm">
               A new race starts daily! Survive 6 laps and fight for the prize
               pool
             </div>
           </div>
           {isMinting ? (
-            <MintButton mintPrice={price} race={race} />
+            <MintButton mintPrice={price} race={currentRace} />
           ) : (
             <div className="text-sm text-gray-300">
               The next BaseRace opens for registration at {nextMint}
@@ -80,7 +88,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="flex flex-col justify-between h-full">
             <div>
               <div>Prize {prize}</div>
-              <div>Entries {race.entries}</div>
+              <div>Entries {currentRace.entries}</div>
               <div className="flex flex-row gap-2">
                 <div>Starts in</div>
                 <CountDown hour={20} />
@@ -99,8 +107,8 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
-              race={race}
-              onClick={() => {}}
+              race={currentRace}
+              onClick={() => { }}
               entries={allRacers}
               eliminated={lap?.eliminations || 0}
             />
@@ -108,8 +116,8 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="text-xs uppercase">My Racers</div>
             <Racers
-              race={race}
-              onClick={() => {}}
+              race={currentRace}
+              onClick={() => { }}
               entries={userRacers}
               eliminated={lap?.eliminations || 0}
             />

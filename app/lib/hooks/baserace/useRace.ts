@@ -5,13 +5,14 @@ import { fetchRace } from "@/app/lib/api/baserace/getRace";
 interface Props {
   id: number;
   enabled: boolean;
+  refetchInterval?: number;
 }
 
-export const useRace = ({ id, enabled }: Props) => {
+export const useRace = ({ id, enabled, refetchInterval }: Props) => {
   return useQuery({
     queryKey: [BASE_RACE_QKS.RACE, id],
     queryFn: async () => await fetchRace(id),
     enabled: enabled,
-    refetchInterval: 1000 * 3, // 3 seconds,
+    refetchInterval: refetchInterval || false,
   });
 };

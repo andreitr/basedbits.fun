@@ -24,6 +24,7 @@ interface Props {
 }
 
 export const MintButton = ({ mintPrice, race }: Props) => {
+
   const { isConnected, address } = useAccount();
   const { data, writeContract, isError, error } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -52,11 +53,15 @@ export const MintButton = ({ mintPrice, race }: Props) => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      queryClient
-        .invalidateQueries({
+
+      Promise.all([
+        queryClient.invalidateQueries({
           queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id],
-        })
-        .then(() => {
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BASE_RACE_QKS.RACE, race.id],
+        })]).then(() => {
+
           show();
         });
     }
@@ -77,7 +82,7 @@ export const MintButton = ({ mintPrice, race }: Props) => {
       loading={isFetching}
       className="flex w-[320px] items-center justify-center"
     >
-      {label}
+      {isFetching ? "Minting..." : label}
     </Button>
   );
 };
