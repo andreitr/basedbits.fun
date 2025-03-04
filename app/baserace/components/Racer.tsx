@@ -1,14 +1,44 @@
-import { useEffect, useRef } from "react";
+"use client";
+
+import { useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
+import { BaseRace } from "@/app/lib/types/types";
+import { useIsBoosted } from "@/app/lib/hooks/baserace/useIsBoosted";
 
 interface Props {
   tokenId: number;
+  race: BaseRace;
   eliminated: boolean;
   onClick: (idx: number) => void;
 }
 
-export const Racer = ({ tokenId, eliminated, onClick }: Props) => {
+export const Racer = ({ tokenId, race, eliminated, onClick }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const hasAnimatedBoost = useRef(false);
+
+  const { data: isBoosted } = useIsBoosted({
+    raceId: race.id,
+    lapId: race.lapCount,
+    tokenId,
+    enabled: true,
+  });
+
+  // Memoize the star symbol to prevent recreation on every render
+  const starSymbol = useMemo(
+    () => d3.symbol().type(d3.symbolStar).size(60),
+    [],
+  );
+
+  // Memoize the arc generator
+  const arc = useMemo(
+    () =>
+      d3
+        .arc<d3.DefaultArcObject>()
+        .innerRadius(16)
+        .outerRadius(20)
+        .startAngle(0),
+    [],
+  );
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -30,6 +60,52 @@ export const Racer = ({ tokenId, eliminated, onClick }: Props) => {
       .attr("font-size", "15px")
       .text(tokenId);
 
+    if (isBoosted) {
+      if (!hasAnimatedBoost.current) {
+        const boostCircle = svg
+          .append("path")
+          .datum({
+            innerRadius: 16,
+            outerRadius: 20,
+            startAngle: 0,
+            endAngle: 0,
+          })
+          .attr("d", arc)
+          .attr("fill", "none")
+          .attr("stroke", "yellow")
+          .attr("stroke-width", "3")
+          .attr("transform", "translate(20, 20)");
+
+        boostCircle
+          .transition()
+          .duration(1200)
+          .attrTween("d", (d) => {
+            const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
+            return (t) => {
+              d.endAngle = interpolate(t);
+              return arc(d) || "";
+            };
+          });
+
+        hasAnimatedBoost.current = true;
+      } else {
+        // Just draw the circle without animation
+        svg
+          .append("path")
+          .datum({
+            innerRadius: 16,
+            outerRadius: 20,
+            startAngle: 0,
+            endAngle: 2 * Math.PI,
+          })
+          .attr("d", arc)
+          .attr("fill", "none")
+          .attr("stroke", "yellow")
+          .attr("stroke-width", "3")
+          .attr("transform", "translate(20, 20)");
+      }
+    }
+
     if (!eliminated) {
       // Draw the smaller circle
       svg
@@ -39,25 +115,22 @@ export const Racer = ({ tokenId, eliminated, onClick }: Props) => {
         .attr("r", 10)
         .attr("stroke", "black")
         .attr("stroke-width", "2")
-        .attr("fill", "yellow");
+        .attr("fill", "red");
 
-      const starSymbol = d3.symbol().type(d3.symbolStar).size(60);
+      // Draw the cross last to ensure it's on top
       svg
         .append("path")
         .attr("transform", "translate(30, 35)")
-        .attr("d", starSymbol)
-        .attr("fill", "blue");
+        .attr("d", "M-5,-5 L5,5 M-5,5 L5,-5")
+        .attr("stroke", "white")
+        .attr("stroke-width", "2");
     }
-  }, [eliminated, tokenId]);
+  }, [eliminated, tokenId, isBoosted, starSymbol]);
 
   const handleClick = () => {
-    const svg = d3.select(svgRef.current);
-    const arc = d3
-      .arc<d3.DefaultArcObject>()
-      .innerRadius(16)
-      .outerRadius(20)
-      .startAngle(0);
+    if (isBoosted) return;
 
+    const svg = d3.select(svgRef.current);
     const progress = svg
       .append("path")
       .datum({ innerRadius: 16, outerRadius: 20, startAngle: 0, endAngle: 0 })
@@ -87,9 +160,7 @@ export const Racer = ({ tokenId, eliminated, onClick }: Props) => {
       width={50}
       height={50}
       onClick={handleClick}
-      style={{ cursor: "pointer" }}
-    >
-      {/* Circle and star will be drawn by D3.js */}
-    </svg>
+      style={{ cursor: isBoosted ? "not-allowed" : "pointer" }}
+    />
   );
 };

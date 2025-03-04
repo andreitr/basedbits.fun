@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { Racer } from "@/app/baserace/components/Racer";
-import { BaseRaceEntry } from "@/app/lib/types/types";
+import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 
 interface Props {
   entries: BaseRaceEntry[];
   eliminated: number;
+  race: BaseRace;
   onClick: (idx: number) => void;
 }
 
-export const Racers = ({ entries, onClick, eliminated }: Props) => {
+export const Racers = ({ entries, onClick, eliminated, race }: Props) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -29,7 +30,8 @@ export const Racers = ({ entries, onClick, eliminated }: Props) => {
           <Racer
             key={i}
             tokenId={entry.tokenId}
-            eliminated={entry.index >= eliminated}
+            race={race}
+            eliminated={i < entries.length - eliminated}
             onClick={onClick}
           />
         ))}

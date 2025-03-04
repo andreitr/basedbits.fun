@@ -9,4 +9,5 @@ export enum BASE_RACE_QKS {
   LAP = "getLap",
   MINT_FEE = "mintFee",
   MINT_TIME = "mintingTime",
+  IS_BOOSTED = "isBoosted",
 }

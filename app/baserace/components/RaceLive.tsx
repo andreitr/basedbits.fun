@@ -128,11 +128,12 @@ export const RaceLive = ({ race }: Props) => {
               All Racers -
               <CountDownToDate
                 targetDate={lap.startedAt + 300}
-                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 600).toFormat('h:mm a')}`}
+                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 600).toFormat("h:mm a")}`}
               />
             </div>
             <Racers
               onClick={handleClick}
+              race={race}
               entries={allRacers}
               eliminated={lap.eliminations}
             />
@@ -143,6 +144,7 @@ export const RaceLive = ({ race }: Props) => {
               onClick={handleClick}
               entries={userRacers}
               eliminated={lap.eliminations}
+              race={race}
             />
           </div>
         </div>

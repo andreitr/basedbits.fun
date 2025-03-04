@@ -33,8 +33,8 @@ export const MintButton = ({ mintPrice, race }: Props) => {
   const queryClient = useQueryClient();
 
   const { show } = useSocialDisplay({
-    message: "Entered Race!",
-    title: "XXX",
+    message: "I just entered the Base Race! Join me!",
+    title: "Spread the word about the race and invite more runners to join!",
     url: "https://basedbits.fun/baserace",
   });
 
@@ -52,11 +52,13 @@ export const MintButton = ({ mintPrice, race }: Props) => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      queryClient.invalidateQueries({
-        queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id]
-      }).then(() => {
-        show();
-      });
+      queryClient
+        .invalidateQueries({
+          queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id],
+        })
+        .then(() => {
+          show();
+        });
     }
     if (isError) {
       toast.error("Unable to mint NFT");

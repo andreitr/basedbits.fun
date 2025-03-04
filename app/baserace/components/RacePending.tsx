@@ -99,6 +99,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
+              race={race}
               onClick={() => {}}
               entries={allRacers}
               eliminated={lap?.eliminations || 0}
@@ -107,6 +108,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="text-xs uppercase">My Racers</div>
             <Racers
+              race={race}
               onClick={() => {}}
               entries={userRacers}
               eliminated={lap?.eliminations || 0}
