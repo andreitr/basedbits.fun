@@ -16,6 +16,7 @@ import { Button } from "@/app/lib/components/Button";
 import { baseSepolia } from "wagmi/chains";
 import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { BaseRace } from "@/app/lib/types/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   mintPrice: string;
@@ -29,6 +30,7 @@ export const MintButton = ({ mintPrice, race }: Props) => {
     hash: data,
     chainId: baseSepolia.id,
   });
+  const queryClient = useQueryClient();
 
   const { show } = useSocialDisplay({
     message: "Entered Race!",
@@ -50,21 +52,16 @@ export const MintButton = ({ mintPrice, race }: Props) => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      Promise.all([
-        revalidateTags([
-          BASE_RACE_QKS.RACE_ENTRIES,
-          address!,
-          race.id.toString(),
-        ]),
-        revalidateTags([`getNFTsForOwner-${address}`]),
-      ]).then(() => {
+      queryClient.invalidateQueries({
+        queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id]
+      }).then(() => {
         show();
       });
     }
     if (isError) {
       toast.error("Unable to mint NFT");
     }
-  }, [isSuccess, isError, error, data, address]);
+  }, [isSuccess, isError, error, data, address, race.id, queryClient]);
 
   const label = `Enter Race ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`;
 
