@@ -45,6 +45,8 @@ export async function GET(req: NextRequest) {
 
     if (race.lapCount === race.lapTotal) {
       await contract.finishGame();
+      revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
+      revalidateTag(BASE_RACE_QKS.COUNT);
     } else {
       await contract.startNextLap();
     }

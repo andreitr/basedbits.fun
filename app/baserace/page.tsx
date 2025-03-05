@@ -24,6 +24,7 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
+
   const currentRace = await fetchRaceCount();
 
   const price = await getMintFee();
