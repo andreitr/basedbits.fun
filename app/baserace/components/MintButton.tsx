@@ -4,6 +4,7 @@ import {
   useAccount,
   useWaitForTransactionReceipt,
   useWriteContract,
+  useSwitchChain,
 } from "wagmi";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import { formatUnits } from "ethers";
@@ -24,7 +25,8 @@ interface Props {
 }
 
 export const MintButton = ({ mintPrice, race }: Props) => {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chainId } = useAccount();
+  const { switchChain } = useSwitchChain();
   const { data, writeContract, isError, error } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
@@ -40,7 +42,7 @@ export const MintButton = ({ mintPrice, race }: Props) => {
 
   const { call: revalidateTags } = useRevalidateTags();
 
-  const mint = () => {
+  const mint = async () => {
     writeContract({
       chainId: baseSepolia.id,
       abi: BaseRaceAbi,
@@ -77,6 +79,17 @@ export const MintButton = ({ mintPrice, race }: Props) => {
     return <ConnectAction action={"to mint"} />;
   }
 
+  if (chainId !== baseSepolia.id) {
+    return (
+      <Button
+        onClick={() => switchChain({ chainId: baseSepolia.id })}
+        loading={isFetching}
+        className="flex w-[320px] items-center justify-center"
+      >
+        Switch to Base Sepolia
+      </Button>
+    );
+  }
   return (
     <Button
       onClick={() => mint()}
