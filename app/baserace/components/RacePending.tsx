@@ -48,17 +48,20 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
   const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
   useEffect(() => {
-    if (lap && userEntries) {
+    if (lap) {
       const filtered = lap?.positions.map((tokenId, index) => ({
         tokenId: Number(tokenId),
         index,
       }));
+      setAllRacers(filtered);
+    }
 
-      const myRacers = filtered.filter((racer) =>
+    if (lap && userEntries) {
+      const myRacers = allRacers.filter((racer) =>
         userEntries.includes(racer.tokenId.toString()),
       );
+
       setUserRacers(myRacers);
-      setAllRacers(filtered);
     }
   }, [lap, userEntries]);
 
@@ -102,27 +105,29 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
         </div>
       </div>
 
-      <div>
-        <div className="grid grid-cols-4 my-8 gap-8 ">
+      <div className="grid grid-cols-4 my-8 gap-8 ">
+        {lap && allRacers.length > 0 && (
           <div className="col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
               race={currentRace}
               onClick={() => {}}
               entries={allRacers}
-              eliminated={lap?.eliminations || 0}
+              eliminated={lap.eliminations}
             />
           </div>
+        )}
+        {lap && userRacers.length > 0 && (
           <div className="flex flex-col gap-4">
             <div className="text-xs uppercase">My Racers</div>
             <Racers
               race={currentRace}
               onClick={() => {}}
               entries={userRacers}
-              eliminated={lap?.eliminations || 0}
+              eliminated={lap.eliminations}
             />
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

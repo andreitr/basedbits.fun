@@ -12,17 +12,6 @@ interface Props {
 }
 
 export const Racers = ({ entries, onClick, eliminated, race }: Props) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 500); // Match the duration of the CSS transition
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating]);
-
   return (
     <div>
       <div className="flex flex-wrap">
