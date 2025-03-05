@@ -34,6 +34,7 @@ export const RaceLive = ({ race }: Props) => {
     raceId: race.id,
     lapId: race.lapCount,
     enabled: true,
+    refetchInterval: 1000 * 3,
   });
 
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);

@@ -108,7 +108,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
             <div className="text-xs uppercase">All Racers</div>
             <Racers
               race={currentRace}
-              onClick={() => { }}
+              onClick={() => {}}
               entries={allRacers}
               eliminated={lap?.eliminations || 0}
             />
@@ -117,7 +117,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
             <div className="text-xs uppercase">My Racers</div>
             <Racers
               race={currentRace}
-              onClick={() => { }}
+              onClick={() => {}}
               entries={userRacers}
               eliminated={lap?.eliminations || 0}
             />

@@ -24,7 +24,6 @@ interface Props {
 }
 
 export const MintButton = ({ mintPrice, race }: Props) => {
-
   const { isConnected, address } = useAccount();
   const { data, writeContract, isError, error } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -53,17 +52,19 @@ export const MintButton = ({ mintPrice, race }: Props) => {
 
   useEffect(() => {
     if (isSuccess && data) {
-
       Promise.all([
         queryClient.invalidateQueries({
           queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id],
         }),
         queryClient.invalidateQueries({
           queryKey: [BASE_RACE_QKS.RACE, race.id],
-        })]).then(() => {
-
-          show();
-        });
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BASE_RACE_QKS.LAP, race.id, race.lapCount],
+        }),
+      ]).then(() => {
+        show();
+      });
     }
     if (isError) {
       toast.error("Unable to mint NFT");
