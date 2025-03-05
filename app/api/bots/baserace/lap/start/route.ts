@@ -43,7 +43,6 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
-
     if (race.lapCount === race.lapTotal) {
       await contract.finishGame();
     } else {
