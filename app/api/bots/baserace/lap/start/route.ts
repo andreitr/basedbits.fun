@@ -45,6 +45,10 @@ export async function GET(req: NextRequest) {
 
     await contract.startNextLap();
 
+    if (race.lapCount === race.lapTotal) {
+      await contract.finishGame();
+    }
+
     return new Response("Lap Started", {
       status: 200,
     });
