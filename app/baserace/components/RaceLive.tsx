@@ -42,44 +42,29 @@ export const RaceLive = ({ race }: Props) => {
 
   const { call: boost, data } = useBoost();
 
-  console.log(lap?.eliminations);
-
   const { isFetching: isBoosting, isSuccess: hasBoosted } =
     useWaitForTransactionReceipt({
       hash: data,
     });
+
   const [boostedTokenId, setBoostedTokenId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (lap && userEntries) {
+    if (lap) {
       const filtered = lap?.positions.map((tokenId, index) => ({
         tokenId: Number(tokenId),
         index,
       }));
+      setAllRacers(filtered);
+    }
 
-      const myRacers = filtered.filter((racer) =>
+    if (lap && userEntries) {
+      const myRacers = allRacers.filter((racer) =>
         userEntries.includes(racer.tokenId.toString()),
       );
 
       setUserRacers(myRacers);
-      setAllRacers(filtered);
     }
-
-    // TODO: Figure out how to speed up the racer
-    // if (hasBoosted) {
-    //     setAllRacers((prevRacers) => {
-    //         const newRacers = [...prevRacers];
-    //         const index = newRacers.findIndex((racer) => racer.tokenId.toString() === boostedTokenId);
-    //         if (index > -1) {
-    //             const [clickedItem] = newRacers.splice(index, 1);
-    //             newRacers.unshift(clickedItem);
-    //             newRacers.forEach((racer, idx) => {
-    //                 racer.index = idx;
-    //             });
-    //         }
-    //         return newRacers;
-    //     });
-    // }
   }, [lap, userEntries]);
 
   const handleClick = (tokenId: number) => {
@@ -87,7 +72,7 @@ export const RaceLive = ({ race }: Props) => {
     boost(tokenId.toString());
   };
 
-  if (!lap || allRacers.length === 0) return <RaceSkeleton />;
+  if (!lap || !allRacers) return <RaceSkeleton />;
 
   return (
     <div>
