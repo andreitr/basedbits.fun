@@ -43,10 +43,11 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
-    await contract.startNextLap();
 
     if (race.lapCount === race.lapTotal) {
       await contract.finishGame();
+    } else {
+      await contract.startNextLap();
     }
 
     return new Response("Lap Started", {
