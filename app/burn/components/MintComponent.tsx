@@ -8,7 +8,7 @@ export const MintComponent = () => {
         <div className="text-5xl mb-2">Burned Bits</div>
         <div>
           Every mint burns a Based Bit. The mint price is calculated based on
-          the BBITS token. The max supply of 8,000 will never be reached.
+          the BBITS token. The max supply of 9,000 will never be reached.
         </div>
         <div className="mt-10 mb-5">
           <MintButton />
