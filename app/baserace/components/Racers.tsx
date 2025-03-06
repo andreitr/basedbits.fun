@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Racer } from "@/app/baserace/components/Racer";
 import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 
@@ -9,22 +8,37 @@ interface Props {
   eliminated: number;
   race: BaseRace;
   onClick: (idx: number) => void;
+  userEntries?: BaseRaceEntry[];
+  userAddress?: string;
 }
 
-export const Racers = ({ entries, onClick, eliminated, race }: Props) => {
+export const Racers = ({
+  entries,
+  onClick,
+  eliminated,
+  race,
+  userEntries = [],
+  userAddress,
+}: Props) => {
   return (
-    <div>
-      <div className="flex flex-wrap">
-        {entries.map((entry, i) => (
+    <div className="flex flex-wrap">
+      {entries.map((entry, i) => {
+        const isUser = userEntries.some(
+          (userEntry) => userEntry.tokenId === entry.tokenId,
+        );
+
+        return (
           <Racer
             key={i}
             tokenId={entry.tokenId}
             race={race}
             eliminated={i < entries.length - eliminated}
             onClick={onClick}
+            isUserRacer={isUser}
+            address={isUser ? userAddress : undefined}
           />
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 };

@@ -4,23 +4,34 @@ import { useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
 import { BaseRace } from "@/app/lib/types/types";
 import { useIsBoosted } from "@/app/lib/hooks/baserace/useIsBoosted";
+import { Avatar } from "connectkit";
 
 interface Props {
   tokenId: number;
   race: BaseRace;
   eliminated: boolean;
   onClick: (idx: number) => void;
+  isUserRacer: boolean;
+  address?: string;
 }
 
-export const Racer = ({ tokenId, race, eliminated, onClick }: Props) => {
+export const Racer = ({
+  tokenId,
+  race,
+  eliminated,
+  onClick,
+  isUserRacer,
+  address,
+}: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const hasAnimatedBoost = useRef(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
 
   const { data: isBoosted } = useIsBoosted({
     raceId: race.id,
     lapId: race.lapCount,
     tokenId,
-    enabled: true,
+    enabled: isUserRacer,
   });
 
   // Memoize the star symbol to prevent recreation on every render
@@ -44,13 +55,17 @@ export const Racer = ({ tokenId, race, eliminated, onClick }: Props) => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove(); // Clear previous content
 
+    console.log(`Racer ${tokenId} - isUserRacer:`, isUserRacer);
+
     // Draw the main circle
     svg
       .append("circle")
       .attr("cx", 20)
       .attr("cy", 20)
       .attr("r", 20)
-      .attr("fill", eliminated ? "gray" : "black");
+      .attr("fill", isUserRacer ? "green" : "gray")
+      .attr("stroke", "none")
+      .attr("stroke-width", isUserRacer ? 2 : 0);
 
     svg
       .append("text")
@@ -155,12 +170,14 @@ export const Racer = ({ tokenId, race, eliminated, onClick }: Props) => {
   };
 
   return (
-    <svg
-      ref={svgRef}
-      width={50}
-      height={50}
-      onClick={handleClick}
-      style={{ cursor: isBoosted ? "not-allowed" : "pointer" }}
-    />
+    <div className="relative">
+      <svg
+        ref={svgRef}
+        width={50}
+        height={50}
+        onClick={handleClick}
+        style={{ cursor: isBoosted ? "not-allowed" : "pointer" }}
+      />
+    </div>
   );
 };

@@ -115,6 +115,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
               onClick={() => {}}
               entries={allRacers}
               eliminated={lap.eliminations}
+              userEntries={userRacers}
             />
           </div>
         )}
@@ -126,6 +127,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
               onClick={() => {}}
               entries={userRacers}
               eliminated={lap.eliminations}
+              userEntries={userRacers}
             />
           </div>
         )}

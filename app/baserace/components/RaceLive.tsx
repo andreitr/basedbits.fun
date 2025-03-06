@@ -30,6 +30,8 @@ export const RaceLive = ({ race }: Props) => {
     enabled: isConnected,
   });
 
+  console.log("Initial userEntries:", userEntries);
+
   const { data: lap } = useLap({
     raceId: race.id,
     lapId: race.lapCount,
@@ -57,15 +59,28 @@ export const RaceLive = ({ race }: Props) => {
       }));
       setAllRacers(filtered);
     }
+  }, [lap]);
 
-    if (lap && userEntries) {
+  useEffect(() => {
+    if (userEntries && allRacers.length > 0) {
+      console.log("Processing user entries:", userEntries);
+      console.log("Current all racers:", allRacers);
+
+      const userEntryObjects = userEntries.map((tokenId) => ({
+        tokenId: Number(tokenId),
+        index: allRacers.findIndex(
+          (racer) => racer.tokenId === Number(tokenId),
+        ),
+      }));
+
       const myRacers = allRacers.filter((racer) =>
-        userEntries.includes(racer.tokenId.toString()),
+        userEntryObjects.some((entry) => entry.tokenId === racer.tokenId),
       );
 
+      console.log("Filtered my racers:", myRacers);
       setUserRacers(myRacers);
     }
-  }, [lap, userEntries]);
+  }, [userEntries, allRacers]);
 
   const handleClick = (tokenId: number) => {
     setBoostedTokenId(tokenId.toString());
@@ -122,6 +137,17 @@ export const RaceLive = ({ race }: Props) => {
               race={race}
               entries={allRacers}
               eliminated={lap.eliminations}
+              userEntries={
+                userEntries
+                  ? userEntries.map((tokenId) => ({
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
+                  : []
+              }
+              userAddress={address}
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -130,6 +156,17 @@ export const RaceLive = ({ race }: Props) => {
               onClick={handleClick}
               entries={userRacers}
               eliminated={lap.eliminations}
+              userEntries={
+                userEntries
+                  ? userEntries.map((tokenId) => ({
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
+                  : []
+              }
+              userAddress={address}
               race={race}
             />
           </div>
