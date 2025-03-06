@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    revalidateTag(BASE_RACE_QKS.COUNT);
     const currentRaceId = await getRaceCount();
     const race = await fetchRace(currentRaceId);
     const mintTime = await getMintTime();
@@ -45,16 +44,25 @@ export async function GET(req: NextRequest) {
 
     if (race.lapCount === race.lapTotal) {
       await contract.finishGame();
-      revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
-      revalidateTag(BASE_RACE_QKS.COUNT);
     } else {
       await contract.startNextLap();
     }
+
+    // Revalidate all affected queries after successful contract interaction
+    revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
+    revalidateTag(BASE_RACE_QKS.COUNT);
+    revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount + 1}`);
 
     return new Response("Lap Started", {
       status: 200,
     });
   } catch (error) {
+    console.error("Error in lap start:", error);
+    if (error instanceof Error) {
+      return new Response(`Error: ${error.message}`, {
+        status: 500,
+      });
+    }
     return new Response("Internal Server Error", {
       status: 500,
     });
