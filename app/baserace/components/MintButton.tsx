@@ -35,7 +35,7 @@ export const MintButton = ({ mintPrice, race }: Props) => {
   const queryClient = useQueryClient();
 
   const { show } = useSocialDisplay({
-    message: "I just entered the Base Race! Join me!",
+    message: "I just entered the Base Race! Join me now!",
     title: "Spread the word about the race and invite more runners to join!",
     url: "https://basedbits.fun/baserace",
   });
