@@ -1,5 +1,7 @@
 import { baseTestnetRpcUrl } from "@/app/lib/Web3Configs";
 import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
+import { fetchLap } from "@/app/lib/api/baserace/getLap";
+import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { getRaceCount } from "@/app/lib/api/baserace/getRaceCount";
 import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -31,19 +33,17 @@ export async function GET(req: NextRequest) {
 
     const status = await contract.status();
     if (status === 2) {
-      // InRace
-      const race = await contract.getRace(currentRaceId);
-      const lapCount = Number(race[4].toString()); // lapCount is at index 4
-      const lapTotal = Number(race[3].toString()); // lapTotal is at index 3
-      const currentLap = await contract.getLap(currentRaceId, lapCount);
+
+
+      const race = await fetchRace(currentRaceId);
+
+      const currentLap = await fetchLap(currentRaceId, race.lapCount);
       const currentTime = Math.floor(Date.now() / 1000);
       const lapTime = Number((await contract.lapTime()).toString());
 
       // Only finish if we've completed all laps and the current lap has ended
       if (
-        lapCount >= lapTotal &&
-        currentTime - Number(currentLap.startedAt.toString()) >= lapTime
-      ) {
+        race.lapCount >= race.lapTotal && currentTime - currentLap.startedAt >= lapTime) {
         const finishTx = await contract.finishGame();
         await finishTx.wait();
       }
@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
     if (previousRaceId >= 0) {
       revalidateTag(`${BASE_RACE_QKS.RACE}-${previousRaceId}`);
     }
+
     revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
     revalidateTag(BASE_RACE_QKS.COUNT);
 

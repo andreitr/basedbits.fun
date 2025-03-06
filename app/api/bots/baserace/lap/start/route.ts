@@ -8,6 +8,7 @@ import { revalidateTag } from "next/cache";
 import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
+import { fetchLap } from "@/app/lib/api/baserace/getLap";
 
 export const dynamic = "force-dynamic";
 
@@ -42,16 +43,27 @@ export async function GET(req: NextRequest) {
       signer,
     );
 
+    const status = await contract.status();
     if (race.lapCount === race.lapTotal) {
-      await contract.finishGame();
+      if (status === 2) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        const lapTime = Number((await contract.lapTime()).toString());
+        const lap = await fetchLap(currentRaceId, race.lapCount);
+        const lapStartedAt = lap.startedAt;
+        if (race.lapCount === race.lapTotal && currentTime - lapStartedAt >= lapTime) {
+          await contract.finishGame();
+          revalidateTag(BASE_RACE_QKS.COUNT);
+          revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
+          revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId - 1}`);
+        }
+      }
+
     } else {
       await contract.startNextLap();
+      revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
+      revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount}`);
+      revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount + 1}`);
     }
-
-    // Revalidate all affected queries after successful contract interaction
-    revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
-    revalidateTag(BASE_RACE_QKS.COUNT);
-    revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount + 1}`);
 
     return new Response("Lap Started", {
       status: 200,
