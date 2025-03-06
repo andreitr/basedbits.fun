@@ -30,8 +30,6 @@ export const RaceLive = ({ race }: Props) => {
     enabled: isConnected,
   });
 
-  console.log("Initial userEntries:", userEntries);
-
   const { data: lap } = useLap({
     raceId: race.id,
     lapId: race.lapCount,
