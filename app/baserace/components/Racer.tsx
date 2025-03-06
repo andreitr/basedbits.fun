@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
-import * as d3 from "d3";
-import { BaseRace } from "@/app/lib/types/types";
 import { useIsBoosted } from "@/app/lib/hooks/baserace/useIsBoosted";
-import { Avatar } from "connectkit";
+import { BaseRace } from "@/app/lib/types/types";
+import * as d3 from "d3";
+import { useEffect, useMemo, useRef } from "react";
 
 interface Props {
   tokenId: number;
@@ -12,7 +11,6 @@ interface Props {
   eliminated: boolean;
   onClick: (idx: number) => void;
   isUserRacer: boolean;
-  address?: string;
 }
 
 export const Racer = ({
@@ -21,11 +19,9 @@ export const Racer = ({
   eliminated,
   onClick,
   isUserRacer,
-  address,
 }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const hasAnimatedBoost = useRef(false);
-  const avatarRef = useRef<HTMLDivElement>(null);
 
   const { data: isBoosted } = useIsBoosted({
     raceId: race.id,
@@ -86,9 +82,7 @@ export const Racer = ({
             endAngle: 0,
           })
           .attr("d", arc)
-          .attr("fill", "none")
-          .attr("stroke", "yellow")
-          .attr("stroke-width", "3")
+          .attr("fill", "blue")
           .attr("transform", "translate(20, 20)");
 
         boostCircle
@@ -114,9 +108,7 @@ export const Racer = ({
             endAngle: 2 * Math.PI,
           })
           .attr("d", arc)
-          .attr("fill", "none")
-          .attr("stroke", "yellow")
-          .attr("stroke-width", "3")
+          .attr("fill", "blue")
           .attr("transform", "translate(20, 20)");
       }
     }
@@ -143,7 +135,7 @@ export const Racer = ({
   }, [eliminated, tokenId, isBoosted, starSymbol]);
 
   const handleClick = () => {
-    if (isBoosted) return;
+    if (isBoosted || !isUserRacer) return;
 
     const svg = d3.select(svgRef.current);
     const progress = svg
@@ -176,7 +168,13 @@ export const Racer = ({
         width={50}
         height={50}
         onClick={handleClick}
-        style={{ cursor: isBoosted ? "not-allowed" : "pointer" }}
+        style={{
+          cursor: !isUserRacer
+            ? "default"
+            : isBoosted
+              ? "not-allowed"
+              : "pointer",
+        }}
       />
     </div>
   );

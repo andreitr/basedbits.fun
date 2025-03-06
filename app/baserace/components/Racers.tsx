@@ -9,7 +9,6 @@ interface Props {
   race: BaseRace;
   onClick: (idx: number) => void;
   userEntries?: BaseRaceEntry[];
-  userAddress?: string;
 }
 
 export const Racers = ({
@@ -18,7 +17,6 @@ export const Racers = ({
   eliminated,
   race,
   userEntries = [],
-  userAddress,
 }: Props) => {
   return (
     <div className="flex flex-wrap">
@@ -35,7 +33,6 @@ export const Racers = ({
             eliminated={i < entries.length - eliminated}
             onClick={onClick}
             isUserRacer={isUser}
-            address={isUser ? userAddress : undefined}
           />
         );
       })}

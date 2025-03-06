@@ -147,7 +147,6 @@ export const RaceLive = ({ race }: Props) => {
                     }))
                   : []
               }
-              userAddress={address}
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -166,7 +165,6 @@ export const RaceLive = ({ race }: Props) => {
                     }))
                   : []
               }
-              userAddress={address}
               race={race}
             />
           </div>
