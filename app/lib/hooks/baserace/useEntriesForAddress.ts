@@ -13,5 +13,9 @@ export const useEntriesForAddress = ({ address, id, enabled }: Props) => {
     queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, id],
     queryFn: async () => await fetchRaceEntries(address || "", id),
     enabled: enabled,
+    staleTime: 0, // Consider data stale immediately
+    refetchOnMount: "always",
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: true,
   });
 };

@@ -33,8 +33,6 @@ export async function GET(req: NextRequest) {
 
     const status = await contract.status();
     if (status === 2) {
-
-
       const race = await fetchRace(currentRaceId);
 
       const currentLap = await fetchLap(currentRaceId, race.lapCount);
@@ -43,7 +41,9 @@ export async function GET(req: NextRequest) {
 
       // Only finish if we've completed all laps and the current lap has ended
       if (
-        race.lapCount >= race.lapTotal && currentTime - currentLap.startedAt >= lapTime) {
+        race.lapCount >= race.lapTotal &&
+        currentTime - currentLap.startedAt >= lapTime
+      ) {
         const finishTx = await contract.finishGame();
         await finishTx.wait();
       }

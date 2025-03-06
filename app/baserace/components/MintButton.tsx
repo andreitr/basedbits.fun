@@ -56,13 +56,13 @@ export const MintButton = ({ mintPrice, race }: Props) => {
     if (isSuccess && data) {
       Promise.all([
         queryClient.invalidateQueries({
-          queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id],
-        }),
-        queryClient.invalidateQueries({
           queryKey: [BASE_RACE_QKS.RACE, race.id],
         }),
         queryClient.invalidateQueries({
           queryKey: [BASE_RACE_QKS.LAP, race.id, race.lapCount],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BASE_RACE_QKS.RACE_ENTRIES, address, race.id],
         }),
       ]).then(() => {
         show();

@@ -55,15 +55,16 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
       }));
       setAllRacers(filtered);
     }
+  }, [lap]);
 
-    if (lap && userEntries) {
+  useEffect(() => {
+    if (lap && userEntries && allRacers.length > 0) {
       const myRacers = allRacers.filter((racer) =>
         userEntries.includes(racer.tokenId.toString()),
       );
-
       setUserRacers(myRacers);
     }
-  }, [lap, userEntries]);
+  }, [lap, userEntries, allRacers]);
 
   const currentRace = loadedRace || race;
 

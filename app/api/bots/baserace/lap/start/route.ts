@@ -50,19 +50,23 @@ export async function GET(req: NextRequest) {
         const lapTime = Number((await contract.lapTime()).toString());
         const lap = await fetchLap(currentRaceId, race.lapCount);
         const lapStartedAt = lap.startedAt;
-        if (race.lapCount === race.lapTotal && currentTime - lapStartedAt >= lapTime) {
+        if (
+          race.lapCount === race.lapTotal &&
+          currentTime - lapStartedAt >= lapTime
+        ) {
           await contract.finishGame();
           revalidateTag(BASE_RACE_QKS.COUNT);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId - 1}`);
         }
       }
-
     } else {
       await contract.startNextLap();
       revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
       revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount}`);
-      revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount + 1}`);
+      revalidateTag(
+        `${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount + 1}`,
+      );
     }
 
     return new Response("Lap Started", {
