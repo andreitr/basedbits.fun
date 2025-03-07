@@ -58,7 +58,7 @@ export const Racer = ({
     [],
   );
 
-  useEffect(() => {
+  const drawRacer = () => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove(); // Clear previous content
 
@@ -69,6 +69,7 @@ export const Racer = ({
       .attr("cy", 20)
       .attr("r", 20)
       .attr("fill", isUserRacer ? "green" : "gray")
+      .attr("stroke", "none")
       .attr("stroke-width", isUserRacer ? 2 : 0);
 
     svg
@@ -79,7 +80,21 @@ export const Racer = ({
       .attr("font-size", "15px")
       .text(tokenId);
 
-    if (isBoosting && !hasBoostFailed) {
+    if (hasBoostFailed) {
+      svg
+        .append("path")
+        .datum({
+          innerRadius: 16,
+          outerRadius: 20,
+          startAngle: 0,
+          endAngle: 2 * Math.PI,
+        })
+        .attr("d", arc)
+        .attr("fill", "red")
+        .attr("transform", "translate(20, 20)");
+    }
+
+    if (isBoosting && !isBoosted) {
       // Add spinning animation while transaction is pending
       const spinningArc = svg
         .append("path")
@@ -90,7 +105,7 @@ export const Racer = ({
           endAngle: 0,
         })
         .attr("d", arc)
-        .attr("fill", "yellow")
+        .attr("fill", "orange")
         .attr("transform", "translate(20, 20)");
 
       spinningArc
@@ -103,7 +118,9 @@ export const Racer = ({
             return arc(d) || "";
           };
         });
-    } else if (isBoosted) {
+    }
+
+    if (isBoosted) {
       if (!hasAnimatedBoost.current) {
         const boostCircle = svg
           .append("path")
@@ -164,15 +181,18 @@ export const Racer = ({
         .attr("stroke", "white")
         .attr("stroke-width", "2");
     }
+  };
 
-    // Cleanup function to stop animations when component unmounts or dependencies change
+  // Draw the racer whenever relevant props change
+  useEffect(() => {
+    drawRacer();
     return () => {
-      svg.selectAll("*").interrupt();
+      d3.select(svgRef.current).selectAll("*").interrupt();
     };
-  }, [eliminated, tokenId, isBoosted, isBoosting, starSymbol]);
+  }, [eliminated, tokenId, isBoosted, isBoosting, hasBoostFailed]);
 
   const handleClick = () => {
-    if (isBoosted || !isUserRacer) return;
+    if (isBoosted || !isUserRacer || isBoosting) return;
     boost(tokenId.toString());
   };
 
@@ -184,7 +204,7 @@ export const Racer = ({
         height={50}
         onClick={handleClick}
         style={{
-          cursor: isBoosted || !isUserRacer ? "default" : "pointer",
+          cursor: isBoosted || !isUserRacer || isBoosting ? "default" : "pointer",
         }}
       />
     </div>
