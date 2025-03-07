@@ -6,22 +6,16 @@ import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
 import { useWaitForTransactionReceipt } from "wagmi";
+import toast from "react-hot-toast";
 
 interface Props {
   tokenId: number;
   race: BaseRace;
   eliminated: boolean;
-  onClick: (idx: number) => void;
   isUserRacer: boolean;
 }
 
-export const Racer = ({
-  tokenId,
-  race,
-  eliminated,
-  onClick,
-  isUserRacer,
-}: Props) => {
+export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const hasAnimatedBoost = useRef(false);
 
@@ -40,12 +34,12 @@ export const Racer = ({
     tokenId,
     enabled: isUserRacer,
   });
-
-  // Memoize the star symbol to prevent recreation on every render
-  const starSymbol = useMemo(
-    () => d3.symbol().type(d3.symbolStar).size(60),
-    [],
-  );
+  // Show toast when boost fails
+  useEffect(() => {
+    if (hasBoostFailed) {
+      toast.error("Failed to boost. Please try again.");
+    }
+  }, [hasBoostFailed]);
 
   // Memoize the arc generator
   const arc = useMemo(
@@ -80,22 +74,7 @@ export const Racer = ({
       .attr("font-size", "15px")
       .text(tokenId);
 
-    if (hasBoostFailed) {
-      svg
-        .append("path")
-        .datum({
-          innerRadius: 16,
-          outerRadius: 20,
-          startAngle: 0,
-          endAngle: 2 * Math.PI,
-        })
-        .attr("d", arc)
-        .attr("fill", "red")
-        .attr("transform", "translate(20, 20)");
-    }
-
-    if (isBoosting && !isBoosted) {
-      // Add spinning animation while transaction is pending
+    if (isBoosting && !isBoosted && !hasBoostFailed) {
       const spinningArc = svg
         .append("path")
         .datum({
@@ -204,7 +183,8 @@ export const Racer = ({
         height={50}
         onClick={handleClick}
         style={{
-          cursor: isBoosted || !isUserRacer || isBoosting ? "default" : "pointer",
+          cursor:
+            isBoosted || !isUserRacer || isBoosting ? "default" : "pointer",
         }}
       />
     </div>

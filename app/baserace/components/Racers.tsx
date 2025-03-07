@@ -7,13 +7,11 @@ interface Props {
   entries: BaseRaceEntry[];
   eliminated: number;
   race: BaseRace;
-  onClick: (idx: number) => void;
   userEntries?: BaseRaceEntry[];
 }
 
 export const Racers = ({
   entries,
-  onClick,
   eliminated,
   race,
   userEntries = [],
@@ -31,7 +29,6 @@ export const Racers = ({
             tokenId={entry.tokenId}
             race={race}
             eliminated={i < entries.length - eliminated}
-            onClick={onClick}
             isUserRacer={isUser}
           />
         );

@@ -1,16 +1,15 @@
 "use client";
 
-import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
-import { useLap } from "@/app/lib/hooks/baserace/useLap";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { formatUnits } from "ethers";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
-import { useEffect, useState } from "react";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
+import { useLap } from "@/app/lib/hooks/baserace/useLap";
+import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
+import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
-import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 interface Props {
   race: BaseRace;
@@ -39,15 +38,6 @@ export const RaceLive = ({ race }: Props) => {
 
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
   const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
-
-  const { call: boost, data } = useBoost();
-
-  const { isFetching: isBoosting, isSuccess: hasBoosted } =
-    useWaitForTransactionReceipt({
-      hash: data,
-    });
-
-  const [boostedTokenId, setBoostedTokenId] = useState<string | null>(null);
 
   useEffect(() => {
     if (lap) {
@@ -79,11 +69,6 @@ export const RaceLive = ({ race }: Props) => {
       setUserRacers(myRacers);
     }
   }, [userEntries, allRacers]);
-
-  const handleClick = (tokenId: number) => {
-    setBoostedTokenId(tokenId.toString());
-    boost(tokenId.toString());
-  };
 
   if (!lap || !allRacers) return <RaceSkeleton />;
 
@@ -131,7 +116,6 @@ export const RaceLive = ({ race }: Props) => {
               />
             </div>
             <Racers
-              onClick={handleClick}
               race={race}
               entries={allRacers}
               eliminated={lap.eliminations}
@@ -150,7 +134,6 @@ export const RaceLive = ({ race }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="text-xs uppercase">My Racers</div>
             <Racers
-              onClick={handleClick}
               entries={userRacers}
               eliminated={lap.eliminations}
               userEntries={
