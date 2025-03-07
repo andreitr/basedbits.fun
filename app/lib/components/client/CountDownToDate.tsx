@@ -64,7 +64,7 @@ export const CountDownToDate = ({ targetDate, message }: Props) => {
           />
 
           <NumberFlow
-            value={Math.round(seconds)}
+            value={Math.floor(seconds)}
             prefix=":"
             trend={-1}
             digits={{ 1: { max: 5 } }}

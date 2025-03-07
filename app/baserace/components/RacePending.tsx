@@ -3,6 +3,7 @@
 import { MintButton } from "@/app/baserace/components/MintButton";
 import { Racers } from "@/app/baserace/components/Racers";
 import { CountDown } from "@/app/lib/components/client/CountDown";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
@@ -21,6 +22,7 @@ interface Props {
 export const RacePending = ({ mintTime, price, race }: Props) => {
   const { address, isConnected } = useAccount();
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
+
   const isMinting = race.startedAt + mintTime > DateTime.now().toSeconds();
 
   const { data: loadedRace } = useRace({
@@ -67,23 +69,42 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
   }, [lap, userEntries, allRacers]);
 
   const currentRace = loadedRace || race;
+  const raceStartTime = DateTime.utc().set({ hour: 19, minute: 0 });
+  const raceStartsAt = `${raceStartTime.toLocal().toFormat("h:mma").toLowerCase()} ${raceStartTime.toLocal().startOf("day").equals(DateTime.now().startOf("day")) ? "today" : "tomorrow"}`;
+
+  const raceTitle = isMinting
+    ? `BaseRace #${currentRace.id} Registration Open`
+    : `BaseRace #${currentRace.id} - Starts soon`;
 
   return (
     <div>
       <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
         <div className="col-span-3 flex flex-col justify-between h-full">
           <div>
-            <div className="text-4xl mb-2">BaseRace #{currentRace.id}</div>
+            <div className="text-4xl mb-2">{raceTitle}</div>
             <div className="text-sm">
-              A new race starts daily! Survive 6 laps and fight for the prize
-              pool
+              {isMinting ? (
+                <div className="flex flex-row gap-2 items-center">
+                  Registration for this race closes in
+                  <CountDownToDate
+                    message="Mint ended"
+                    targetDate={race.startedAt + mintTime}
+                  />{" "}
+                  - Race starts {raceStartsAt}
+                </div>
+              ) : (
+                <div className="flex flex-row gap-2 items-center">
+                  {"Registration closed! Race starts in "}
+                  <CountDown hour={19} />
+                </div>
+              )}
             </div>
           </div>
           {isMinting ? (
             <MintButton mintPrice={price} race={currentRace} />
           ) : (
-            <div className="text-sm text-gray-300">
-              The next BaseRace opens for registration at {nextMint}
+            <div className="text-xs text-gray-300">
+              The next BaseRace opens for registration once this one ends
             </div>
           )}
         </div>
@@ -94,8 +115,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
               <div>Prize {prize}</div>
               <div>Entries {currentRace.entries}</div>
               <div className="flex flex-row gap-2">
-                <div>Starts in</div>
-                <CountDown hour={20} />
+                <div>Starts {raceStartsAt}</div>
               </div>
             </div>
 
