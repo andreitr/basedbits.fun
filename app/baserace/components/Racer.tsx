@@ -1,12 +1,12 @@
 "use client";
 
+import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
 import { useIsBoosted } from "@/app/lib/hooks/baserace/useIsBoosted";
 import { BaseRace } from "@/app/lib/types/types";
 import * as d3 from "d3";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
+import { useWaitForTransactionReceipt } from "wagmi";
 
 interface Props {
   tokenId: number;
@@ -74,34 +74,9 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
       .attr("font-size", "15px")
       .text(tokenId);
 
-    if (isBoosting && !isBoosted && !hasBoostFailed) {
-      const spinningArc = svg
-        .append("path")
-        .datum({
-          innerRadius: 16,
-          outerRadius: 20,
-          startAngle: 0,
-          endAngle: 0,
-        })
-        .attr("d", arc)
-        .attr("fill", "orange")
-        .attr("transform", "translate(20, 20)");
-
-      spinningArc
-        .transition()
-        .duration(4200)
-        .attrTween("d", (d) => {
-          const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
-          return (t) => {
-            d.endAngle = interpolate(t);
-            return arc(d) || "";
-          };
-        });
-    }
-
-    if (isBoosted) {
+    if ((isBoosting || hasBoosted || isBoosted) && !hasBoostFailed) {
       if (!hasAnimatedBoost.current) {
-        const boostCircle = svg
+        const spinningArc = svg
           .append("path")
           .datum({
             innerRadius: 16,
@@ -113,20 +88,21 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
           .attr("fill", "blue")
           .attr("transform", "translate(20, 20)");
 
-        boostCircle
+        spinningArc
           .transition()
-          .duration(1200)
+          .duration(4200)
           .attrTween("d", (d) => {
             const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
             return (t) => {
               d.endAngle = interpolate(t);
               return arc(d) || "";
             };
+          })
+          .on("end", () => {
+            hasAnimatedBoost.current = true;
           });
-
-        hasAnimatedBoost.current = true;
       } else {
-        // Just draw the circle without animation
+        // Draw static full circle for completed boost
         svg
           .append("path")
           .datum({
