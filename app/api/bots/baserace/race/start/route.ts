@@ -4,6 +4,9 @@ import { BASE_RACE_QKS, BASE_RACE_STATUS } from "@/app/lib/constants";
 import { getBaseRaceBotContract } from "@/app/lib/contracts/baserace";
 import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
+import { fetchLap } from "@/app/lib/api/baserace/getLap";
+import { fetchLapTime } from "@/app/lib/api/baserace/getLapTime";
+import { DateTime } from "luxon";
 
 export const dynamic = "force-dynamic";
 
@@ -25,21 +28,31 @@ export async function GET(req: NextRequest) {
     if (status === BASE_RACE_STATUS.RACING) {
       const race = await fetchRace(currentRaceId);
 
-      // Only finish if we've completed all laps and the current lap has ended
       if (
         race.lapCount >= race.lapTotal &&
         status === BASE_RACE_STATUS.RACING
       ) {
-        const finishTx = await contract.finishGame();
-        await finishTx.wait();
 
-        console.log("Finished game....");
+        const currentTime = DateTime.now().toSeconds();
+        const lap = await fetchLap(currentRaceId, race.lapCount);
+        const lapTime = await fetchLapTime();
+
+        if (currentTime - lap.startedAt >= lapTime) {
+          const finishTx = await contract.finishGame();
+          await finishTx.wait();
+        } else {
+          console.log("Unable to finish the game. Lap time not reached.");
+        }
       }
     }
 
-    const startTx = await contract.startGame();
-    await startTx.wait(); // Wait for transaction confirmation
-    console.log("Started new game...");
+    const statusAfterFinish = await contract.status();
+    if (statusAfterFinish === BASE_RACE_STATUS.PENDING) {
+      const startTx = await contract.startGame();
+      await startTx.wait();
+    } else {
+      console.log("Unable to start the game. Race status is not PENDING.");
+    }
 
     revalidateTag(`${BASE_RACE_QKS.RACE}-${previousRaceId}`);
     revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);

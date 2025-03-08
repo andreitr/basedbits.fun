@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
 
     if (race.lapCount >= race.lapTotal) {
       if (status === BASE_RACE_STATUS.RACING) {
-        const currentTime = Math.floor(Date.now() / 1000);
+        const currentTime = DateTime.now().toSeconds();
         const lap = await fetchLap(currentRaceId, race.lapCount);
 
         if (currentTime - lap.startedAt >= lapTime) {
