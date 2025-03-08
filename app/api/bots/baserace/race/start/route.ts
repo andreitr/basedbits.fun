@@ -1,10 +1,7 @@
-import { baseTestnetRpcUrl } from "@/app/lib/Web3Configs";
-import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
-import { fetchLap } from "@/app/lib/api/baserace/getLap";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { getRaceCount } from "@/app/lib/api/baserace/getRaceCount";
-import { BASE_RACE_QKS } from "@/app/lib/constants";
-import { Contract, JsonRpcProvider, Wallet } from "ethers";
+import { BASE_RACE_QKS, BASE_RACE_STATUS } from "@/app/lib/constants";
+import { getBaseRaceBotContract } from "@/app/lib/contracts/baserace";
 import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 
@@ -19,44 +16,32 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const provider = new JsonRpcProvider(baseTestnetRpcUrl);
-    const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
-
-    const contract = new Contract(
-      process.env.NEXT_PUBLIC_BASERACE_ADDRESS as string,
-      BaseRaceAbi,
-      signer,
-    );
+    const contract = getBaseRaceBotContract();
 
     const currentRaceId = await getRaceCount();
     const previousRaceId = currentRaceId - 1;
-
     const status = await contract.status();
-    if (status === 2) {
-      const race = await fetchRace(currentRaceId);
 
-      const currentLap = await fetchLap(currentRaceId, race.lapCount);
-      const currentTime = Math.floor(Date.now() / 1000);
-      const lapTime = Number((await contract.lapTime()).toString());
+    if (status === BASE_RACE_STATUS.RACING) {
+      const race = await fetchRace(currentRaceId);
 
       // Only finish if we've completed all laps and the current lap has ended
       if (
         race.lapCount >= race.lapTotal &&
-        currentTime - currentLap.startedAt >= lapTime
+        status === BASE_RACE_STATUS.RACING
       ) {
         const finishTx = await contract.finishGame();
         await finishTx.wait();
+
+        console.log("Finished game....");
       }
     }
 
     const startTx = await contract.startGame();
     await startTx.wait(); // Wait for transaction confirmation
+    console.log("Started new game...");
 
-    // Revalidate after game state changes
-    if (previousRaceId >= 0) {
-      revalidateTag(`${BASE_RACE_QKS.RACE}-${previousRaceId}`);
-    }
-
+    revalidateTag(`${BASE_RACE_QKS.RACE}-${previousRaceId}`);
     revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
     revalidateTag(BASE_RACE_QKS.COUNT);
 
