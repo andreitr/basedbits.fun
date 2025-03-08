@@ -10,4 +10,11 @@ export enum BASE_RACE_QKS {
   MINT_FEE = "mintFee",
   MINT_TIME = "mintingTime",
   IS_BOOSTED = "isBoosted",
+  LAP_TIME = "lapTime",
 }
+
+export const BASE_RACE_STATUS = {
+  PENDING: 0,
+  MINTING: 1,
+  RACING: 2,
+} as const;

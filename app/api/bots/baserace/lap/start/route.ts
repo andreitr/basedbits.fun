@@ -9,8 +9,22 @@ import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
 import { fetchLap } from "@/app/lib/api/baserace/getLap";
+import { getLapTime } from "@/app/lib/api/baserace/getLapTime";
 
 export const dynamic = "force-dynamic";
+
+import { BASE_RACE_STATUS } from "@/app/lib/constants";
+
+
+// Then, let's extract the contract initialization
+const getBaseRaceContract = (provider: JsonRpcProvider) => {
+  const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
+  return new Contract(
+    process.env.NEXT_PUBLIC_BASERACE_ADDRESS as string,
+    BaseRaceAbi,
+    signer
+  );
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,9 +38,9 @@ export async function GET(req: NextRequest) {
     const currentRaceId = await getRaceCount();
     const race = await fetchRace(currentRaceId);
     const mintTime = await getMintTime();
+    const lapTime = await getLapTime();
 
-    const isDoneMinting =
-      DateTime.now().toSeconds() > race.startedAt + mintTime;
+    const isDoneMinting = DateTime.now().toSeconds() > race.startedAt + mintTime;
 
     if (!isDoneMinting || currentRaceId === 0) {
       return new Response("Race Not Started", {
@@ -35,29 +49,21 @@ export async function GET(req: NextRequest) {
     }
 
     const provider = new JsonRpcProvider(baseTestnetRpcUrl);
-    const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
-
-    const contract = new Contract(
-      process.env.NEXT_PUBLIC_BASERACE_ADDRESS as string,
-      BaseRaceAbi,
-      signer,
-    );
+    const contract = getBaseRaceContract(provider);
 
     const status = await contract.status();
     if (race.lapCount === race.lapTotal) {
-      if (status === 2) {
+      if (status === BASE_RACE_STATUS.RACING) {
         const currentTime = Math.floor(Date.now() / 1000);
-        const lapTime = Number((await contract.lapTime()).toString());
         const lap = await fetchLap(currentRaceId, race.lapCount);
-        const lapStartedAt = lap.startedAt;
-        if (
-          race.lapCount === race.lapTotal &&
-          currentTime - lapStartedAt >= lapTime
-        ) {
+
+        if (currentTime - lap.startedAt >= lapTime) {
           await contract.finishGame();
           revalidateTag(BASE_RACE_QKS.COUNT);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId - 1}`);
+        } else {
+          console.log("Unalble to finish the game. Lap time not reached.");
         }
       }
     } else {
