@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
     const race = await fetchRace(currentRaceId);
     const mintTime = await fetchMintTime();
 
-    const isDoneMinting = DateTime.now().toSeconds() > race.startedAt + mintTime;
+    const isDoneMinting =
+      DateTime.now().toSeconds() > race.startedAt + mintTime;
 
     if (!isDoneMinting || currentRaceId === 0) {
       return new Response("Race Not Started", {
@@ -35,7 +36,6 @@ export async function GET(req: NextRequest) {
     const contract = getBaseRaceBotContract();
 
     if (race.lapCount === race.lapTotal) {
-
       const status = await contract.status();
 
       if (Number(status) === BASE_RACE_STATUS.RACING) {
@@ -45,12 +45,13 @@ export async function GET(req: NextRequest) {
 
           revalidateTag(BASE_RACE_QKS.COUNT);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
-          revalidateTag(`${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount}`);
+          revalidateTag(
+            `${BASE_RACE_QKS.LAP}-${currentRaceId}-${race.lapCount}`,
+          );
 
           return new Response("Game Finished Successfully", {
             status: 200,
           });
-
         } catch (txError) {
           console.error("Transaction failed:", txError);
           return new Response("Failed to finish game: Transaction error", {
@@ -62,9 +63,7 @@ export async function GET(req: NextRequest) {
       return new Response("Unable to finish game. Status is not RACING", {
         status: 400,
       });
-
     } else {
-
       const tx = await contract.startNextLap();
       await tx.wait();
 
@@ -75,7 +74,6 @@ export async function GET(req: NextRequest) {
         status: 200,
       });
     }
-
   } catch (error) {
     console.error("Error in lap start:", error);
     if (error instanceof Error) {

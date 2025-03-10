@@ -25,9 +25,7 @@ export async function GET(req: NextRequest) {
     const previousRaceId = currentRaceId - 1;
     let status = await contract.status();
 
-
     if (Number(status) === BASE_RACE_STATUS.RACING) {
-
       const race = await fetchRace(currentRaceId);
 
       if (race.lapCount === race.lapTotal) {
@@ -50,7 +48,6 @@ export async function GET(req: NextRequest) {
     return new Response("Game Started", {
       status: 200,
     });
-
   } catch (error) {
     console.error("Error in race management:", error);
     return new Response(
