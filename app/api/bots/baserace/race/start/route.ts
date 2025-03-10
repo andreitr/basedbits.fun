@@ -1,5 +1,5 @@
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
-import { getRaceCount } from "@/app/lib/api/baserace/getRaceCount";
+import { fetchRaceCount, getRaceCount } from "@/app/lib/api/baserace/getRaceCount";
 import { BASE_RACE_QKS, BASE_RACE_STATUS } from "@/app/lib/constants";
 import { getBaseRaceBotContract } from "@/app/lib/contracts/baserace";
 import { revalidateTag } from "next/cache";
@@ -21,9 +21,12 @@ export async function GET(req: NextRequest) {
 
     const contract = getBaseRaceBotContract();
 
-    const currentRaceId = await getRaceCount();
+    const currentRaceId = await fetchRaceCount();
     const previousRaceId = currentRaceId - 1;
     const status = await contract.status();
+
+    console.log("STATUS ", status);
+    console.log("currentRace ", currentRaceId);
 
     if (status === BASE_RACE_STATUS.RACING) {
 
@@ -45,23 +48,33 @@ export async function GET(req: NextRequest) {
         const lapTime = await fetchLapTime();
 
         if (currentTime - lap.startedAt >= lapTime) {
+          console.log("Finishing current game...");
           const finishTx = await contract.finishGame();
           await finishTx.wait();
+          console.log("Game finished successfully");
 
-          console.log("Finished game....");
-
+          // Verify the game is actually finished
+          const statusAfterFinish = await contract.status();
+          if (statusAfterFinish === BASE_RACE_STATUS.PENDING) {
+            console.log("Starting new game...");
+            const startTx = await contract.startGame();
+            await startTx.wait();
+            console.log("New game started successfully");
+          } else {
+            console.log(`Unable to start new game. Status after finish: ${statusAfterFinish}`);
+          }
         } else {
           console.log("Unable to finish the game. Lap time not reached.");
         }
       }
     }
 
-    const statusAfterFinish = await contract.status();
-    if (statusAfterFinish === BASE_RACE_STATUS.PENDING) {
+    // Remove the separate status check since we handle it above
+    if (status === BASE_RACE_STATUS.PENDING) {
+      console.log("No ongoing race, starting new game...");
       const startTx = await contract.startGame();
       await startTx.wait();
-    } else {
-      console.log("Unable to start the game. Race status is not PENDING.");
+      console.log("New game started successfully");
     }
 
     revalidateTag(`${BASE_RACE_QKS.RACE}-${previousRaceId}`);
