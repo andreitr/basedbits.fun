@@ -26,12 +26,19 @@ export async function GET(req: NextRequest) {
     const status = await contract.status();
 
     if (status === BASE_RACE_STATUS.RACING) {
+
+
       const race = await fetchRace(currentRaceId);
+      console.log("RACE STATUS ", status);
 
       if (
         race.lapCount >= race.lapTotal &&
         status === BASE_RACE_STATUS.RACING
       ) {
+
+        console.log("RACE LAP COUNT ", race.lapCount);
+        console.log("RACE LAP TOTAL ", race.lapTotal);
+
 
         const currentTime = DateTime.now().toSeconds();
         const lap = await fetchLap(currentRaceId, race.lapCount);
@@ -40,6 +47,9 @@ export async function GET(req: NextRequest) {
         if (currentTime - lap.startedAt >= lapTime) {
           const finishTx = await contract.finishGame();
           await finishTx.wait();
+
+          console.log("Finished game....");
+
         } else {
           console.log("Unable to finish the game. Lap time not reached.");
         }

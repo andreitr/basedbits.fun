@@ -70,7 +70,7 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
 
   const currentRace = loadedRace || race;
   const raceStartTime = DateTime.utc().set({ hour: 19, minute: 0 });
-  const raceStartsAt = `${raceStartTime.toLocal().toFormat("h:mma").toLowerCase()} ${raceStartTime.toLocal().startOf("day").equals(DateTime.now().startOf("day")) ? "today" : "tomorrow"}`;
+  const raceStartsAt = `${raceStartTime.toLocal().toFormat("h:mma").toLowerCase()} ${raceStartTime.toLocal() > DateTime.now() ? "today" : "tomorrow"}`;
 
   const raceTitle = isMinting
     ? `BaseRace #${currentRace.id} Registration Open`
