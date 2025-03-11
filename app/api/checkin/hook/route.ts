@@ -22,11 +22,21 @@ interface BlockchainLog {
 }
 
 interface GraphQLWebhookPayload {
-    block: {
-        hash: string;
-        number: string;
-        timestamp: string;
-        logs: BlockchainLog[];
+    webhookId: string;
+    id: string;
+    createdAt: string;
+    type: string;
+    event: {
+        data: {
+            block: {
+                hash: string;
+                number: number;
+                timestamp: number;
+                logs: BlockchainLog[];
+            };
+        };
+        sequenceNumber: string;
+        network: string;
     };
 }
 
@@ -50,7 +60,7 @@ export async function POST(request: Request) {
         console.log('Full payload:', JSON.stringify(payload, null, 2));
 
         // Validate webhook structure
-        if (!payload.block?.logs || !Array.isArray(payload.block.logs) || payload.block.logs.length === 0) {
+        if (!payload.event?.data?.block?.logs || !Array.isArray(payload.event.data.block.logs) || payload.event.data.block.logs.length === 0) {
             console.error('Invalid webhook payload structure:', payload);
             return NextResponse.json(
                 { error: "Invalid webhook payload structure" },
@@ -59,7 +69,7 @@ export async function POST(request: Request) {
         }
 
         // Extract the event data
-        const eventData = payload.block.logs[0];
+        const eventData = payload.event.data.block.logs[0];
 
         // Decode the event data
         const decodedLog = checkInInterface.parseLog({
@@ -80,7 +90,7 @@ export async function POST(request: Request) {
         // Parse the event data
         const checkInEvent: CheckInEvent = {
             sender: decodedLog.args[0].toLowerCase(), // sender address
-            timestamp: parseInt(payload.block.timestamp),
+            timestamp: payload.event.data.block.timestamp,
             streak: Number(decodedLog.args[2]), // streak
             totalCheckIns: Number(decodedLog.args[3]) // totalCheckIns
         };
