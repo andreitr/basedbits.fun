@@ -40,7 +40,10 @@ export async function getFarcasterUsername(
   }
 }
 
-export async function postToFarcaster(message: string): Promise<boolean> {
+export async function postToFarcaster(
+  message: string,
+  embeds?: string[],
+): Promise<boolean> {
   try {
     const response = await fetch(`${NEYNAR_API_URL}/cast`, {
       method: "POST",
@@ -51,6 +54,7 @@ export async function postToFarcaster(message: string): Promise<boolean> {
       body: JSON.stringify({
         signer_uuid: process.env.FARCASTER_BASEDBITS_UUID,
         text: message,
+        embeds: embeds || [],
       }),
     });
 
@@ -63,13 +67,4 @@ export async function postToFarcaster(message: string): Promise<boolean> {
     console.error("Error posting to Farcaster:", error);
     return false;
   }
-}
-
-export function formatCheckInMessage(
-  address: string,
-  username: string | null,
-  streak: number,
-): string {
-  const displayName = username ? `@${username}` : truncateAddress(address);
-  return `${displayName} just checked in! 🔥 Streak: ${streak}`;
 }
