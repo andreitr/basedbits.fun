@@ -95,15 +95,22 @@ export async function POST(request: Request) {
             totalCheckIns: Number(decodedLog.args[3]) // totalCheckIns
         };
 
-        // Look up Farcaster username
-        const username = await getFarcasterUsername(checkInEvent.sender);
+        // Look up Farcaster username with error handling
+        let username: string | null = null;
+        try {
+            username = await getFarcasterUsername(checkInEvent.sender);
+        } catch (error) {
+            console.warn('Failed to fetch Farcaster username:', error);
+            // Continue with the flow, we'll use the address if username is null
+        }
 
-        // Format and post the message
+        // Format and post the message - handle case where username lookup failed
         const message = formatCheckInMessage(
             checkInEvent.sender,
-            username,
+            username || checkInEvent.sender, // fallback to sender address if username lookup failed
             checkInEvent.streak,
         );
+
         const success = await postToFarcaster(message);
 
         if (!success) {
