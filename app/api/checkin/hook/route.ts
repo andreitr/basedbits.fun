@@ -5,8 +5,6 @@ import {
     formatCheckInMessage,
 } from "@/app/lib/external/farcaster";
 
-// Based Bits contract address
-const BASED_BITS_CONTRACT = '0xcf77e83f9745429d2722641f07edb2fbc96de240';
 
 interface CheckInEvent {
     sender: string;
@@ -19,16 +17,12 @@ export async function POST(request: Request) {
     try {
         const payload = await request.json();
 
-        // Verify this is a valid Alchemy webhook payload
-        if (!payload.event || payload.event.network !== 'BASE') {
-            return NextResponse.json({ error: 'Invalid event payload' }, { status: 400 });
-        }
-
         // Extract the event data
         const eventData = payload.event.activity[0];
-        if (!eventData || eventData.contractAddress.toLowerCase() !== BASED_BITS_CONTRACT.toLowerCase()) {
-            return NextResponse.json({ error: 'Invalid contract address' }, { status: 400 });
-        }
+
+
+        console.log(payload);
+        console.log(eventData);
 
         // Parse the event data
         const checkInEvent: CheckInEvent = {
