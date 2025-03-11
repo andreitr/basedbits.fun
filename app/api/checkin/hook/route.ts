@@ -1,10 +1,34 @@
-import { NextResponse } from "next/server";
 import {
+    formatCheckInMessage,
     getFarcasterUsername,
     postToFarcaster,
-    formatCheckInMessage,
 } from "@/app/lib/external/farcaster";
+import { ethers } from "ethers";
+import { NextResponse } from "next/server";
 
+interface BlockchainLog {
+    data: string;
+    topics: string[];
+    index: number;
+    account: {
+        address: string;
+    };
+    transaction: {
+        hash: string;
+        from: {
+            address: string;
+        };
+    };
+}
+
+interface GraphQLWebhookPayload {
+    block: {
+        hash: string;
+        number: string;
+        timestamp: string;
+        logs: BlockchainLog[];
+    };
+}
 
 interface CheckInEvent {
     sender: string;
@@ -13,23 +37,52 @@ interface CheckInEvent {
     totalCheckIns: number;
 }
 
+// Create interface for the CheckIn event
+const checkInInterface = new ethers.Interface([
+    "event CheckIn(address indexed sender, uint256 timestamp, uint16 streak, uint16 totalCheckIns)"
+]);
+
 export async function POST(request: Request) {
     try {
-        const payload = await request.json();
+        const payload = await request.json() as GraphQLWebhookPayload;
+
+        // Add detailed logging of the payload structure
+        console.log('Full payload:', JSON.stringify(payload, null, 2));
+
+        // Validate webhook structure
+        if (!payload.block?.logs || !Array.isArray(payload.block.logs) || payload.block.logs.length === 0) {
+            console.error('Invalid webhook payload structure:', payload);
+            return NextResponse.json(
+                { error: "Invalid webhook payload structure" },
+                { status: 400 }
+            );
+        }
 
         // Extract the event data
-        const eventData = payload.event.activity[0];
+        const eventData = payload.block.logs[0];
 
+        // Decode the event data
+        const decodedLog = checkInInterface.parseLog({
+            topics: eventData.topics,
+            data: eventData.data
+        });
 
-        console.log(payload);
-        console.log(eventData);
+        if (!decodedLog) {
+            console.error('Failed to decode event data');
+            return NextResponse.json(
+                { error: "Failed to decode event data" },
+                { status: 400 }
+            );
+        }
+
+        console.log('Decoded event:', decodedLog);
 
         // Parse the event data
         const checkInEvent: CheckInEvent = {
-            sender: eventData.fromAddress,
-            timestamp: parseInt(eventData.blockTimestamp),
-            streak: parseInt(eventData.extraData.streak),
-            totalCheckIns: parseInt(eventData.extraData.totalCheckIns)
+            sender: decodedLog.args[0].toLowerCase(), // sender address
+            timestamp: parseInt(payload.block.timestamp),
+            streak: Number(decodedLog.args[2]), // streak
+            totalCheckIns: Number(decodedLog.args[3]) // totalCheckIns
         };
 
         // Look up Farcaster username
@@ -49,10 +102,33 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("Error processing webhook:", error);
+        // Log the full error for debugging
+        console.error("Full error details:", {
+            message: error instanceof Error ? error.message : "Unknown error",
+            error,
+            stack: error instanceof Error ? error.stack : undefined
+        });
+
+        // Provide more specific error messages based on the error type
+        if (error instanceof Error) {
+            if (error.message.includes("parseLog")) {
+                return NextResponse.json(
+                    { error: "Failed to parse blockchain event data" },
+                    { status: 400 }
+                );
+            }
+            if (error.message === "Failed to post to Farcaster") {
+                return NextResponse.json(
+                    { error: "Failed to post to Farcaster" },
+                    { status: 503 }
+                );
+            }
+        }
+
+        // Default error response
         return NextResponse.json(
             { error: "Internal server error" },
-            { status: 500 },
+            { status: 500 }
         );
     }
 } 
