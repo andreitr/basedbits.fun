@@ -1,12 +1,6 @@
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || "";
 const NEYNAR_API_URL = "https://api.neynar.com/v2/farcaster";
 
-export interface FarcasterUser {
-  username: string;
-  displayName: string;
-  address: string;
-}
-
 export async function getFarcasterUsername(
   address: string,
 ): Promise<string | null> {
@@ -45,7 +39,10 @@ export async function getFarcasterUsername(
   }
 }
 
-export async function postToFarcaster(message: string): Promise<boolean> {
+export async function postToFarcaster(
+  message: string,
+  url: string,
+): Promise<boolean> {
   try {
     const response = await fetch(`${NEYNAR_API_URL}/cast`, {
       method: "POST",
@@ -58,6 +55,7 @@ export async function postToFarcaster(message: string): Promise<boolean> {
         channel_id: "basedbits",
         signer_uuid: process.env.FARCASTER_BASEDBITS_UUID,
         text: message,
+        embeds: [{ url: url }],
       }),
     });
 
