@@ -103,7 +103,7 @@ export async function POST(request: Request) {
         }
 
         const success = await postToFarcaster(
-            `${checkInEvent.streak}-day check-in streak 🔥 by ${username || truncateAddress(checkInEvent.sender)}`,
+            `${checkInEvent.streak}-day check-in streak 🔥 by ${username ? `@${username}` : truncateAddress(checkInEvent.sender)}`,
             `https://www.basedbits.fun/users/${checkInEvent.sender}`,
         );
 
