@@ -107,9 +107,9 @@ export async function POST(request: Request) {
       // Continue with the flow, we'll use the address if username is null
     }
 
-    const success = await postToFarcaster(`${checkInEvent.streak} streak 🔥`, [
-      `https://www.basedbits.fun/users/${checkInEvent.sender}`,
-    ]);
+    const success = await postToFarcaster(
+      `${checkInEvent.streak} streak 🔥 https://www.basedbits.fun/users/${checkInEvent.sender}`,
+    );
 
     if (!success) {
       throw new Error("Failed to post to Farcaster");
