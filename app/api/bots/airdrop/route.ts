@@ -5,6 +5,7 @@ import { Contract, parseUnits, Wallet } from "ethers";
 import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 import { isAddress } from "viem";
+import { postToFarcaster } from "@/app/lib/external/farcaster";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
@@ -39,17 +40,25 @@ export async function GET(req: NextRequest) {
     );
 
     let nonce = await baseProvider.getTransactionCount(signer.address);
+    let successfulTransfers = 0;
 
     for (const checkin of checkins) {
       if (isAddress(checkin)) {
         try {
           await contract.transfer(checkin, rewardAmount, { nonce: nonce++ });
+          successfulTransfers++;
         } catch (error) {
           console.error("Failed to transfer to", checkin, "Error:", error);
         }
       } else {
         console.log("Invalid address:", checkin);
       }
+    }
+
+    // Post to Farcaster if there were any successful transfers
+    if (successfulTransfers > 0) {
+      const message = `🎉 Daily BBITS Airdrop sent!\n\n${successfulTransfers} based frens received ${reward.toFixed(2)} $BBITS each for checking in.`;
+      await postToFarcaster(message, "https://www.basedbits.fun");
     }
 
     return new Response("Daily airdrop sent", {
