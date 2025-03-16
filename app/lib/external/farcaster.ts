@@ -41,7 +41,7 @@ export async function getFarcasterUsername(
 
 export async function postToFarcaster(
   message: string,
-  url: string,
+  url?: string,
 ): Promise<boolean> {
   try {
     const response = await fetch(`${NEYNAR_API_URL}/cast`, {
@@ -55,7 +55,7 @@ export async function postToFarcaster(
         channel_id: "basedbits",
         signer_uuid: process.env.FARCASTER_BASEDBITS_UUID,
         text: message,
-        embeds: [{ url: url }],
+        ...(url ? { embeds: [{ url: url }] } : {}),
       }),
     });
 

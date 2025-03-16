@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
 
     // Post to Farcaster if there were any successful transfers
     if (successfulTransfers > 0) {
-      const message = `🎉 Daily BBITS Airdrop sent!\n\n${successfulTransfers} based frens received ${reward.toFixed(2)} $BBITS each for checking in.`;
-      await postToFarcaster(message, "https://www.basedbits.fun");
+      const message = `Daily BBITS Airdrop sent!\n\n${successfulTransfers} based frens received ${reward.toFixed(2)} $BBITS each for checking in. Start your streak today! https://www.basedbits.fun`;
+      await postToFarcaster(message);
     }
 
     return new Response("Daily airdrop sent", {
