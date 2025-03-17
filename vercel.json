@@ -14,7 +14,15 @@
     },
     {
       "path": "/api/bots/baserace/lap/start",
+      "schedule": "5 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/lap/start",
       "schedule": "10 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/lap/start",
+      "schedule": "15 19 * * *"
     },
     {
       "path": "/api/bots/baserace/lap/start",
@@ -22,15 +30,11 @@
     },
     {
       "path": "/api/bots/baserace/lap/start",
+      "schedule": "25 19 * * *"
+    },
+    {
+      "path": "/api/bots/baserace/lap/start",
       "schedule": "30 19 * * *"
-    },
-    {
-      "path": "/api/bots/baserace/lap/start",
-      "schedule": "40 19 * * *"
-    },
-    {
-      "path": "/api/bots/baserace/lap/start",
-      "schedule": "50 19 * * *"
     },
     {
       "path": "/api/bots/baserace/race/start",
