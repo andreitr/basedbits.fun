@@ -42,7 +42,7 @@ export default async function Page() {
           <Header />
 
           {isPendingRace && (
-            <RacePending race={race} mintTime={mintTime} price={price} />
+            <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
           {isLiveRace && <RaceLive race={race} />}

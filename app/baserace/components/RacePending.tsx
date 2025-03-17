@@ -15,13 +15,12 @@ import { useAccount } from "wagmi";
 
 interface Props {
   mintTime: number;
-  price: string;
+  mintPrice: string;
   race: BaseRace;
 }
 
-export const RacePending = ({ mintTime, price, race }: Props) => {
+export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
   const { address, isConnected } = useAccount();
-  const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
 
   const isMinting = race.startedAt + mintTime > DateTime.now().toSeconds();
 
@@ -112,7 +111,9 @@ export const RacePending = ({ mintTime, price, race }: Props) => {
         <div className="bg-blue-600 rounded-lg p-3">
           <div className="flex flex-col justify-between h-full">
             <div>
-              <div>Prize {prize}</div>
+              <div>
+                Prize {`${formatUnits(currentRace.prize, 18).slice(0, 7)}Ξ`}
+              </div>
               <div>Entries {currentRace.entries}</div>
               <div className="flex flex-row gap-2">
                 <div>Starts {raceStartsAt}</div>
