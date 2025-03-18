@@ -4,7 +4,9 @@ CREATE TABLE users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   address TEXT NOT NULL,
   ens_name TEXT,
+  ens_avatar TEXT,
   farcaster_name TEXT,
+  farcaster_avatar TEXT,
   PRIMARY KEY (address)
 );
 
