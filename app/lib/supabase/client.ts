@@ -50,3 +50,22 @@ export async function getOrCreateUser(address: string): Promise<User | null> {
 
   return newUser as User;
 }
+
+// Helper function to update a user
+export async function updateUser(address: string, updates: Partial<User>): Promise<User | null> {
+  const normalizedAddress = address.toLowerCase();
+
+  const { data: updatedUser, error } = await supabase
+    .from("users")
+    .update(updates)
+    .eq("address", normalizedAddress)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+
+  return updatedUser as User;
+}

@@ -1,9 +1,14 @@
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || "";
 const NEYNAR_API_URL = "https://api.neynar.com/v2/farcaster";
 
-export async function getFarcasterUsername(
+type FarcasterUser = {
+  username: string;
+  avatarUrl: string | null;
+} | null;
+
+export async function getFarcasterUser(
   address: string,
-): Promise<string | null> {
+): Promise<FarcasterUser> {
   try {
     const normalizedAddress = address.toLowerCase();
 
@@ -29,12 +34,15 @@ export async function getFarcasterUsername(
     const users = data[normalizedAddress];
 
     if (users && users.length > 0 && users[0].username) {
-      return users[0].username;
+      return {
+        username: users[0].username,
+        avatarUrl: users[0].pfp_url || null,
+      };
     }
 
     return null;
   } catch (error) {
-    console.error("Error fetching Farcaster username:", error);
+    console.error("Error fetching Farcaster user:", error);
     return null;
   }
 }

@@ -1,11 +1,10 @@
 import {
-  getFarcasterUsername,
+  getFarcasterUser,
   postToFarcaster,
 } from "@/app/lib/external/farcaster";
-import { truncateAddress } from "@/app/lib/utils/addressUtils";
+import { getOrCreateUser, updateUser } from "@/app/lib/supabase/client";
 import { ethers } from "ethers";
 import { NextResponse } from "next/server";
-import { getOrCreateUser } from "@/app/lib/supabase/client";
 
 interface BlockchainLog {
   data: string;
@@ -93,26 +92,44 @@ export async function POST(request: Request) {
     };
 
     // Create or update user in database
-    const user = await getOrCreateUser(checkInEvent.sender);
+    let user = await getOrCreateUser(checkInEvent.sender);
     if (!user) {
-      console.error("Failed to create/update user in database");
+      return NextResponse.json(
+        { error: "Failed to create/update user in database" },
+        { status: 500 },
+      );
     }
 
-    // Look up Farcaster username with error handling
-    let username: string | null = null;
-    try {
-      username = await getFarcasterUsername(checkInEvent.sender);
-    } catch (error) {
-      console.warn("Failed to fetch Farcaster username:", error);
+    // Try to get Farcaster username if not already set
+    if (!user.farcaster_name) {
+      try {
+        const fcUser = await getFarcasterUser(checkInEvent.sender);
+        if (fcUser) {
+          const updates = {
+            farcaster_name: fcUser.username,
+            farcaster_avatar: fcUser.avatarUrl || undefined,
+          };
+
+          const updatedUser = await updateUser(checkInEvent.sender, updates);
+          if (updatedUser) {
+            user = updatedUser;
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to fetch Farcaster username:", error);
+      }
     }
 
-    const success = await postToFarcaster(
-      `${checkInEvent.streak}-day check-in streak 🔥 by ${username ? `@${username}` : truncateAddress(checkInEvent.sender)}`,
-      `https://www.basedbits.fun/users/${checkInEvent.sender}`,
-    );
+    // Only post to Farcaster if we have a username
+    if (user.farcaster_name) {
+      const success = await postToFarcaster(
+        `${checkInEvent.streak}-day streak 🔥 by @${user.farcaster_name}`,
+        `https://www.basedbits.fun/users/${checkInEvent.sender}`,
+      );
 
-    if (!success) {
-      throw new Error("Failed to post to Farcaster");
+      if (!success) {
+        throw new Error("Failed to post to Farcaster");
+      }
     }
 
     return NextResponse.json({ success: true });
