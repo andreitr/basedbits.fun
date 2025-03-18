@@ -5,6 +5,7 @@ import {
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { ethers } from "ethers";
 import { NextResponse } from "next/server";
+import { getOrCreateUser } from "@/app/lib/supabase/client";
 
 interface BlockchainLog {
   data: string;
@@ -90,6 +91,12 @@ export async function POST(request: Request) {
       streak: Number(decodedLog.args[2]), // streak
       totalCheckIns: Number(decodedLog.args[3]), // totalCheckIns
     };
+
+    // Create or update user in database
+    const user = await getOrCreateUser(checkInEvent.sender);
+    if (!user) {
+      console.error("Failed to create/update user in database");
+    }
 
     // Look up Farcaster username with error handling
     let username: string | null = null;
