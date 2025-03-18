@@ -12,6 +12,7 @@ import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import { futureLocalTime } from "@/app/lib/utils/timeUtils";
 
 interface Props {
   mintTime: number;
@@ -68,8 +69,7 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
   }, [lap, userEntries, allRacers]);
 
   const currentRace = loadedRace || race;
-  const raceStartTime = DateTime.utc().set({ hour: 19, minute: 0 });
-  const raceStartsAt = `${raceStartTime.toLocal().toFormat("h:mma").toLowerCase()} ${raceStartTime.toLocal() > DateTime.now() ? "today" : "tomorrow"}`;
+  const raceStartsAt = futureLocalTime(19);
 
   const raceTitle = isMinting
     ? `BaseRace #${currentRace.id} Registration Open`
