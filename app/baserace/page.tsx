@@ -30,10 +30,9 @@ export default async function Page() {
   const race = await fetchRace(currentRace);
 
   const mintTime = await getMintTime();
-  const isPendingRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
-  const isLiveRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
+
+  const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
+  const isLiveRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
