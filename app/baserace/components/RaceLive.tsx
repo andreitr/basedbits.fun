@@ -51,8 +51,6 @@ export const RaceLive = ({ race }: Props) => {
 
   useEffect(() => {
     if (userEntries && allRacers.length > 0) {
-      console.log("Processing user entries:", userEntries);
-      console.log("Current all racers:", allRacers);
 
       const userEntryObjects = userEntries.map((tokenId) => ({
         tokenId: Number(tokenId),
@@ -64,8 +62,6 @@ export const RaceLive = ({ race }: Props) => {
       const myRacers = allRacers.filter((racer) =>
         userEntryObjects.some((entry) => entry.tokenId === racer.tokenId),
       );
-
-      console.log("Filtered my racers:", myRacers);
       setUserRacers(myRacers);
     }
   }, [userEntries, allRacers]);
@@ -111,8 +107,8 @@ export const RaceLive = ({ race }: Props) => {
             <div className="flex flex-row items-center text-xs uppercase">
               All Racers -
               <CountDownToDate
-                targetDate={lap.startedAt + 300}
-                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 600).toFormat("h:mm a")}`}
+                targetDate={lap.startedAt + 180}
+                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 120).toFormat("h:mm a")}`}
               />
             </div>
             <Racers
@@ -122,11 +118,11 @@ export const RaceLive = ({ race }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
             />
@@ -139,11 +135,11 @@ export const RaceLive = ({ race }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
               race={race}

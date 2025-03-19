@@ -52,7 +52,10 @@ export async function getOrCreateUser(address: string): Promise<User | null> {
 }
 
 // Helper function to update a user
-export async function updateUser(address: string, updates: Partial<User>): Promise<User | null> {
+export async function updateUser(
+  address: string,
+  updates: Partial<User>,
+): Promise<User | null> {
   const normalizedAddress = address.toLowerCase();
 
   const { data: updatedUser, error } = await supabase

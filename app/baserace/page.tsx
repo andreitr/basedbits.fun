@@ -3,7 +3,7 @@
 import { RaceLive } from "@/app/baserace/components/RaceLive";
 import { RacePending } from "@/app/baserace/components/RacePending";
 import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
-import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
+import { fetchMintTime, getMintTime } from "@/app/lib/api/baserace/getMintTime";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import {
   fetchRaceCount,
@@ -29,7 +29,7 @@ export default async function Page() {
   const price = await getMintFee();
   const race = await fetchRace(currentRace);
 
-  const mintTime = await getMintTime();
+  const mintTime = await fetchMintTime();
 
   const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
   const isLiveRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
