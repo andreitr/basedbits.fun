@@ -108,7 +108,7 @@ export const RaceLive = ({ race }: Props) => {
               All Racers -
               <CountDownToDate
                 targetDate={lap.startedAt + 180}
-                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 120).toFormat("h:mm a")}`}
+                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 300).toFormat("h:mm a")}`}
               />
             </div>
             <Racers
