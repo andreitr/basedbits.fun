@@ -13,9 +13,12 @@ import { useAccount } from "wagmi";
 
 interface Props {
   race: BaseRace;
+  lapTime: number;
 }
 
-export const RaceLive = ({ race }: Props) => {
+const LAP_INTERVAL = 300; // New lap starts every 5 minutes
+
+export const RaceLive = ({ race, lapTime }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const { address, isConnected } = useAccount();
 
@@ -107,8 +110,8 @@ export const RaceLive = ({ race }: Props) => {
             <div className="flex flex-row items-center text-xs uppercase">
               All Racers -
               <CountDownToDate
-                targetDate={lap.startedAt + 180}
-                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + 300).toFormat("h:mm a")}`}
+                targetDate={lap.startedAt + lapTime}
+                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
               />
             </div>
             <Racers

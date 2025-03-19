@@ -5,14 +5,14 @@ import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 
 interface Props {
   entries: BaseRaceEntry[];
-  eliminated: number;
+  eliminated?: number;
   race: BaseRace;
   userEntries?: BaseRaceEntry[];
 }
 
 export const Racers = ({
   entries,
-  eliminated,
+  eliminated = 0,
   race,
   userEntries = [],
 }: Props) => {

@@ -3,7 +3,7 @@
 import { RaceLive } from "@/app/baserace/components/RaceLive";
 import { RacePending } from "@/app/baserace/components/RacePending";
 import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
-import { fetchMintTime, getMintTime } from "@/app/lib/api/baserace/getMintTime";
+import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import {
   fetchRaceCount,
@@ -11,6 +11,7 @@ import {
 } from "@/app/lib/api/baserace/getRaceCount";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+import { getLapTime } from "../lib/api/baserace/getLapTime";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
@@ -26,10 +27,11 @@ export async function generateMetadata() {
 export default async function Page() {
   const currentRace = await fetchRaceCount();
 
+
   const price = await getMintFee();
   const race = await fetchRace(currentRace);
-
-  const mintTime = await fetchMintTime();
+  const lapTime = await getLapTime();
+  const mintTime = await getMintTime();
 
   const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
   const isLiveRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
@@ -44,7 +46,7 @@ export default async function Page() {
             <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
-          {isLiveRace && <RaceLive race={race} />}
+          {isLiveRace && <RaceLive race={race} lapTime={lapTime} />}
         </div>
       </div>
 

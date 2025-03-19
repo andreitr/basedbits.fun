@@ -1,13 +1,14 @@
 "use server";
 
+import { getLapTime } from "@/app/lib/api/baserace/getLapTime";
 import { getMintFee } from "@/app/lib/api/baserace/getMintFree";
 import { getMintTime } from "@/app/lib/api/baserace/getMintTime";
 import { fetchRace, getRace } from "@/app/lib/api/baserace/getRace";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+import { RaceFinished } from "../components/RaceFinished";
 import { RaceLive } from "../components/RaceLive";
 import { RacePending } from "../components/RacePending";
-import { RaceFinished } from "../components/RaceFinished";
 
 interface Props {
   params: Promise<{
@@ -36,6 +37,7 @@ export default async function Page(props: Props) {
   const price = await getMintFee();
   const race = await fetchRace(Number(id));
 
+  const lapTime = await getLapTime();
   const mintTime = await getMintTime();
 
   const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
@@ -55,7 +57,7 @@ export default async function Page(props: Props) {
             <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
-          {isLiveRace && <RaceLive race={race} />}
+          {isLiveRace && <RaceLive race={race} lapTime={lapTime} />}
         </div>
       </div>
 
