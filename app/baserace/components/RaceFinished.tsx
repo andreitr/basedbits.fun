@@ -10,81 +10,72 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 interface Props {
-    race: BaseRace;
+  race: BaseRace;
 }
 
 export const RaceFinished = ({ race }: Props) => {
+  const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
+  const { address, isConnected } = useAccount();
 
-    const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
-    const { address, isConnected } = useAccount();
+  const nextMint = DateTime.utc()
+    .set({ hour: 20, minute: 0 })
+    .toFormat("h:mm a");
 
-    const nextMint = DateTime.utc()
-        .set({ hour: 20, minute: 0 })
-        .toFormat("h:mm a");
+  const { data: lap } = useLap({
+    raceId: race.id,
+    lapId: 1, //First lap with all entries
+    enabled: true,
+  });
 
-    const { data: lap } = useLap({
-        raceId: race.id,
-        lapId: 1, //First lap with all entries
-        enabled: true,
-    });
+  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
+  const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
-    const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
-    const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
+  useEffect(() => {
+    if (lap) {
+      const filtered = lap?.positions.map((tokenId, index) => ({
+        tokenId: Number(tokenId),
+        index,
+      }));
+      setAllRacers(filtered);
+    }
+  }, [lap]);
 
-    useEffect(() => {
-        if (lap) {
-            const filtered = lap?.positions.map((tokenId, index) => ({
-                tokenId: Number(tokenId),
-                index,
-            }));
-            setAllRacers(filtered);
-        }
-    }, [lap]);
+  if (!lap || !allRacers) return <RaceSkeleton />;
 
-
-    if (!lap || !allRacers) return <RaceSkeleton />;
-
-    return (
-        <div>
-            <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
-                <div className="col-span-3 flex flex-col justify-between h-full">
-                    <div>
-                        <div className="text-4xl mb-2">BaseRace #{race.id} is FINISHED</div>
-                        <div className="text-sm">
-                            Winner: {race.winner} won {prize}
-                        </div>
-                    </div>
-
-                    <div className="text-sm text-gray-300">
-                        The next BaseRace opens for registration at {nextMint}
-                    </div>
-                </div>
-
-                <div className="bg-blue-600 rounded-lg p-3">
-                    <div className="flex flex-col justify-between h-full">
-                        <div>
-                            <div>Prize {prize}</div>
-                            <div>Entries {race.entries}</div>
-                            <div>
-                                Completed {race.lapCount} laps
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+  return (
+    <div>
+      <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
+        <div className="col-span-3 flex flex-col justify-between h-full">
+          <div>
+            <div className="text-4xl mb-2">BaseRace #{race.id} is FINISHED</div>
+            <div className="text-sm">
+              Winner: {race.winner} won {prize}
             </div>
-            <div>
+          </div>
 
-                <div className="flex flex-col my-8 gap-8">
-                    <div className="flex flex-row items-center text-xs uppercase">
-                        Final Results
-                    </div>
-                    <Racers
-                        race={race}
-                        entries={allRacers}
-                    />
-                </div>
-            </div>
+          <div className="text-sm text-gray-300">
+            The next BaseRace opens for registration at {nextMint}
+          </div>
         </div>
-    );
-}; 
+
+        <div className="bg-blue-600 rounded-lg p-3">
+          <div className="flex flex-col justify-between h-full">
+            <div>
+              <div>Prize {prize}</div>
+              <div>Entries {race.entries}</div>
+              <div>Completed {race.lapCount} laps</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col my-8 gap-8">
+          <div className="flex flex-row items-center text-xs uppercase">
+            Final Results
+          </div>
+          <Racers race={race} entries={allRacers} />
+        </div>
+      </div>
+    </div>
+  );
+};

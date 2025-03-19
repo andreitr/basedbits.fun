@@ -27,14 +27,15 @@ export async function generateMetadata() {
 export default async function Page() {
   const currentRace = await fetchRaceCount();
 
-
   const price = await getMintFee();
   const race = await fetchRace(currentRace);
   const lapTime = await getLapTime();
   const mintTime = await getMintTime();
 
-  const isPendingRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
-  const isLiveRace = race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
+  const isPendingRace =
+    race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
+  const isLiveRace =
+    race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

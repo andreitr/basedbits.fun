@@ -54,7 +54,6 @@ export const RaceLive = ({ race, lapTime }: Props) => {
 
   useEffect(() => {
     if (userEntries && allRacers.length > 0) {
-
       const userEntryObjects = userEntries.map((tokenId) => ({
         tokenId: Number(tokenId),
         index: allRacers.findIndex(
@@ -121,11 +120,11 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                    tokenId: Number(tokenId),
-                    index: allRacers.findIndex(
-                      (racer) => racer.tokenId === Number(tokenId),
-                    ),
-                  }))
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
                   : []
               }
             />
@@ -138,11 +137,11 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                    tokenId: Number(tokenId),
-                    index: allRacers.findIndex(
-                      (racer) => racer.tokenId === Number(tokenId),
-                    ),
-                  }))
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
                   : []
               }
               race={race}
