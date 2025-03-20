@@ -4,7 +4,7 @@ import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { BASE_RACE_QKS } from "@/app/lib/constants";
-import { BaseRace } from "@/app/lib/types/types";
+import { BaseRace } from "@/app/lib/classes/BaseRace";
 
 export const fetchRace = async (race: number) => {
   const result: any = await readContract(baseSepoliaConfig, {
@@ -14,16 +14,7 @@ export const fetchRace = async (race: number) => {
     args: [race],
   });
 
-  return {
-    id: race,
-    entries: Number(result[0].toString()),
-    startedAt: Number(result[1].toString()),
-    endedAt: Number(result[2].toString()),
-    lapTotal: Number(result[3].toString()),
-    lapCount: Number(result[4].toString()),
-    prize: result[5].toString(),
-    winner: result[6].toString(),
-  } as BaseRace;
+  return BaseRace.fromContractResult(race, result);
 };
 
 // Avoid duplicate concurrent calls by wrapping the function in a cache

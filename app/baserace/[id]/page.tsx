@@ -40,25 +40,19 @@ export default async function Page(props: Props) {
   const lapTime = await getLapTime();
   const mintTime = await getMintTime();
 
-  const isPendingRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
-  const isLiveRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
-  const isFinishedRace = race.startedAt > 0 && race.endedAt > 0;
-
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
 
-          {isFinishedRace && <RaceFinished race={race} />}
+          {race.isFinished && <RaceFinished race={race} />}
 
-          {isPendingRace && (
+          {race.isMinting && (
             <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
-          {isLiveRace && <RaceLive race={race} lapTime={lapTime} />}
+          {race.isLive && <RaceLive race={race} lapTime={lapTime} />}
         </div>
       </div>
 

@@ -2,9 +2,10 @@
 
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
+import { BaseRace } from "@/app/lib/classes/BaseRace";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRaceCount } from "@/app/lib/hooks/baserace/useRaceCount";
-import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
+import { BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import Link from "next/link";

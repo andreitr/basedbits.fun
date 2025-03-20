@@ -12,6 +12,7 @@ import {
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { getLapTime } from "../lib/api/baserace/getLapTime";
+import { RaceFinished } from "./components/RaceFinished";
 
 export async function generateMetadata() {
   const race = await getRaceCount();
@@ -32,22 +33,19 @@ export default async function Page() {
   const lapTime = await getLapTime();
   const mintTime = await getMintTime();
 
-  const isPendingRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount === 0;
-  const isLiveRace =
-    race.startedAt > 0 && race.endedAt === 0 && race.lapCount > 0;
-
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
 
-          {isPendingRace && (
+          {race.isMinting && (
             <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
-          {isLiveRace && <RaceLive race={race} lapTime={lapTime} />}
+          {race.isLive && <RaceLive race={race} lapTime={lapTime} />}
+
+          {race.isFinished && <RaceFinished race={race} />}
         </div>
       </div>
 

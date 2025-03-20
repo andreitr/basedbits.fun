@@ -1,16 +1,5 @@
 import BigNumber from "bignumber.js";
 
-export type BaseRace = {
-  lapCount: number;
-  lapTotal: number;
-  endedAt: number;
-  entries: number;
-  id: number;
-  prize: string;
-  startedAt: number;
-  winner: string;
-};
-
 export type BaseRaceEntry = {
   tokenId: number;
   index: number;
