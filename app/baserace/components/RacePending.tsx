@@ -42,10 +42,6 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
     enabled: true,
   });
 
-  const nextMint = DateTime.utc()
-    .set({ hour: 20, minute: 0 })
-    .toFormat("h:mm a");
-
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
   const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 

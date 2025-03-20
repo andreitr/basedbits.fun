@@ -1,13 +1,13 @@
 "use client";
 
+import { RaceManager } from "@/app/baserace/components/RaceManager";
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
+import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
-import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -16,15 +16,14 @@ interface Props {
   lapTime: number;
 }
 
-const LAP_INTERVAL = 300; // New lap starts every 5 minutes
-
 export const RaceLive = ({ race, lapTime }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const { address, isConnected } = useAccount();
 
-  const nextMint = DateTime.utc()
-    .set({ hour: 20, minute: 0 })
-    .toFormat("h:mm a");
+  const { data: loadedRace } = useRace({
+    id: race.id,
+    enabled: true,
+  });
 
   const { data: userEntries } = useEntriesForAddress({
     address,
@@ -39,6 +38,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
     refetchInterval: 1000 * 3,
   });
 
+  const currentRace = loadedRace || race;
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
   const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
@@ -71,21 +71,22 @@ export const RaceLive = ({ race, lapTime }: Props) => {
   if (!lap || !allRacers) return <RaceSkeleton />;
 
   return (
+
     <div>
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
           <div>
             <div className="text-2xl md:text-4xl mb-2">
-              BaseRace #{race.id} is LIVE
+              BaseRace #{currentRace.id} is LIVE
             </div>
             <div className="text-sm">
-              A new race starts daily! Survive {race.lapTotal} laps and fight
+              A new race starts daily! Survive {currentRace.lapTotal} laps and fight
               for the prize pool
             </div>
           </div>
 
           <div className="text-sm text-gray-300">
-            The next BaseRace opens for registration at {nextMint}
+            The next BaseRace opens for registration...
           </div>
         </div>
 
@@ -93,9 +94,9 @@ export const RaceLive = ({ race, lapTime }: Props) => {
           <div className="flex flex-col justify-between h-full">
             <div>
               <div>Prize {prize}</div>
-              <div>Entries {race.entries}</div>
+              <div>Entries {currentRace.entries}</div>
               <div>
-                Lap {race.lapCount} of {race.lapTotal}
+                Lap {currentRace.lapCount} of {currentRace.lapTotal}
               </div>
             </div>
 
@@ -110,23 +111,20 @@ export const RaceLive = ({ race, lapTime }: Props) => {
           <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
             <div className="flex flex-col md:flex-row items-start md:items-center text-xs uppercase">
               All Racers -
-              <CountDownToDate
-                targetDate={lap.startedAt + lapTime}
-                message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
-              />
+              <RaceManager race={currentRace} lapTime={lapTime} />
             </div>
             <Racers
-              race={race}
+              race={currentRace}
               entries={allRacers}
               eliminated={lap.eliminations}
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
             />
@@ -139,18 +137,19 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
-              race={race}
+              race={currentRace}
             />
           </div>
         </div>
       </div>
     </div>
+
   );
 };
