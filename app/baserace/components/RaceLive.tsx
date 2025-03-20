@@ -8,6 +8,7 @@ import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
+import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -17,7 +18,9 @@ interface Props {
 }
 
 export const RaceLive = ({ race, lapTime }: Props) => {
+
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
+
   const { address, isConnected } = useAccount();
 
   const { data: loadedRace } = useRace({
@@ -48,6 +51,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
         index,
       }));
       setAllRacers(filtered);
+
     }
   }, [lap]);
 
@@ -102,11 +106,11 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
             />

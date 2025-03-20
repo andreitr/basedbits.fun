@@ -7,6 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Type for our users table
 export interface User {
+  user_id: number;
   created_at: string;
   updated_at: string;
   address: string;
