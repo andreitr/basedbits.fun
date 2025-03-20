@@ -3,9 +3,11 @@
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
+import { useRaceCount } from "@/app/lib/hooks/baserace/useRaceCount";
 import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -14,6 +16,11 @@ interface Props {
 
 export const RaceFinished = ({ race }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
+  const { data: latestRace } = useRaceCount();
+
+  const formattedEndDate = race.endedAt
+    ? DateTime.fromSeconds(Number(race.endedAt)).toFormat("MMMM d, yyyy")
+    : "";
 
   const { data: lap } = useLap({
     raceId: race.id,
@@ -37,21 +44,25 @@ export const RaceFinished = ({ race }: Props) => {
 
   return (
     <div>
-      <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
-        <div className="col-span-3 flex flex-col justify-between h-full">
+      <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
+        <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
           <div>
-            <div className="text-4xl mb-2">BaseRace #{race.id} is FINISHED</div>
+            <div className="text-2xl md:text-4xl mb-2">
+              Racer #{race.winner} won {prize}
+            </div>
             <div className="text-sm">
-              Winner: {race.winner} won {prize}
+              BaseRace #{race.id} ended {formattedEndDate}
             </div>
           </div>
 
-          <div className="text-sm text-gray-300">
-            The next BaseRace opens for registration.
+          <div className="text-sm text-gray-300 mt-4 md:mt-0">
+            <Link href={`/baserace/${latestRace}`} className="hover:underline">
+              View latest race #{latestRace}
+            </Link>
           </div>
         </div>
 
-        <div className="bg-blue-600 rounded-lg p-3">
+        <div className="bg-yellow-400 rounded-lg p-3 mt-4 md:mt-0">
           <div className="flex flex-col justify-between h-full">
             <div>
               <div>Prize {prize}</div>
@@ -62,9 +73,9 @@ export const RaceFinished = ({ race }: Props) => {
         </div>
       </div>
       <div>
-        <div className="flex flex-col my-8 gap-8">
+        <div className="flex flex-col my-6 md:my-8 gap-6 md:gap-8">
           <div className="flex flex-row items-center text-xs uppercase">
-            Final Results
+            Participants
           </div>
           <Racers race={race} entries={allRacers} />
         </div>

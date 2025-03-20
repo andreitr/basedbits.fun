@@ -1,10 +1,7 @@
-import { fetchLap } from "@/app/lib/api/baserace/getLap";
-import { fetchLapTime } from "@/app/lib/api/baserace/getLapTime";
 import { fetchRace } from "@/app/lib/api/baserace/getRace";
 import { fetchRaceCount } from "@/app/lib/api/baserace/getRaceCount";
 import { BASE_RACE_QKS, BASE_RACE_STATUS } from "@/app/lib/constants";
 import { getBaseRaceBotContract } from "@/app/lib/contracts/baserace";
-import { DateTime } from "luxon";
 import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 
