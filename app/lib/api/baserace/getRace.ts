@@ -26,7 +26,6 @@ export const fetchRace = async (race: number) => {
   } as BaseRace;
 };
 
-// TODO: Fix caching
 // Avoid duplicate concurrent calls by wrapping the function in a cache
 const cachedFetchRace = cache(fetchRace);
 

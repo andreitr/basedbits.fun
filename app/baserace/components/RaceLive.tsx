@@ -40,7 +40,6 @@ export const RaceLive = ({ race, lapTime }: Props) => {
 
   const currentRace = loadedRace || race;
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
-  const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
   useEffect(() => {
     if (lap) {
@@ -52,26 +51,9 @@ export const RaceLive = ({ race, lapTime }: Props) => {
     }
   }, [lap]);
 
-  useEffect(() => {
-    if (userEntries && allRacers.length > 0) {
-      const userEntryObjects = userEntries.map((tokenId) => ({
-        tokenId: Number(tokenId),
-        index: allRacers.findIndex(
-          (racer) => racer.tokenId === Number(tokenId),
-        ),
-      }));
-
-      const myRacers = allRacers.filter((racer) =>
-        userEntryObjects.some((entry) => entry.tokenId === racer.tokenId),
-      );
-      setUserRacers(myRacers);
-    }
-  }, [userEntries, allRacers]);
-
   if (!lap || !allRacers) return <RaceSkeleton />;
 
   return (
-
     <div>
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
@@ -80,8 +62,8 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               BaseRace #{currentRace.id} is LIVE
             </div>
             <div className="text-sm">
-              A new race starts daily! Survive {currentRace.lapTotal} laps and fight
-              for the prize pool
+              A new race starts daily! Survive {currentRace.lapTotal} laps and
+              fight for the prize pool
             </div>
           </div>
 
@@ -111,7 +93,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
           <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
             <div className="flex flex-col md:flex-row items-start md:items-center text-xs uppercase">
               All Racers -
-              <RaceManager race={currentRace} lapTime={lapTime} />
+              <RaceManager race={currentRace} lapTime={lapTime} lap={lap} />
             </div>
             <Racers
               race={currentRace}
@@ -120,36 +102,17 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                    tokenId: Number(tokenId),
-                    index: allRacers.findIndex(
-                      (racer) => racer.tokenId === Number(tokenId),
-                    ),
-                  }))
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
                   : []
               }
-            />
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="text-xs uppercase">My Racers</div>
-            <Racers
-              entries={userRacers}
-              eliminated={lap.eliminations}
-              userEntries={
-                userEntries
-                  ? userEntries.map((tokenId) => ({
-                    tokenId: Number(tokenId),
-                    index: allRacers.findIndex(
-                      (racer) => racer.tokenId === Number(tokenId),
-                    ),
-                  }))
-                  : []
-              }
-              race={currentRace}
             />
           </div>
         </div>
       </div>
     </div>
-
   );
 };

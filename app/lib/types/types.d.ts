@@ -17,6 +17,7 @@ export type BaseRaceEntry = {
 };
 
 export type BaseRaceLap = {
+  id: number;
   startedAt: number;
   endedAt: number;
   eliminations: number;
