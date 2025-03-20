@@ -2,7 +2,7 @@
 
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
-import { BaseRace } from "@/app/lib/classes/BaseRace";
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRaceCount } from "@/app/lib/hooks/baserace/useRaceCount";
 import { BaseRaceEntry } from "@/app/lib/types/types";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Props {
-  race: BaseRace;
+  race: IBaseRace;
 }
 
 export const RaceFinished = ({ race }: Props) => {

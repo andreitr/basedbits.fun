@@ -3,18 +3,17 @@
 import { RaceManager } from "@/app/baserace/components/RaceManager";
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
-import { BaseRace } from "@/app/lib/classes/BaseRace";
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
-import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 interface Props {
-  race: BaseRace;
+  race: IBaseRace;
   lapTime: number;
 }
 

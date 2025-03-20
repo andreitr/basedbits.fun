@@ -2,23 +2,23 @@
 
 import { MintButton } from "@/app/baserace/components/MintButton";
 import { Racers } from "@/app/baserace/components/Racers";
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
 import { BaseRaceEntry } from "@/app/lib/types/types";
+import { futureLocalTime } from "@/app/lib/utils/timeUtils";
 import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { futureLocalTime } from "@/app/lib/utils/timeUtils";
-import { BaseRace } from "@/app/lib/classes/BaseRace";
 
 interface Props {
   mintTime: number;
   mintPrice: string;
-  race: BaseRace;
+  race: IBaseRace;
 }
 
 export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
