@@ -40,8 +40,11 @@ export async function GET(req: NextRequest) {
 
       if (Number(status) === BASE_RACE_STATUS.RACING) {
         try {
-          const tx = await contract.finishGame();
-          const receipt = await tx.wait();
+          const finishTx = await contract.finishGame();
+          await finishTx.wait();
+
+          const startTx = await contract.startGame();
+          await startTx.wait();
 
           revalidateTag(BASE_RACE_QKS.COUNT);
           revalidateTag(`${BASE_RACE_QKS.RACE}-${currentRaceId}`);
@@ -53,7 +56,6 @@ export async function GET(req: NextRequest) {
             status: 200,
           });
         } catch (txError) {
-          console.error("Transaction failed:", txError);
           return new Response("Failed to finish game: Transaction error", {
             status: 500,
           });
@@ -75,7 +77,6 @@ export async function GET(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.error("Error in lap start:", error);
     if (error instanceof Error) {
       return new Response(`Error: ${error.message}`, {
         status: 500,

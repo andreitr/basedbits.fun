@@ -7,7 +7,6 @@ import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 
 interface Props {
   race: BaseRace;
@@ -15,11 +14,6 @@ interface Props {
 
 export const RaceFinished = ({ race }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
-  const { address, isConnected } = useAccount();
-
-  const nextMint = DateTime.utc()
-    .set({ hour: 20, minute: 0 })
-    .toFormat("h:mm a");
 
   const { data: lap } = useLap({
     raceId: race.id,
@@ -28,7 +22,6 @@ export const RaceFinished = ({ race }: Props) => {
   });
 
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
-  const [userRacers, setUserRacers] = useState<BaseRaceEntry[]>([]);
 
   useEffect(() => {
     if (lap) {
@@ -54,7 +47,7 @@ export const RaceFinished = ({ race }: Props) => {
           </div>
 
           <div className="text-sm text-gray-300">
-            The next BaseRace opens for registration at {nextMint}
+            The next BaseRace opens for registration.
           </div>
         </div>
 
