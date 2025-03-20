@@ -2,7 +2,7 @@ import {
   getFarcasterUser,
   postToFarcaster,
 } from "@/app/lib/external/farcaster";
-import { getOrCreateUser, updateUser } from "@/app/lib/supabase/client";
+import { createCheckin, getOrCreateUser, updateUser } from "@/app/lib/supabase/client";
 import { ethers } from "ethers";
 import { NextResponse } from "next/server";
 
@@ -99,6 +99,8 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
+    // Create checkin record
+    await createCheckin(user.user_id, checkInEvent.streak, checkInEvent.totalCheckIns);
 
     // Try to get Farcaster username if not already set
     if (!user.farcaster_name) {
