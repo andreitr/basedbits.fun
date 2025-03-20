@@ -77,13 +77,13 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
 
   return (
     <div>
-      <div className="grid grid-cols-4 w-full p-6 bg-black rounded-lg text-white h-[210px]">
-        <div className="col-span-3 flex flex-col justify-between h-full">
+      <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
+        <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
           <div>
-            <div className="text-4xl mb-2">{raceTitle}</div>
+            <div className="text-2xl md:text-4xl mb-2">{raceTitle}</div>
             <div className="text-sm">
               {isMinting ? (
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
                   Registration for this race closes in
                   <CountDownToDate
                     message="Mint ended"
@@ -92,7 +92,7 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
                   - Race starts {raceStartsAt}
                 </div>
               ) : (
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
                   {"Registration closed! Race starts in "}
                   <CountDown hour={19} />
                 </div>
@@ -108,7 +108,7 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
           )}
         </div>
 
-        <div className="bg-blue-600 rounded-lg p-3">
+        <div className="bg-blue-600 rounded-lg p-3 mt-4 md:mt-0">
           <div className="flex flex-col justify-between h-full">
             <div>
               <div>
@@ -127,9 +127,9 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 my-8 gap-8 ">
+      <div className="grid grid-cols-1 md:grid-cols-4 my-6 md:my-8 gap-6 md:gap-8">
         {lap && allRacers.length > 0 && (
-          <div className="col-span-3 flex flex-col gap-4">
+          <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
               race={currentRace}
