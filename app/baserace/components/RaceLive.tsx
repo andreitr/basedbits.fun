@@ -44,14 +44,17 @@ export const RaceLive = ({ race, lapTime }: Props) => {
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
 
   useEffect(() => {
-    if (lap) {
+    if (lap?.id === race.lapCount) {
       const filtered = lap?.positions.map((tokenId, index) => ({
         tokenId: Number(tokenId),
         index,
       }));
+
+      console.log("new lap detected");
+
       setAllRacers(filtered);
     }
-  }, [lap]);
+  }, [race.lapCount, lap]);
 
   if (!lap || !allRacers) return <RaceSkeleton />;
 
@@ -95,11 +98,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
           <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
             <div className="flex flex-col md:flex-row items-start md:items-center text-xs uppercase">
               All Racers -
-              <RaceManager
-                race={currentRace}
-                lapTime={lapTime}
-                lapStartedAt={lap.startedAt}
-              />
+              <RaceManager race={currentRace} lapTime={lapTime} lap={lap} />
             </div>
             <Racers
               race={currentRace}

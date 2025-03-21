@@ -3,6 +3,7 @@
 import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
+import { BaseRaceLap } from "@/app/lib/types/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
@@ -10,12 +11,12 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   race: IBaseRace;
   lapTime: number;
-  lapStartedAt: number;
+  lap: BaseRaceLap;
 }
 
 const LAP_INTERVAL = 300;
 
-export const RaceManager = ({ race, lapTime, lapStartedAt }: Props) => {
+export const RaceManager = ({ race, lapTime, lap }: Props) => {
   const initialLapCount = useRef(race.lapCount);
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const queryClient = useQueryClient();
@@ -32,6 +33,7 @@ export const RaceManager = ({ race, lapTime, lapStartedAt }: Props) => {
       currentRace &&
       currentRace.lapCount > initialLapCount.current
     ) {
+      console.log("we have a new lap - stop refetching");
       setShouldRefetch(false);
       initialLapCount.current = currentRace.lapCount;
     }
@@ -39,19 +41,20 @@ export const RaceManager = ({ race, lapTime, lapStartedAt }: Props) => {
 
   useEffect(() => {
     const checkLapEnd = () => {
-      if (lapStartedAt + lapTime > DateTime.now().toSeconds()) {
+      if (DateTime.now().toSeconds() > lap.startedAt + LAP_INTERVAL) {
         setShouldRefetch(true);
+        console.log("lap ended - checking for the next one ");
       }
     };
     checkLapEnd();
     const interval = setInterval(checkLapEnd, 3000);
     return () => clearInterval(interval);
-  }, [lapStartedAt, lapTime]);
+  }, [lap, lapTime]);
 
   return (
     <CountDownToDate
-      targetDate={lapStartedAt + lapTime}
-      message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lapStartedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
+      targetDate={lap.startedAt + lapTime}
+      message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
     />
   );
 };
