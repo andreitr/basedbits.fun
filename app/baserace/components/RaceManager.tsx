@@ -1,22 +1,22 @@
 "use client";
 
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
-import { BaseRace, BaseRaceLap } from "@/app/lib/types/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
-  race: BaseRace;
+  race: IBaseRace;
   lapTime: number;
-  lap: BaseRaceLap;
+  lapStartedAt: number;
 }
 
 const LAP_INTERVAL = 300;
 
-export const RaceManager = ({ race, lapTime, lap }: Props) => {
+export const RaceManager = ({ race, lapTime, lapStartedAt }: Props) => {
+  const initialLapCount = useRef(race.lapCount);
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const queryClient = useQueryClient();
 
@@ -27,25 +27,31 @@ export const RaceManager = ({ race, lapTime, lap }: Props) => {
   });
 
   useEffect(() => {
-    if (currentRace && currentRace.lapCount > lap.id) {
-      //TODO: Verify that this reloads upstream lap queries
-      queryClient.invalidateQueries({
-        queryKey: [BASE_RACE_QKS.RACE, race.id],
-      });
+    if (
+      shouldRefetch &&
+      currentRace &&
+      currentRace.lapCount > initialLapCount.current
+    ) {
       setShouldRefetch(false);
+      initialLapCount.current = currentRace.lapCount;
     }
-  }, [currentRace, race.lapCount, race.id, queryClient]);
+  }, [shouldRefetch, currentRace, race.id, queryClient]);
 
   useEffect(() => {
-    if (lap.startedAt + LAP_INTERVAL > DateTime.now().toSeconds()) {
-      setShouldRefetch(true);
-    }
-  }, [lap]);
+    const checkLapEnd = () => {
+      if (lapStartedAt + lapTime > DateTime.now().toSeconds()) {
+        setShouldRefetch(true);
+      }
+    };
+    checkLapEnd();
+    const interval = setInterval(checkLapEnd, 3000);
+    return () => clearInterval(interval);
+  }, [lapStartedAt, lapTime]);
 
   return (
     <CountDownToDate
-      targetDate={lap.startedAt + lapTime}
-      message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lap.startedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
+      targetDate={lapStartedAt + lapTime}
+      message={` Lap ended. Next lap starts at ${DateTime.fromSeconds(lapStartedAt + LAP_INTERVAL).toFormat("h:mm a")}`}
     />
   );
 };
