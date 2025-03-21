@@ -1,27 +1,27 @@
 "use client";
 
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-  useSwitchChain,
-} from "wagmi";
+import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
+import { Button } from "@/app/lib/components/Button";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
-import { formatUnits } from "ethers";
-import { useEffect } from "react";
+import { BASE_RACE_QKS } from "@/app/lib/constants";
 import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
-import { BaseRaceAbi } from "@/app/lib/abi/BaseRace.abi";
-import toast from "react-hot-toast";
-import { Button } from "@/app/lib/components/Button";
-import { baseSepolia } from "wagmi/chains";
-import { BASE_RACE_QKS } from "@/app/lib/constants";
-import { BaseRace } from "@/app/lib/types/types";
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatUnits } from "ethers";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import {
+  useAccount,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { baseSepolia } from "wagmi/chains";
 
 interface Props {
   mintPrice: string;
-  race: BaseRace;
+  race: IBaseRace;
 }
 
 export const MintButton = ({ mintPrice, race }: Props) => {

@@ -1,8 +1,9 @@
 "use client";
 
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
 import { useBoost } from "@/app/lib/hooks/baserace/useBoost";
 import { useIsBoosted } from "@/app/lib/hooks/baserace/useIsBoosted";
-import { BaseRace } from "@/app/lib/types/types";
+
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
@@ -10,7 +11,7 @@ import { useWaitForTransactionReceipt } from "wagmi";
 
 interface Props {
   tokenId: number;
-  race: BaseRace;
+  race: IBaseRace;
   eliminated: boolean;
   isUserRacer: boolean;
 }

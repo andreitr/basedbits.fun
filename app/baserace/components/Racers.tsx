@@ -1,12 +1,13 @@
 "use client";
 
 import { Racer } from "@/app/baserace/components/Racer";
-import { BaseRace, BaseRaceEntry } from "@/app/lib/types/types";
+import { IBaseRace } from "@/app/lib/classes/BaseRace";
+import { BaseRaceEntry } from "@/app/lib/types/types";
 
 interface Props {
   entries: BaseRaceEntry[];
   eliminated?: number;
-  race: BaseRace;
+  race: IBaseRace;
   userEntries?: BaseRaceEntry[];
 }
 
