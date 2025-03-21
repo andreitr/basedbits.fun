@@ -108,6 +108,7 @@ export async function POST(request: Request) {
       user.user_id,
       checkInEvent.streak,
       checkInEvent.totalCheckIns,
+      eventData.transaction.hash,
     );
 
     // Try to get Farcaster username if not already set

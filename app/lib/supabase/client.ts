@@ -79,12 +79,14 @@ export async function createCheckin(
   userId: number,
   streak: number,
   count: number,
+  hash: string,
 ): Promise<boolean> {
   const { error } = await supabase.from("checkins").insert([
     {
       user_id: userId,
       streak,
       count,
+      hash,
     },
   ]);
 
