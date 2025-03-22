@@ -9,6 +9,10 @@
       "schedule": "0 7 * * *"
     },
     {
+      "path": "/api/bots/backfill/checkins",
+      "schedule": "0 0 * * *"
+    },
+    {
       "path": "/api/bots/baserace/lap/start",
       "schedule": "0 19 * * *"
     },
