@@ -85,9 +85,41 @@ export async function GET(req: NextRequest) {
       ? `0x${(lastCheckin[0].block_number + 1).toString(16)}`
       : "0x0";
 
-    // Process in chunks of 1000 blocks
-    const toBlock = "latest";
-    const chunkSize = 1000;
+    // Get current block number
+    const currentBlockResponse = await fetch(baseRpcUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_blockNumber",
+      }),
+    });
+
+    const currentBlockData = await currentBlockResponse.json();
+    const currentBlock = parseInt(currentBlockData.result, 16);
+    const lastProcessedBlock = lastCheckin?.[0]?.block_number || 0;
+
+    // Process in chunks of 100 blocks to stay within timeout
+    const chunkSize = 100;
+    const toBlock = Math.min(lastProcessedBlock + chunkSize, currentBlock);
+    const toBlockHex = `0x${toBlock.toString(16)}`;
+
+    // If we've caught up to the current block, return early
+    if (lastProcessedBlock >= currentBlock) {
+      return new Response(JSON.stringify({
+        message: "Already up to date",
+        lastProcessedBlock,
+        currentBlock
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
 
     const response = await fetch(baseRpcUrl, {
       method: "POST",
@@ -105,7 +137,7 @@ export async function GET(req: NextRequest) {
               "0x4a86d69d6fc1e14c4d0d43553c3c2740655d55029baf8c564d8e1f702a6b48f2",
             ],
             fromBlock,
-            toBlock,
+            toBlock: toBlockHex,
           },
         ],
       }),
@@ -122,9 +154,14 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // If no new events, return early
+    // If no new events in this chunk, return early
     if (!data.result || data.result.length === 0) {
-      return new Response(JSON.stringify({ message: "No new events to process" }), {
+      return new Response(JSON.stringify({
+        message: "No new events in this chunk",
+        fromBlock,
+        toBlock: toBlockHex,
+        nextFromBlock: `0x${(toBlock + 1).toString(16)}`
+      }), {
         status: 200,
         headers: {
           "Content-Type": "application/json",
@@ -226,20 +263,28 @@ export async function GET(req: NextRequest) {
     // Log the results
     console.log('Backfill Checkins Results:', {
       fromBlock,
-      toBlock,
+      toBlock: toBlockHex,
       totalEvents: blockchainEvents.length,
       existingEvents: existingCheckins.length,
       missingEvents: missingEvents.length,
       createdEvents: successCount,
       failedEvents: failureCount,
+      nextFromBlock: `0x${(toBlock + 1).toString(16)}`
     });
 
     return new Response(JSON.stringify({
-      message: 'Backfill completed successfully',
+      message: 'Chunk processed successfully',
       stats: {
         totalEvents: blockchainEvents.length,
         createdEvents: successCount,
         failedEvents: failureCount,
+      },
+      pagination: {
+        fromBlock,
+        toBlock: toBlockHex,
+        nextFromBlock: `0x${(toBlock + 1).toString(16)}`,
+        currentBlock,
+        remainingBlocks: currentBlock - toBlock
       }
     }), {
       status: 200,
