@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Decode each log into CheckInEvent format
-    const blockchainEvents: CheckInEvent[] = data.result.map((log: any) => {
+    const blockchainEvents: CheckInEvent[] = await Promise.all(data.result.map(async (log: any) => {
       const decodedLog = checkInInterface.parseLog({
         topics: log.topics,
         data: log.data,
@@ -66,16 +66,33 @@ export async function GET(req: NextRequest) {
         throw new Error("Failed to decode event data");
       }
 
+      // Get block timestamp
+      const blockResponse = await fetch(baseRpcUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "eth_getBlockByNumber",
+          params: [log.blockNumber, false],
+        }),
+      });
+
+      const blockData = await blockResponse.json();
+      const blockTimestamp = blockData.result ? Number(blockData.result.timestamp) : Number(log.blockNumber);
+
       return {
         sender: decodedLog.args[0].toLowerCase(), // sender address
-        timestamp: Number(log.blockNumber), // Using block number as timestamp since we don't have block timestamp in logs
+        timestamp: blockTimestamp, // Using actual block timestamp
         streak: Number(decodedLog.args[2]), // streak
         totalCheckIns: Number(decodedLog.args[3]), // totalCheckIns
         transactionHash: log.transactionHash,
         blockNumber: Number(log.blockNumber),
-        blockTimestamp: Number(log.blockNumber), // Using block number as timestamp since we don't have block timestamp in logs
+        blockTimestamp: blockTimestamp, // Using actual block timestamp
       };
-    });
+    }));
 
     // Get existing check-ins from database
     const { data: existingCheckins, error: dbError } = await supabase
