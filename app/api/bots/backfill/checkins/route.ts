@@ -13,6 +13,58 @@ const checkInInterface = new ethers.Interface([
   "event CheckIn(address indexed sender, uint256 timestamp, uint16 streak, uint16 totalCheckIns)",
 ]);
 
+// Helper function to delay execution
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to batch requests
+async function batchGetBlockTimestamps(blockNumbers: string[], batchSize = 10) {
+  const results: { [key: string]: number } = {};
+
+  for (let i = 0; i < blockNumbers.length; i += batchSize) {
+    const batch = blockNumbers.slice(i, i + batchSize);
+    const batchPromises = batch.map(async (blockNumber) => {
+      try {
+        const response = await fetch(baseRpcUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "eth_getBlockByNumber",
+            params: [blockNumber, false],
+          }),
+        });
+
+        const data = await response.json();
+        return {
+          blockNumber,
+          timestamp: data.result ? Number(data.result.timestamp) : Number(blockNumber),
+        };
+      } catch (error) {
+        console.error(`Error fetching block ${blockNumber}:`, error);
+        return {
+          blockNumber,
+          timestamp: Number(blockNumber), // Fallback to block number as timestamp
+        };
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    batchResults.forEach(({ blockNumber, timestamp }) => {
+      results[blockNumber] = timestamp;
+    });
+
+    // Add a small delay between batches to prevent overwhelming the system
+    if (i + batchSize < blockNumbers.length) {
+      await delay(100);
+    }
+  }
+
+  return results;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -55,8 +107,14 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Get unique block numbers
+    const blockNumbers = [...new Set(data.result.map((log: any) => log.blockNumber))] as string[];
+
+    // Get block timestamps in batches
+    const blockTimestamps = await batchGetBlockTimestamps(blockNumbers);
+
     // Decode each log into CheckInEvent format
-    const blockchainEvents: CheckInEvent[] = await Promise.all(data.result.map(async (log: any) => {
+    const blockchainEvents: CheckInEvent[] = data.result.map((log: any) => {
       const decodedLog = checkInInterface.parseLog({
         topics: log.topics,
         data: log.data,
@@ -66,22 +124,7 @@ export async function GET(req: NextRequest) {
         throw new Error("Failed to decode event data");
       }
 
-      // Get block timestamp
-      const blockResponse = await fetch(baseRpcUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "eth_getBlockByNumber",
-          params: [log.blockNumber, false],
-        }),
-      });
-
-      const blockData = await blockResponse.json();
-      const blockTimestamp = blockData.result ? Number(blockData.result.timestamp) : Number(log.blockNumber);
+      const blockTimestamp = blockTimestamps[log.blockNumber] || Number(log.blockNumber);
 
       return {
         sender: decodedLog.args[0].toLowerCase(), // sender address
@@ -92,7 +135,7 @@ export async function GET(req: NextRequest) {
         blockNumber: Number(log.blockNumber),
         blockTimestamp: blockTimestamp, // Using actual block timestamp
       };
-    }));
+    });
 
     // Get existing check-ins from database
     const { data: existingCheckins, error: dbError } = await supabase
@@ -118,20 +161,22 @@ export async function GET(req: NextRequest) {
       (event) => !existingHashes.has(event.transactionHash),
     );
 
-    // Create check-ins for missing events
-    const results = await Promise.all(
-      missingEvents.map(async (event) => {
+    // Create check-ins for missing events with rate limiting
+    const results = [];
+    for (const event of missingEvents) {
+      try {
         // Create or get user
         const user = await getOrCreateUser(event.sender);
         if (!user) {
           console.error(
             `Failed to create/get user for address ${event.sender}`,
           );
-          return false;
+          results.push(false);
+          continue;
         }
 
         // Create check-in
-        return await createCheckin(
+        const result = await createCheckin(
           user.user_id,
           event.streak,
           event.totalCheckIns,
@@ -139,8 +184,15 @@ export async function GET(req: NextRequest) {
           event.blockNumber,
           event.blockTimestamp,
         );
-      }),
-    );
+        results.push(result);
+
+        // Add a small delay between check-in creations
+        await delay(50);
+      } catch (error) {
+        console.error(`Error creating check-in for event ${event.transactionHash}:`, error);
+        results.push(false);
+      }
+    }
 
     const successCount = results.filter(Boolean).length;
     const failureCount = results.length - successCount;
