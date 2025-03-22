@@ -61,3 +61,13 @@ export type CheckIn = {
   streak: number;
   count: number;
 };
+
+export interface CheckInEvent {
+  sender: string;
+  timestamp: number;
+  streak: number;
+  totalCheckIns: number;
+  transactionHash: string;
+  blockNumber: number;
+  blockTimestamp: number;
+}

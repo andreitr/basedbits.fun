@@ -7,6 +7,7 @@ import {
   getOrCreateUser,
   updateUser,
 } from "@/app/lib/supabase/client";
+import { CheckInEvent } from "@/app/lib/types/types";
 import { ethers } from "ethers";
 import { NextResponse } from "next/server";
 
@@ -42,13 +43,6 @@ interface GraphQLWebhookPayload {
     sequenceNumber: string;
     network: string;
   };
-}
-
-interface CheckInEvent {
-  sender: string;
-  timestamp: number;
-  streak: number;
-  totalCheckIns: number;
 }
 
 // Create interface for the CheckIn event
@@ -87,12 +81,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Parse the event data
     const checkInEvent: CheckInEvent = {
-      sender: decodedLog.args[0].toLowerCase(), // sender address
+      sender: decodedLog.args[0].toLowerCase(),
       timestamp: payload.event.data.block.timestamp,
-      streak: Number(decodedLog.args[2]), // streak
-      totalCheckIns: Number(decodedLog.args[3]), // totalCheckIns
+      streak: Number(decodedLog.args[2]),
+      totalCheckIns: Number(decodedLog.args[3]),
+      transactionHash: eventData.transaction.hash,
+      blockNumber: payload.event.data.block.number,
+      blockTimestamp: payload.event.data.block.timestamp,
     };
 
     // Create or update user in database
@@ -109,6 +105,8 @@ export async function POST(request: Request) {
       checkInEvent.streak,
       checkInEvent.totalCheckIns,
       eventData.transaction.hash,
+      payload.event.data.block.number,
+      payload.event.data.block.timestamp,
     );
 
     // Try to get Farcaster username if not already set

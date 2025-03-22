@@ -80,6 +80,8 @@ export async function createCheckin(
   streak: number,
   count: number,
   hash: string,
+  blockNumber: number,
+  blockTimestamp: number,
 ): Promise<boolean> {
   const { error } = await supabase.from("checkins").insert([
     {
@@ -87,6 +89,8 @@ export async function createCheckin(
       streak,
       count,
       hash,
+      block_number: blockNumber,
+      block_timestamp: blockTimestamp,
     },
   ]);
 
