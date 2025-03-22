@@ -74,6 +74,21 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Get the last processed block from the database
+    const { data: lastCheckin } = await supabase
+      .from("checkins")
+      .select("block_number")
+      .order("block_number", { ascending: false })
+      .limit(1);
+
+    const fromBlock = lastCheckin?.[0]?.block_number
+      ? `0x${(lastCheckin[0].block_number + 1).toString(16)}`
+      : "0x0";
+
+    // Process in chunks of 1000 blocks
+    const toBlock = "latest";
+    const chunkSize = 1000;
+
     const response = await fetch(baseRpcUrl, {
       method: "POST",
       headers: {
@@ -89,8 +104,8 @@ export async function GET(req: NextRequest) {
             topics: [
               "0x4a86d69d6fc1e14c4d0d43553c3c2740655d55029baf8c564d8e1f702a6b48f2",
             ],
-            fromBlock: "0x0",
-            toBlock: "latest",
+            fromBlock,
+            toBlock,
           },
         ],
       }),
@@ -101,6 +116,16 @@ export async function GET(req: NextRequest) {
     if (data.error) {
       return new Response(JSON.stringify({ error: data.error }), {
         status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    // If no new events, return early
+    if (!data.result || data.result.length === 0) {
+      return new Response(JSON.stringify({ message: "No new events to process" }), {
+        status: 200,
         headers: {
           "Content-Type": "application/json",
         },
@@ -127,20 +152,21 @@ export async function GET(req: NextRequest) {
       const blockTimestamp = blockTimestamps[log.blockNumber] || Number(log.blockNumber);
 
       return {
-        sender: decodedLog.args[0].toLowerCase(), // sender address
-        timestamp: blockTimestamp, // Using actual block timestamp
-        streak: Number(decodedLog.args[2]), // streak
-        totalCheckIns: Number(decodedLog.args[3]), // totalCheckIns
+        sender: decodedLog.args[0].toLowerCase(),
+        timestamp: blockTimestamp,
+        streak: Number(decodedLog.args[2]),
+        totalCheckIns: Number(decodedLog.args[3]),
         transactionHash: log.transactionHash,
         blockNumber: Number(log.blockNumber),
-        blockTimestamp: blockTimestamp, // Using actual block timestamp
+        blockTimestamp: blockTimestamp,
       };
     });
 
     // Get existing check-ins from database
     const { data: existingCheckins, error: dbError } = await supabase
       .from("checkins")
-      .select("hash");
+      .select("hash")
+      .in("hash", blockchainEvents.map(e => e.transactionHash));
 
     if (dbError) {
       return new Response(JSON.stringify({ error: dbError }), {
@@ -199,6 +225,8 @@ export async function GET(req: NextRequest) {
 
     // Log the results
     console.log('Backfill Checkins Results:', {
+      fromBlock,
+      toBlock,
       totalEvents: blockchainEvents.length,
       existingEvents: existingCheckins.length,
       missingEvents: missingEvents.length,
@@ -206,7 +234,14 @@ export async function GET(req: NextRequest) {
       failedEvents: failureCount,
     });
 
-    return new Response('Backfill completed successfully', {
+    return new Response(JSON.stringify({
+      message: 'Backfill completed successfully',
+      stats: {
+        totalEvents: blockchainEvents.length,
+        createdEvents: successCount,
+        failedEvents: failureCount,
+      }
+    }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
