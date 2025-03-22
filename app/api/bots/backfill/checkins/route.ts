@@ -128,22 +128,23 @@ export async function GET(req: NextRequest) {
     const successCount = results.filter(Boolean).length;
     const failureCount = results.length - successCount;
 
-    return new Response(
-      JSON.stringify({
-        totalEvents: blockchainEvents.length,
-        existingEvents: existingCheckins.length,
-        missingEvents: missingEvents.length,
-        createdEvents: successCount,
-        failedEvents: failureCount,
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+    // Log the results
+    console.log('Backfill Checkins Results:', {
+      totalEvents: blockchainEvents.length,
+      existingEvents: existingCheckins.length,
+      missingEvents: missingEvents.length,
+      createdEvents: successCount,
+      failedEvents: failureCount,
+    });
+
+    return new Response('Backfill completed successfully', {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+    });
   } catch (error) {
+    console.error('Backfill Checkins Error:', error);
     return new Response(
       JSON.stringify({ error: "Failed to fetch or decode events" }),
       {
