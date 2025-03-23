@@ -2,6 +2,10 @@ export enum ALCHEMY_API_PATH {
   MAINNET = "base-mainnet",
 }
 
+export enum CHECKIN_QKS {
+  CHECKINS = "checkins",
+}
+
 export enum BASE_RACE_QKS {
   COUNT = "raceCount",
   RACE = "getRace",

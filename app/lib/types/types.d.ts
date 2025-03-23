@@ -71,3 +71,26 @@ export interface CheckInEvent {
   blockNumber: number;
   blockTimestamp: number;
 }
+
+export interface DBCheckin {
+  id: number;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  streak: number;
+  count: number;
+  hash: string;
+  block_number: number;
+  block_timestamp: number;
+}
+
+export interface DBUser {
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  address: string;
+  ens_name: string | null;
+  ens_avatar: string | null;
+  farcaster_name: string | null;
+  farcaster_avatar: string | null;
+}

@@ -1,11 +1,11 @@
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { getRecentCheckIns } from "@/app/lib/api/getRecentCheckIns";
+import { getCheckins } from "@/app/lib/api/getCheckins";
+import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { baseProvider } from "@/app/lib/Web3Configs";
 import { Contract, parseUnits, Wallet } from "ethers";
 import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 import { isAddress } from "viem";
-import { postToFarcaster } from "@/app/lib/external/farcaster";
 
 const DAILY_AIRDROP_AMOUNT = 200;
 
@@ -18,8 +18,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    revalidateTag("checkins");
-    const checkins = await getRecentCheckIns(86_400); // 24 hours
+    const checkins = await getCheckins(86_400); // 24 hours
 
     if (checkins.length === 0) {
       return new Response("No recent check-ins found", { status: 200 });
@@ -43,15 +42,17 @@ export async function GET(req: NextRequest) {
     let successfulTransfers = 0;
 
     for (const checkin of checkins) {
-      if (isAddress(checkin)) {
+      if (isAddress(checkin.user.address)) {
         try {
-          await contract.transfer(checkin, rewardAmount, { nonce: nonce++ });
+          await contract.transfer(checkin.user.address, rewardAmount, {
+            nonce: nonce++,
+          });
           successfulTransfers++;
         } catch (error) {
           console.error("Failed to transfer to", checkin, "Error:", error);
         }
       } else {
-        console.log("Invalid address:", checkin);
+        console.log("Invalid address:", checkin.user.address);
       }
     }
 

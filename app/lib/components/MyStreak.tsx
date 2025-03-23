@@ -10,6 +10,7 @@ import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
 import { useHydrateUser } from "@/app/lib/hooks/useHydrateUser";
+import { CHECKIN_QKS } from "../constants";
 
 interface Props {
   address: string;
@@ -36,11 +37,10 @@ export const MyStreak = ({ address }: Props) => {
     Promise.all([
       // Server
       revalidateTags([`checkIns-${address}`]), // User checkin data
-      revalidateTags(["checkins"]), // Indexed checkins
-
       hydrateUser(address), // Hydrate user queries with updated values
 
       // Client
+      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS] }), //User checkin data in hook
       queryClient.invalidateQueries({ queryKey: ["checkIns", address] }), //User checkin data in hook
       queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }), // Can checkin hook
       queryClient.invalidateQueries({ queryKey: ["checkins", address] }), // Indexed checkins hook

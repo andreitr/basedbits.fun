@@ -1,7 +1,7 @@
-import { readContract } from "@wagmi/core";
 import { baseConfig } from "@/app/lib/Web3Configs";
-import { CheckIn } from "@/app/lib/types/types";
 import { BBitsCheckInABI } from "@/app/lib/abi/BBitsCheckIn.abi";
+import { CheckIn } from "@/app/lib/types/types";
+import { readContract } from "@wagmi/core";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 

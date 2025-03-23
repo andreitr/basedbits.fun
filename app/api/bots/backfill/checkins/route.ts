@@ -56,7 +56,6 @@ export async function GET(req: NextRequest) {
     const currentBlockData = await currentBlockResponse.json();
     const currentBlock = parseInt(currentBlockData.result, 16);
 
-    // Get block number from 24 hours ago using timestamp
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
     const fromBlockResponse = await fetch(baseRpcUrl, {
       method: "POST",
