@@ -1,9 +1,4 @@
-import {
-  createCheckin,
-  getOrCreateUser,
-  supabase,
-} from "@/app/lib/supabase/client";
-import { CheckInEvent } from "@/app/lib/types/types";
+import { getOrCreateUser, supabase } from "@/app/lib/supabase/client";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { ethers } from "ethers";
 import { NextRequest } from "next/server";
@@ -13,79 +8,36 @@ const checkInInterface = new ethers.Interface([
   "event CheckIn(address indexed sender, uint256 timestamp, uint16 streak, uint16 totalCheckIns)",
 ]);
 
-// Helper function to delay execution
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper function to batch requests
-async function batchGetBlockTimestamps(blockNumbers: string[], batchSize = 10) {
-  const results: { [key: string]: number } = {};
-
-  for (let i = 0; i < blockNumbers.length; i += batchSize) {
-    const batch = blockNumbers.slice(i, i + batchSize);
-    const batchPromises = batch.map(async (blockNumber) => {
-      try {
-        const response = await fetch(baseRpcUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "eth_getBlockByNumber",
-            params: [blockNumber, false],
-          }),
-        });
-
-        const data = await response.json();
-        return {
-          blockNumber,
-          timestamp: data.result ? Number(data.result.timestamp) : Number(blockNumber),
-        };
-      } catch (error) {
-        console.error(`Error fetching block ${blockNumber}:`, error);
-        return {
-          blockNumber,
-          timestamp: Number(blockNumber), // Fallback to block number as timestamp
-        };
-      }
+// Helper function to get block timestamp
+async function getBlockTimestamp(blockNumber: string): Promise<number> {
+  try {
+    const response = await fetch(baseRpcUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_getBlockByNumber",
+        params: [blockNumber, false],
+      }),
     });
 
-    const batchResults = await Promise.all(batchPromises);
-    batchResults.forEach(({ blockNumber, timestamp }) => {
-      results[blockNumber] = timestamp;
-    });
-
-    // Add a small delay between batches to prevent overwhelming the system
-    if (i + batchSize < blockNumbers.length) {
-      await delay(100);
-    }
+    const data = await response.json();
+    return data.result ? Number(data.result.timestamp) : Number(blockNumber);
+  } catch (error) {
+    console.error(`Error fetching block ${blockNumber}:`, error);
+    return Number(blockNumber); // Fallback to block number as timestamp
   }
-
-  return results;
 }
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return new Response("Unauthorized", {
-        status: 401,
-      });
-    }
+    const contractAddress = process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS;
+    console.log("Contract Address:", contractAddress);
 
-    // Get the last processed block from the database
-    const { data: lastCheckin } = await supabase
-      .from("checkins")
-      .select("block_number")
-      .order("block_number", { ascending: false })
-      .limit(1);
-
-    const fromBlock = lastCheckin?.[0]?.block_number
-      ? `0x${(lastCheckin[0].block_number + 1).toString(16)}`
-      : "0x0";
-
-    // Get current block number
+    // Get current block number first
     const currentBlockResponse = await fetch(baseRpcUrl, {
       method: "POST",
       headers: {
@@ -100,200 +52,206 @@ export async function GET(req: NextRequest) {
 
     const currentBlockData = await currentBlockResponse.json();
     const currentBlock = parseInt(currentBlockData.result, 16);
-    const lastProcessedBlock = lastCheckin?.[0]?.block_number || 0;
+    console.log("Current block:", currentBlock);
 
-    // Process in chunks of 100 blocks to stay within timeout
-    const chunkSize = 100;
-    const toBlock = Math.min(lastProcessedBlock + chunkSize, currentBlock);
-    const toBlockHex = `0x${toBlock.toString(16)}`;
+    let fromBlock = 26034294;
+    let allEvents: any[] = [];
+    const uniqueTransactionHashes = new Set<string>();
 
-    // If we've caught up to the current block, return early
-    if (lastProcessedBlock >= currentBlock) {
-      return new Response(JSON.stringify({
-        message: "Already up to date",
-        lastProcessedBlock,
-        currentBlock
-      }), {
-        status: 200,
+    // Calculate the event signature hash for the CheckIn event
+    const checkInEvent = checkInInterface.getEvent("CheckIn");
+    if (!checkInEvent) {
+      throw new Error("CheckIn event not found in interface");
+    }
+    const checkInEventSignature = checkInEvent.topicHash;
+
+    while (fromBlock < currentBlock) {
+      const toBlock = Math.min(fromBlock + 10000, currentBlock);
+      const fromBlockHex = `0x${fromBlock.toString(16)}`;
+      const toBlockHex = `0x${toBlock.toString(16)}`;
+
+      console.log(`Fetching logs from block ${fromBlockHex} to ${toBlockHex}`);
+
+      const response = await fetch(baseRpcUrl, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "eth_getLogs",
+          params: [
+            {
+              address: contractAddress,
+              topics: [checkInEventSignature],
+              fromBlock: fromBlockHex,
+              toBlock: toBlockHex,
+            },
+          ],
+        }),
       });
-    }
 
-    const response = await fetch(baseRpcUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "eth_getLogs",
-        params: [
-          {
-            address: process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS,
-            topics: [
-              "0x4a86d69d6fc1e14c4d0d43553c3c2740655d55029baf8c564d8e1f702a6b48f2",
-            ],
-            fromBlock,
-            toBlock: toBlockHex,
+      const data = await response.json();
+
+      if (data.error) {
+        console.error("RPC Error:", data.error);
+        if (data.error.code === -32005) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          continue;
+        }
+        return new Response(JSON.stringify({ error: data.error }), {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
           },
-        ],
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.error) {
-      return new Response(JSON.stringify({ error: data.error }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    // If no new events in this chunk, return early
-    if (!data.result || data.result.length === 0) {
-      return new Response(JSON.stringify({
-        message: "No new events in this chunk",
-        fromBlock,
-        toBlock: toBlockHex,
-        nextFromBlock: `0x${(toBlock + 1).toString(16)}`
-      }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    // Get unique block numbers
-    const blockNumbers = [...new Set(data.result.map((log: any) => log.blockNumber))] as string[];
-
-    // Get block timestamps in batches
-    const blockTimestamps = await batchGetBlockTimestamps(blockNumbers);
-
-    // Decode each log into CheckInEvent format
-    const blockchainEvents: CheckInEvent[] = data.result.map((log: any) => {
-      const decodedLog = checkInInterface.parseLog({
-        topics: log.topics,
-        data: log.data,
-      });
-
-      if (!decodedLog) {
-        throw new Error("Failed to decode event data");
+        });
       }
 
-      const blockTimestamp = blockTimestamps[log.blockNumber] || Number(log.blockNumber);
+      if (data.result && data.result.length > 0) {
+        allEvents = allEvents.concat(data.result);
+        console.log(`Found ${data.result.length} events in this chunk`);
+      }
 
-      return {
-        sender: decodedLog.args[0].toLowerCase(),
-        timestamp: blockTimestamp,
-        streak: Number(decodedLog.args[2]),
-        totalCheckIns: Number(decodedLog.args[3]),
-        transactionHash: log.transactionHash,
-        blockNumber: Number(log.blockNumber),
-        blockTimestamp: blockTimestamp,
-      };
-    });
-
-    // Get existing check-ins from database
-    const { data: existingCheckins, error: dbError } = await supabase
-      .from("checkins")
-      .select("hash")
-      .in("hash", blockchainEvents.map(e => e.transactionHash));
-
-    if (dbError) {
-      return new Response(JSON.stringify({ error: dbError }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      fromBlock = toBlock + 1;
     }
 
-    // Create a set of existing hashes for O(1) lookup
+    if (allEvents.length === 0) {
+      console.log("No events found in any chunk");
+      return new Response(
+        JSON.stringify({
+          message: "No new events to process",
+          currentBlock,
+          contractAddress,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    console.log(`Found total of ${allEvents.length} events`);
+
+    // First, get all existing checkins to filter out duplicates
+    const existingCheckins = await supabase
+      .from("checkins")
+      .select("hash")
+      .in("hash", Array.from(uniqueTransactionHashes));
+
     const existingHashes = new Set(
-      existingCheckins.map((c: { hash: string }) => c.hash),
+      existingCheckins.data?.map((c: { hash: string }) => c.hash) || [],
     );
 
     // Filter out events that already exist in the database
-    const missingEvents = blockchainEvents.filter(
-      (event) => !existingHashes.has(event.transactionHash),
+    const newEvents = allEvents.filter(
+      (log: any) => !existingHashes.has(log.transactionHash),
     );
+    console.log(`Found ${newEvents.length} new events to process`);
 
-    // Create check-ins for missing events with rate limiting
-    const results = [];
-    for (const event of missingEvents) {
+    if (newEvents.length === 0) {
+      console.log("No new events to process");
+      return new Response(
+        JSON.stringify({
+          message: "No new events to process",
+          currentBlock,
+          contractAddress,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    // Process new events one by one
+    let processedCount = 0;
+    for (const log of newEvents) {
       try {
+        // Decode the event
+        const decodedLog = checkInInterface.parseLog({
+          topics: log.topics,
+          data: log.data,
+        });
+
+        if (!decodedLog) {
+          throw new Error("Failed to decode event data");
+        }
+
+        // Get block timestamp only for new events
+        const blockTimestamp = await getBlockTimestamp(log.blockNumber);
+
         // Create or get user
-        const user = await getOrCreateUser(event.sender);
+        const user = await getOrCreateUser(decodedLog.args[0].toLowerCase());
         if (!user) {
           console.error(
-            `Failed to create/get user for address ${event.sender}`,
+            `Failed to create/get user for address ${decodedLog.args[0].toLowerCase()}`,
           );
-          results.push(false);
           continue;
         }
 
-        // Create check-in
-        const result = await createCheckin(
-          user.user_id,
-          event.streak,
-          event.totalCheckIns,
-          event.transactionHash,
-          event.blockNumber,
-          event.blockTimestamp,
+        // Save checkin immediately
+        const { error: insertError } = await supabase.from("checkins").insert([
+          {
+            user_id: user.user_id,
+            streak: Number(decodedLog.args[2]),
+            count: Number(decodedLog.args[3]),
+            hash: log.transactionHash,
+            block_number: Number(log.blockNumber),
+            block_timestamp: blockTimestamp,
+          },
+        ]);
+        console.log(
+          `Inserting checkin for user ${user.user_id}, transaction ${log.transactionHash}, streak ${Number(decodedLog.args[2])}, count ${Number(decodedLog.args[3])}`,
         );
-        results.push(result);
 
-        // Add a small delay between check-in creations
-        await delay(50);
+        if (insertError) {
+          console.error(
+            `Error inserting checkin for transaction ${log.transactionHash}:`,
+            insertError,
+          );
+          continue;
+        }
+
+        processedCount++;
+        if (processedCount % 10 === 0) {
+          console.log(`Processed ${processedCount} events so far...`);
+        }
       } catch (error) {
-        console.error(`Error creating check-in for event ${event.transactionHash}:`, error);
-        results.push(false);
+        console.error(`Error processing event ${log.transactionHash}:`, error);
       }
     }
 
-    const successCount = results.filter(Boolean).length;
-    const failureCount = results.length - successCount;
+    console.log(`${processedCount} new events processed and inserted`);
 
     // Log the results
-    console.log('Backfill Checkins Results:', {
-      fromBlock,
-      toBlock: toBlockHex,
-      totalEvents: blockchainEvents.length,
-      existingEvents: existingCheckins.length,
-      missingEvents: missingEvents.length,
-      createdEvents: successCount,
-      failedEvents: failureCount,
-      nextFromBlock: `0x${(toBlock + 1).toString(16)}`
+    console.log("Backfill Checkins Results:", {
+      totalEvents: allEvents.length,
+      existingEvents: existingCheckins.data?.length || 0,
+      newEvents: processedCount,
     });
 
-    return new Response(JSON.stringify({
-      message: 'Chunk processed successfully',
-      stats: {
-        totalEvents: blockchainEvents.length,
-        createdEvents: successCount,
-        failedEvents: failureCount,
+    return new Response(
+      JSON.stringify({
+        message: "Backfill completed successfully",
+        stats: {
+          totalEvents: allEvents.length,
+          createdEvents: processedCount,
+        },
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-      pagination: {
-        fromBlock,
-        toBlock: toBlockHex,
-        nextFromBlock: `0x${(toBlock + 1).toString(16)}`,
-        currentBlock,
-        remainingBlocks: currentBlock - toBlock
-      }
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    );
   } catch (error) {
-    console.error('Backfill Checkins Error:', error);
+    console.error("Backfill Checkins Error:", error);
     return new Response(
       JSON.stringify({ error: "Failed to fetch or decode events" }),
       {
