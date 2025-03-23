@@ -3,12 +3,10 @@ import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { ethers } from "ethers";
 import { NextRequest } from "next/server";
 
-// Create interface for the CheckIn event
 const checkInInterface = new ethers.Interface([
   "event CheckIn(address indexed sender, uint256 timestamp, uint16 streak, uint16 totalCheckIns)",
 ]);
 
-// Helper function to get block timestamp
 async function getBlockTimestamp(blockNumber: string): Promise<number> {
   try {
     const response = await fetch(baseRpcUrl, {
@@ -27,17 +25,22 @@ async function getBlockTimestamp(blockNumber: string): Promise<number> {
     const data = await response.json();
     return data.result ? Number(data.result.timestamp) : Number(blockNumber);
   } catch (error) {
-    console.error(`Error fetching block ${blockNumber}:`, error);
-    return Number(blockNumber); // Fallback to block number as timestamp
+    // If we can't get the block timestamp, return 0
+    return 0;
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
-    const contractAddress = process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS;
-    console.log("Contract Address:", contractAddress);
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new Response("Unauthorized", {
+        status: 401,
+      });
+    }
 
-    // Get current block number first
+    const contractAddress = process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS;
+
     const currentBlockResponse = await fetch(baseRpcUrl, {
       method: "POST",
       headers: {
@@ -52,9 +55,27 @@ export async function GET(req: NextRequest) {
 
     const currentBlockData = await currentBlockResponse.json();
     const currentBlock = parseInt(currentBlockData.result, 16);
-    console.log("Current block:", currentBlock);
 
-    let fromBlock = 26034294;
+    // Get block number from 24 hours ago using timestamp
+    const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
+    const fromBlockResponse = await fetch(baseRpcUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_getBlockByTimestamp",
+        params: [`0x${twentyFourHoursAgo.toString(16)}`, false],
+      }),
+    });
+
+    const fromBlockData = await fromBlockResponse.json();
+    let fromBlock = fromBlockData.result
+      ? parseInt(fromBlockData.result.number, 16)
+      : Math.max(0, currentBlock - 7200);
+
     let allEvents: any[] = [];
     const uniqueTransactionHashes = new Set<string>();
 
@@ -69,8 +90,6 @@ export async function GET(req: NextRequest) {
       const toBlock = Math.min(fromBlock + 10000, currentBlock);
       const fromBlockHex = `0x${fromBlock.toString(16)}`;
       const toBlockHex = `0x${toBlock.toString(16)}`;
-
-      console.log(`Fetching logs from block ${fromBlockHex} to ${toBlockHex}`);
 
       const response = await fetch(baseRpcUrl, {
         method: "POST",
@@ -95,7 +114,6 @@ export async function GET(req: NextRequest) {
       const data = await response.json();
 
       if (data.error) {
-        console.error("RPC Error:", data.error);
         if (data.error.code === -32005) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           continue;
@@ -110,14 +128,12 @@ export async function GET(req: NextRequest) {
 
       if (data.result && data.result.length > 0) {
         allEvents = allEvents.concat(data.result);
-        console.log(`Found ${data.result.length} events in this chunk`);
       }
 
       fromBlock = toBlock + 1;
     }
 
     if (allEvents.length === 0) {
-      console.log("No events found in any chunk");
       return new Response(
         JSON.stringify({
           message: "No new events to process",
@@ -133,8 +149,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    console.log(`Found total of ${allEvents.length} events`);
-
     // First, get all existing checkins to filter out duplicates
     const existingCheckins = await supabase
       .from("checkins")
@@ -149,10 +163,8 @@ export async function GET(req: NextRequest) {
     const newEvents = allEvents.filter(
       (log: any) => !existingHashes.has(log.transactionHash),
     );
-    console.log(`Found ${newEvents.length} new events to process`);
 
     if (newEvents.length === 0) {
-      console.log("No new events to process");
       return new Response(
         JSON.stringify({
           message: "No new events to process",
@@ -172,6 +184,17 @@ export async function GET(req: NextRequest) {
     let processedCount = 0;
     for (const log of newEvents) {
       try {
+        // First check if this specific checkin already exists
+        const { data: existingCheckin } = await supabase
+          .from("checkins")
+          .select("hash")
+          .eq("hash", log.transactionHash)
+          .single();
+
+        if (existingCheckin) {
+          continue;
+        }
+
         // Decode the event
         const decodedLog = checkInInterface.parseLog({
           topics: log.topics,
@@ -188,9 +211,6 @@ export async function GET(req: NextRequest) {
         // Create or get user
         const user = await getOrCreateUser(decodedLog.args[0].toLowerCase());
         if (!user) {
-          console.error(
-            `Failed to create/get user for address ${decodedLog.args[0].toLowerCase()}`,
-          );
           continue;
         }
 
@@ -205,51 +225,29 @@ export async function GET(req: NextRequest) {
             block_timestamp: blockTimestamp,
           },
         ]);
-        console.log(
-          `Inserting checkin for user ${user.user_id}, transaction ${log.transactionHash}, streak ${Number(decodedLog.args[2])}, count ${Number(decodedLog.args[3])}`,
-        );
 
         if (insertError) {
-          console.error(
-            `Error inserting checkin for transaction ${log.transactionHash}:`,
-            insertError,
-          );
           continue;
         }
 
         processedCount++;
-        if (processedCount % 10 === 0) {
-          console.log(`Processed ${processedCount} events so far...`);
-        }
       } catch (error) {
         console.error(`Error processing event ${log.transactionHash}:`, error);
       }
     }
 
-    console.log(`${processedCount} new events processed and inserted`);
-
-    // Log the results
     console.log("Backfill Checkins Results:", {
       totalEvents: allEvents.length,
       existingEvents: existingCheckins.data?.length || 0,
       newEvents: processedCount,
     });
 
-    return new Response(
-      JSON.stringify({
-        message: "Backfill completed successfully",
-        stats: {
-          totalEvents: allEvents.length,
-          createdEvents: processedCount,
-        },
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+    return new Response("Backfill Checkins completed", {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    });
   } catch (error) {
     console.error("Backfill Checkins Error:", error);
     return new Response(
