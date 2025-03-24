@@ -18,6 +18,7 @@ interface Props {
 export const RaceFinished = ({ race }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
   const { data: latestRace } = useRaceCount();
+  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
 
   const formattedEndDate = race.endedAt
     ? DateTime.fromSeconds(Number(race.endedAt)).toFormat("MMMM d, yyyy")
@@ -28,8 +29,6 @@ export const RaceFinished = ({ race }: Props) => {
     lapId: 1, //First lap with all entries
     enabled: true,
   });
-
-  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
 
   useEffect(() => {
     if (lap) {

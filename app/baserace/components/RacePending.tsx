@@ -3,8 +3,6 @@
 import { MintButton } from "@/app/baserace/components/MintButton";
 import { Racers } from "@/app/baserace/components/Racers";
 import { IBaseRace } from "@/app/lib/classes/BaseRace";
-import { CountDown } from "@/app/lib/components/client/CountDown";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
@@ -14,7 +12,7 @@ import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { MintManager } from "@/app/baserace/components/MintManager";
+import { RaceManager } from "./RaceManager";
 
 interface Props {
   mintTime: number;
@@ -75,12 +73,13 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
 
   return (
     <div>
+      <RaceManager race={currentRace} />
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
           <div>
             <div className="text-2xl md:text-4xl mb-2">{raceTitle}</div>
             <div className="text-sm">
-              <MintManager race={currentRace} mintTime={mintTime} />
+              {/* <MintManager race={currentRace} mintTime={mintTime} /> */}
             </div>
           </div>
           {isMinting ? (
@@ -111,24 +110,13 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 my-6 md:my-8 gap-6 md:gap-8">
+      <div className="grid my-6 md:my-8 gap-6 md:gap-8">
         {lap && allRacers.length > 0 && (
           <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
             <div className="text-xs uppercase">All Racers</div>
             <Racers
               race={currentRace}
               entries={allRacers}
-              eliminated={lap.eliminations}
-              userEntries={userRacers}
-            />
-          </div>
-        )}
-        {lap && userRacers.length > 0 && (
-          <div className="flex flex-col gap-4">
-            <div className="text-xs uppercase">My Racers</div>
-            <Racers
-              race={currentRace}
-              entries={userRacers}
               eliminated={lap.eliminations}
               userEntries={userRacers}
             />

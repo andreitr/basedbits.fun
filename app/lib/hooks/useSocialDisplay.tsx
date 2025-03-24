@@ -14,7 +14,9 @@ interface Props {
 export const useSocialDisplay = ({ message, title, url }: Props) => {
   const show = () => {
     // Check if a social display toast is already visible
-    const existingToast = document.querySelector('[data-testid="social-display-toast"]');
+    const existingToast = document.querySelector(
+      '[data-testid="social-display-toast"]',
+    );
     if (existingToast) {
       return;
     }

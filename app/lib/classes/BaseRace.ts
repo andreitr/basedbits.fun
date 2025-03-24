@@ -6,10 +6,11 @@ export interface IBaseRace {
   id: number;
   prize: string;
   startedAt: number;
-  winner: string;
+  winner: number;
   isMinting: boolean;
   isLive: boolean;
   isFinished: boolean;
+  isEnded: boolean;
 }
 
 export class BaseRace implements IBaseRace {
@@ -20,7 +21,7 @@ export class BaseRace implements IBaseRace {
   id: number;
   prize: string;
   startedAt: number;
-  winner: string;
+  winner: number;
 
   constructor(
     id: number,
@@ -30,7 +31,7 @@ export class BaseRace implements IBaseRace {
     lapTotal: number,
     lapCount: number,
     prize: string,
-    winner: string,
+    winner: number,
   ) {
     this.id = id;
     this.entries = entries;
@@ -69,6 +70,7 @@ export class BaseRace implements IBaseRace {
       isMinting: this.isMinting,
       isLive: this.isLive,
       isFinished: this.isFinished,
+      isEnded: this.isEnded,
     };
   }
 
@@ -90,15 +92,28 @@ export class BaseRace implements IBaseRace {
     return this.startedAt > 0 && this.endedAt === 0 && this.lapCount === 0;
   }
 
+  // Race is live
   get isLive(): boolean {
     return this.startedAt > 0 && this.endedAt === 0 && this.lapCount > 0;
   }
 
-  get isFinished(): boolean {
-    return this.startedAt > 0 && this.endedAt > 0;
+  // Race has ended but the winner is not yet set
+  get isEnded(): boolean {
+    return (
+      this.startedAt > 0 &&
+      this.endedAt > 0 &&
+      this.winner === 0 &&
+      this.lapCount === this.lapTotal
+    );
   }
 
-  get isActive(): boolean {
-    return this.startedAt > 0 && this.endedAt === 0;
+  // Race has ended and the winner is set
+  get isFinished(): boolean {
+    return (
+      this.startedAt > 0 &&
+      this.endedAt > 0 &&
+      this.winner !== 0 &&
+      this.lapCount === this.lapTotal
+    );
   }
 }

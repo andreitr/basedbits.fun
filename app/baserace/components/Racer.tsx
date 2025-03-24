@@ -16,9 +16,27 @@ interface Props {
   isUserRacer: boolean;
 }
 
+// Constants for D3 dimensions
+const DIMENSIONS = {
+  width: 50,
+  height: 50,
+  centerX: 25,
+  centerY: 25,
+  mainRadius: 20,
+  innerRadius: 16,
+  outerRadius: 20,
+  boostRadius: 10,
+} as const;
+
 export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const hasAnimatedBoost = useRef(false);
+  const spinningArcRef = useRef<d3.Selection<
+    SVGPathElement,
+    any,
+    null,
+    undefined
+  > | null>(null);
 
   const { call: boost, data: boostTxHash } = useBoost();
 
@@ -49,98 +67,149 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
     () =>
       d3
         .arc<d3.DefaultArcObject>()
-        .innerRadius(16)
-        .outerRadius(20)
+        .innerRadius(DIMENSIONS.innerRadius)
+        .outerRadius(DIMENSIONS.outerRadius)
         .startAngle(0),
     [],
   );
 
+  // Memoize the main circle data
+  const mainCircleData = useMemo(
+    () => ({
+      cx: DIMENSIONS.centerX,
+      cy: DIMENSIONS.centerY,
+      r: DIMENSIONS.mainRadius,
+      fill: isUserRacer ? "green" : "gray",
+      stroke: isUserRacer ? "black" : "none",
+      strokeWidth: isUserRacer ? 2 : 0,
+    }),
+    [isUserRacer],
+  );
+
+  // Memoize the boost arc data
+  const boostArcData = useMemo(
+    () => ({
+      innerRadius: DIMENSIONS.innerRadius,
+      outerRadius: DIMENSIONS.outerRadius,
+      startAngle: 0,
+      endAngle: 2 * Math.PI,
+    }),
+    [],
+  );
+
   const drawRacer = () => {
+    if (!svgRef.current) return;
+
     const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove(); // Clear previous content
 
-    // Draw the main circle
-    svg
-      .append("circle")
-      .attr("cx", 20)
-      .attr("cy", 20)
-      .attr("r", 20)
-      .attr("fill", isUserRacer ? "green" : "gray")
-      .attr("stroke", "none")
-      .attr("stroke-width", isUserRacer ? 2 : 0);
+    // Update main circle
+    const mainCircle = svg
+      .selectAll("circle.main")
+      .data([mainCircleData])
+      .join("circle")
+      .attr("class", "main")
+      .attr("cx", (d) => d.cx)
+      .attr("cy", (d) => d.cy)
+      .attr("r", (d) => d.r)
+      .attr("fill", (d) => d.fill)
+      .attr("stroke", (d) => d.stroke)
+      .attr("stroke-width", (d) => d.strokeWidth);
 
-    svg
-      .append("text")
+    // Update token ID text
+    const tokenText = svg
+      .selectAll("text.token-id")
+      .data([tokenId])
+      .join("text")
+      .attr("class", "token-id")
       .attr("x", 10)
       .attr("y", 25)
       .attr("fill", "white")
       .attr("font-size", "15px")
-      .text(tokenId);
+      .text((d) => d);
 
+    // Handle boost arc
     if (isBoosted) {
       svg
-        .append("path")
-        .datum({
-          innerRadius: 16,
-          outerRadius: 20,
-          startAngle: 0,
-          endAngle: 2 * Math.PI,
-        })
+        .selectAll("path.boost-arc")
+        .data([boostArcData])
+        .join("path")
+        .attr("class", "boost-arc")
         .attr("d", arc)
         .attr("fill", "blue")
-        .attr("transform", "translate(20, 20)");
+        .attr(
+          "transform",
+          `translate(${DIMENSIONS.centerX}, ${DIMENSIONS.centerY})`,
+        );
+    } else {
+      svg.selectAll("path.boost-arc").remove();
     }
 
+    // Handle spinning animation
     if (isBoosting && !hasBoosted) {
+      if (!spinningArcRef.current) {
+        spinningArcRef.current = svg
+          .append("path")
+          .attr("class", "spinning-arc")
+          .datum({
+            innerRadius: DIMENSIONS.innerRadius,
+            outerRadius: DIMENSIONS.outerRadius,
+            startAngle: 0,
+            endAngle: 0,
+          })
+          .attr("d", arc)
+          .attr("fill", "blue")
+          .attr(
+            "transform",
+            `translate(${DIMENSIONS.centerX}, ${DIMENSIONS.centerY})`,
+          );
 
-      const spinningArc = svg
-        .append("path")
-        .datum({
-          innerRadius: 16,
-          outerRadius: 20,
-          startAngle: 0,
-          endAngle: 0,
-        })
-        .attr("d", arc)
-        .attr("fill", "blue")
-        .attr("transform", "translate(20, 20)");
-
-      spinningArc
-        .transition()
-        .duration(4200)
-        .attrTween("d", (d) => {
-          const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
-          return (t) => {
-            d.endAngle = interpolate(t);
-            return arc(d) || "";
-          };
-        })
-        .on("end", () => {
-
-        });
-
+        spinningArcRef.current
+          .transition()
+          .duration(4200)
+          .ease(d3.easeLinear)
+          .attrTween("d", (d) => {
+            const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
+            return (t) => {
+              d.endAngle = interpolate(t);
+              return arc(d) || "";
+            };
+          })
+          .on("end", () => {
+            spinningArcRef.current?.remove();
+            spinningArcRef.current = null;
+          });
+      }
+    } else if (spinningArcRef.current) {
+      spinningArcRef.current.interrupt().remove();
+      spinningArcRef.current = null;
     }
 
-
+    // Handle eliminated state
     if (!eliminated) {
-      // Draw the smaller circle
-      svg
-        .append("circle")
-        .attr("cx", 30)
-        .attr("cy", 35)
-        .attr("r", 10)
+      const boostCircle = svg
+        .selectAll("circle.boost")
+        .data([{ cx: 30, cy: 35, r: DIMENSIONS.boostRadius }])
+        .join("circle")
+        .attr("class", "boost")
+        .attr("cx", (d) => d.cx)
+        .attr("cy", (d) => d.cy)
+        .attr("r", (d) => d.r)
         .attr("stroke", "black")
         .attr("stroke-width", "2")
         .attr("fill", "orange");
 
-      // Draw the asterisk using D3's symbol
       svg
-        .append("path")
-        .attr("transform", "translate(30, 35)")
+        .selectAll("path.asterisk")
+        .data([{ cx: 30, cy: 35 }])
+        .join("path")
+        .attr("class", "asterisk")
+        .attr("transform", (d) => `translate(${d.cx}, ${d.cy})`)
         .attr("d", d3.symbol(d3.symbolAsterisk, 100)())
         .attr("stroke", "white")
         .attr("stroke-width", "2")
         .attr("fill", "none");
+    } else {
+      svg.selectAll("circle.boost, path.asterisk").remove();
     }
   };
 
@@ -148,9 +217,13 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
   useEffect(() => {
     drawRacer();
     return () => {
+      if (spinningArcRef.current) {
+        spinningArcRef.current.interrupt().remove();
+        spinningArcRef.current = null;
+      }
       d3.select(svgRef.current).selectAll("*").interrupt();
     };
-  }, [eliminated, tokenId]);
+  }, [eliminated, tokenId, isBoosted, isBoosting, hasBoosted]);
 
   const handleClick = () => {
     if (isBoosted || !isUserRacer || isBoosting) return;
@@ -161,8 +234,8 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
     <div className="relative">
       <svg
         ref={svgRef}
-        width={50}
-        height={50}
+        width={DIMENSIONS.width}
+        height={DIMENSIONS.height}
         onClick={handleClick}
         style={{
           cursor:
