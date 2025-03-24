@@ -12,6 +12,6 @@ export const useCheckins = ({ seconds, enabled }: Props) => {
     queryKey: [CHECKIN_QKS.CHECKINS],
     queryFn: async () => getCheckins(seconds),
     enabled: enabled,
-    staleTime: 60000, // 1 minute
+    refetchInterval: 60000, // 1 minute
   });
 };
