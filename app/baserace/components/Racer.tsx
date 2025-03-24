@@ -21,6 +21,14 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
   const hasAnimatedBoost = useRef(false);
 
   const { call: boost, data: boostTxHash } = useBoost();
+
+  const { data: isBoosted } = useIsBoosted({
+    raceId: race.id,
+    lapId: race.lapCount,
+    tokenId,
+    enabled: isUserRacer,
+  });
+
   const {
     isFetching: isBoosting,
     isSuccess: hasBoosted,
@@ -29,12 +37,6 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
     hash: boostTxHash,
   });
 
-  const { data: isBoosted } = useIsBoosted({
-    raceId: race.id,
-    lapId: race.lapCount,
-    tokenId,
-    enabled: isUserRacer,
-  });
   // Show toast when boost fails
   useEffect(() => {
     if (hasBoostFailed) {
@@ -75,48 +77,50 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
       .attr("font-size", "15px")
       .text(tokenId);
 
-    if ((isBoosting || hasBoosted || isBoosted) && !hasBoostFailed) {
-      if (!hasAnimatedBoost.current) {
-        const spinningArc = svg
-          .append("path")
-          .datum({
-            innerRadius: 16,
-            outerRadius: 20,
-            startAngle: 0,
-            endAngle: 0,
-          })
-          .attr("d", arc)
-          .attr("fill", "blue")
-          .attr("transform", "translate(20, 20)");
-
-        spinningArc
-          .transition()
-          .duration(4200)
-          .attrTween("d", (d) => {
-            const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
-            return (t) => {
-              d.endAngle = interpolate(t);
-              return arc(d) || "";
-            };
-          })
-          .on("end", () => {
-            hasAnimatedBoost.current = true;
-          });
-      } else {
-        // Draw static full circle for completed boost
-        svg
-          .append("path")
-          .datum({
-            innerRadius: 16,
-            outerRadius: 20,
-            startAngle: 0,
-            endAngle: 2 * Math.PI,
-          })
-          .attr("d", arc)
-          .attr("fill", "blue")
-          .attr("transform", "translate(20, 20)");
-      }
+    if (isBoosted) {
+      svg
+        .append("path")
+        .datum({
+          innerRadius: 16,
+          outerRadius: 20,
+          startAngle: 0,
+          endAngle: 2 * Math.PI,
+        })
+        .attr("d", arc)
+        .attr("fill", "blue")
+        .attr("transform", "translate(20, 20)");
     }
+
+    if (isBoosting && !hasBoosted) {
+
+      const spinningArc = svg
+        .append("path")
+        .datum({
+          innerRadius: 16,
+          outerRadius: 20,
+          startAngle: 0,
+          endAngle: 0,
+        })
+        .attr("d", arc)
+        .attr("fill", "blue")
+        .attr("transform", "translate(20, 20)");
+
+      spinningArc
+        .transition()
+        .duration(4200)
+        .attrTween("d", (d) => {
+          const interpolate = d3.interpolate(d.endAngle, 2 * Math.PI);
+          return (t) => {
+            d.endAngle = interpolate(t);
+            return arc(d) || "";
+          };
+        })
+        .on("end", () => {
+
+        });
+
+    }
+
 
     if (!eliminated) {
       // Draw the smaller circle
@@ -127,15 +131,16 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
         .attr("r", 10)
         .attr("stroke", "black")
         .attr("stroke-width", "2")
-        .attr("fill", "red");
+        .attr("fill", "orange");
 
-      // Draw the cross last to ensure it's on top
+      // Draw the asterisk using D3's symbol
       svg
         .append("path")
         .attr("transform", "translate(30, 35)")
-        .attr("d", "M-5,-5 L5,5 M-5,5 L5,-5")
+        .attr("d", d3.symbol(d3.symbolAsterisk, 100)())
         .attr("stroke", "white")
-        .attr("stroke-width", "2");
+        .attr("stroke-width", "2")
+        .attr("fill", "none");
     }
   };
 
@@ -145,7 +150,7 @@ export const Racer = ({ tokenId, race, eliminated, isUserRacer }: Props) => {
     return () => {
       d3.select(svgRef.current).selectAll("*").interrupt();
     };
-  }, [eliminated, tokenId, isBoosted, isBoosting, hasBoostFailed]);
+  }, [eliminated, tokenId]);
 
   const handleClick = () => {
     if (isBoosted || !isUserRacer || isBoosting) return;

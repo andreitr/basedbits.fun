@@ -14,6 +14,7 @@ import { formatUnits } from "ethers";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import { MintManager } from "@/app/baserace/components/MintManager";
 
 interface Props {
   mintTime: number;
@@ -79,21 +80,7 @@ export const RacePending = ({ mintTime, mintPrice: price, race }: Props) => {
           <div>
             <div className="text-2xl md:text-4xl mb-2">{raceTitle}</div>
             <div className="text-sm">
-              {isMinting ? (
-                <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                  Registration for this race closes in
-                  <CountDownToDate
-                    message="Mint ended"
-                    targetDate={race.startedAt + mintTime}
-                  />{" "}
-                  - Race starts {raceStartsAt}
-                </div>
-              ) : (
-                <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                  {"Registration closed! Race starts in "}
-                  <CountDown hour={19} />
-                </div>
-              )}
+              <MintManager race={currentRace} mintTime={mintTime} />
             </div>
           </div>
           {isMinting ? (
