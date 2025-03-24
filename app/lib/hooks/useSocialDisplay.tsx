@@ -1,9 +1,9 @@
-import toast from "react-hot-toast";
-import Image from "next/image";
-import CloseIcon from "@/app/lib/icons/x-mark.svg";
-import Link from "next/link";
 import FarcasterIcon from "@/app/lib/icons/farcaster.svg";
+import CloseIcon from "@/app/lib/icons/x-mark.svg";
 import XIcon from "@/app/lib/icons/x.svg";
+import Image from "next/image";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface Props {
   message: string;
@@ -13,11 +13,20 @@ interface Props {
 
 export const useSocialDisplay = ({ message, title, url }: Props) => {
   const show = () => {
+    // Check if a social display toast is already visible
+    const existingToast = document.querySelector('[data-testid="social-display-toast"]');
+    if (existingToast) {
+      return;
+    }
+
     const encodedText = encodeURIComponent(message);
 
     toast.custom(
       (t) => (
-        <div className="max-w-md w-full bg-black bg-opacity-80 rounded-lg pointer-events-auto ring-1 ring-black text-white p-5">
+        <div
+          data-testid="social-display-toast"
+          className="max-w-md w-full bg-black bg-opacity-80 rounded-lg pointer-events-auto ring-1 ring-black text-white p-5"
+        >
           <div className="flex flex-col justify-end gap-5">
             <div className="flex flex-row justify-between items-start">
               <div>{title}</div>
