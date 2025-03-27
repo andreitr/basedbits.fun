@@ -3,6 +3,7 @@
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
 import { Racers } from "@/app/baserace/components/Racers";
 import { IBaseRace } from "@/app/lib/classes/BaseRace";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
 import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
@@ -24,6 +25,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
   const { data: loadedRace } = useRace({
     id: race.id,
     enabled: true,
+    refetchInterval: 1000 * 5,
   });
 
   const { data: userEntries } = useEntriesForAddress({
@@ -32,7 +34,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
     enabled: isConnected,
   });
 
-  const { data: lap } = useLap({
+  const { data: lap, refetch } = useLap({
     raceId: race.id,
     lapId: race.lapCount,
     enabled: true,
@@ -41,26 +43,36 @@ export const RaceLive = ({ race, lapTime }: Props) => {
 
   const currentRace = loadedRace || race;
   const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
+  const [key, setKey] = useState(0);
 
   useEffect(() => {
-    if (lap?.id === race.lapCount) {
-      const filtered = lap?.positions.map((tokenId, index) => ({
+    setKey(prev => prev + 1);
+    refetch();
+  }, [race.lapCount, refetch]);
+
+  useEffect(() => {
+    if (lap?.positions) {
+      const filtered = lap.positions.map((tokenId, index) => ({
         tokenId: Number(tokenId),
         index,
       }));
 
-      console.log("new lap detected");
-
       setAllRacers(filtered);
     }
-  }, [race.lapCount, lap]);
+  }, [lap]);
 
   if (!lap || !allRacers) return <RaceSkeleton />;
 
   return (
-    <div>
+    <div key={key}>
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
+          <CountDownToDate
+            targetDate={lap.startedAt + lapTime}
+            message={`LAP FINISHED`}
+          />
+
+
           <div>
             <div className="text-2xl md:text-4xl mb-2">
               BaseRace #{currentRace.id} is LIVE
@@ -105,11 +117,11 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
+                    tokenId: Number(tokenId),
+                    index: allRacers.findIndex(
+                      (racer) => racer.tokenId === Number(tokenId),
+                    ),
+                  }))
                   : []
               }
             />

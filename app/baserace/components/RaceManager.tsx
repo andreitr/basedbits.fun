@@ -98,6 +98,19 @@ export const RaceManager = ({ race }: Props) => {
     }
   }, [state, race.id, router]);
 
+
+  if (state === RaceState.LIVE) {
+    return (
+      <div className="flex flex-row gap-2">
+        <div>LIVE</div>
+        <CountDownToDate
+          targetDate={race.startedAt + MINTING_TIME}
+          message={`Minting now open`}
+        />
+      </div>
+    );
+  }
+
   if (state === RaceState.MINT_OPEN) {
     return (
       <div className="flex flex-row gap-2">
