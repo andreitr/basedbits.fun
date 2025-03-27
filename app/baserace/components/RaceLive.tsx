@@ -46,7 +46,7 @@ export const RaceLive = ({ race, lapTime }: Props) => {
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    setKey(prev => prev + 1);
+    setKey((prev) => prev + 1);
     refetch();
   }, [race.lapCount, refetch]);
 
@@ -71,7 +71,6 @@ export const RaceLive = ({ race, lapTime }: Props) => {
             targetDate={lap.startedAt + lapTime}
             message={`LAP FINISHED`}
           />
-
 
           <div>
             <div className="text-2xl md:text-4xl mb-2">
@@ -117,11 +116,11 @@ export const RaceLive = ({ race, lapTime }: Props) => {
               userEntries={
                 userEntries
                   ? userEntries.map((tokenId) => ({
-                    tokenId: Number(tokenId),
-                    index: allRacers.findIndex(
-                      (racer) => racer.tokenId === Number(tokenId),
-                    ),
-                  }))
+                      tokenId: Number(tokenId),
+                      index: allRacers.findIndex(
+                        (racer) => racer.tokenId === Number(tokenId),
+                      ),
+                    }))
                   : []
               }
             />

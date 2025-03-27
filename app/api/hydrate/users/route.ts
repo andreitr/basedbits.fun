@@ -15,7 +15,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    revalidateTag(`checkIns-${address}`);
     revalidateTag(`getNFTsForOwner-${address}`);
 
     await getNFTsForOwner({

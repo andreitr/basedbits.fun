@@ -35,13 +35,11 @@ export const MyStreak = ({ address }: Props) => {
 
   const invalidate = () => {
     Promise.all([
-      // Server
-      revalidateTags([`checkIns-${address}`]), // User checkin data
       hydrateUser(address), // Hydrate user queries with updated values
 
-      // Client
-      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS] }),
-      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS, address] }),
+      queryClient.invalidateQueries({
+        queryKey: [CHECKIN_QKS.CHECKINS, address],
+      }),
       queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }),
     ]).finally(() => {
       show();

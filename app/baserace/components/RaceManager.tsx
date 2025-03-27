@@ -98,7 +98,6 @@ export const RaceManager = ({ race }: Props) => {
     }
   }, [state, race.id, router]);
 
-
   if (state === RaceState.LIVE) {
     return (
       <div className="flex flex-row gap-2">

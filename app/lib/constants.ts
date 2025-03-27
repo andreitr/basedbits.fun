@@ -33,7 +33,7 @@ export const emptyDBUser: DBUser = {
   ens_name: null,
   ens_avatar: null,
   farcaster_name: null,
-  farcaster_avatar: null
+  farcaster_avatar: null,
 };
 
 export const emptyDBCheckin: DBCheckin = {
@@ -45,5 +45,5 @@ export const emptyDBCheckin: DBCheckin = {
   count: 0,
   hash: "",
   block_number: 0,
-  block_timestamp: 0
+  block_timestamp: 0,
 };
