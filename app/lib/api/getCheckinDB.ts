@@ -11,7 +11,7 @@ export const fetchCheckinDB = async (address: string) => {
     .single();
 
   if (error || !data) {
-    // Handle no user found
+    return {} as DBCheckin & { user: DBUser };
   }
 
   // Choose the latest checkin (if any)

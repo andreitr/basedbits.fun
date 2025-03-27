@@ -1,5 +1,6 @@
 import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { getUserDB } from "@/app/lib/api/getUserDB";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import {
@@ -60,6 +61,7 @@ export default async function Page(props: Props) {
 
   const csAddress = getAddress(address);
   const lastCheckin = await getCheckinDB(csAddress);
+  const user = await getUserDB(csAddress);
   const userNFTs = await getNFTsForOwner({
     address: csAddress,
     contract: [
@@ -78,7 +80,7 @@ export default async function Page(props: Props) {
       </div>
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="flex flex-col gap-8 container max-w-screen-lg mb-10">
-          <UserInfo checkin={lastCheckin} address={getAddress(address)} />
+          <UserInfo user={user} checkin={lastCheckin} />
           <Suspense fallback={<NFTListSkeleton />}>
             <NFTList list={userNFTs.ownedNfts} />
           </Suspense>
