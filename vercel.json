@@ -13,6 +13,10 @@
       "schedule": "0 0 * * *"
     },
     {
+      "path": "/api/bots/backfill/ens",
+      "schedule": "30 0,6,12,18 * * *"
+    },
+    {
       "path": "/api/bots/baserace/lap/start",
       "schedule": "0 19 * * *"
     },

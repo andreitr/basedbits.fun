@@ -3,7 +3,6 @@ import { getCheckins } from "@/app/lib/api/getCheckins";
 import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { baseProvider } from "@/app/lib/Web3Configs";
 import { Contract, parseUnits, Wallet } from "ethers";
-import { revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 import { isAddress } from "viem";
 
