@@ -1,6 +1,5 @@
-import { revalidateTag } from "next/cache";
-import { getCheckin } from "@/app/lib/api/getCheckin";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { revalidateTag } from "next/cache";
 import { isAddress } from "viem";
 
 export const dynamic = "force-dynamic";
@@ -19,8 +18,6 @@ export async function GET(req: Request) {
     revalidateTag(`checkIns-${address}`);
     revalidateTag(`getNFTsForOwner-${address}`);
 
-    // Hydrate cache for user checkins and NFTs
-    await getCheckin(address);
     await getNFTsForOwner({
       address: address,
       contract: [

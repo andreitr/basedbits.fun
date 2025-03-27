@@ -1,9 +1,9 @@
-import { ImageResponse } from "next/og";
+import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
+import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
-import { getCheckin } from "@/app/lib/api/getCheckin";
-import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       return new Response(`Address is required`, {});
     }
 
-    const lastCheckin = await getCheckin(address);
+    const lastCheckin = await getCheckinDB(address);
     const contractNFTs = await getNFTsForOwner({
       address: address,
       contract: [

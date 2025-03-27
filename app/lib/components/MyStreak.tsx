@@ -40,10 +40,9 @@ export const MyStreak = ({ address }: Props) => {
       hydrateUser(address), // Hydrate user queries with updated values
 
       // Client
-      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS] }), //User checkin data in hook
-      queryClient.invalidateQueries({ queryKey: ["checkIns", address] }), //User checkin data in hook
-      queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }), // Can checkin hook
-      queryClient.invalidateQueries({ queryKey: ["checkins", address] }), // Indexed checkins hook
+      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS] }),
+      queryClient.invalidateQueries({ queryKey: [CHECKIN_QKS.CHECKINS, address] }),
+      queryClient.invalidateQueries({ queryKey: ["canCheckIn", address] }),
     ]).finally(() => {
       show();
     });

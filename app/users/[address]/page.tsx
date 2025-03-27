@@ -1,13 +1,13 @@
+import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
+import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 import { Header } from "@/app/lib/components/client/Header";
-import { getAddress } from "ethers";
+import { Footer } from "@/app/lib/components/Footer";
 import {
   NFTList,
   NFTListSkeleton,
 } from "@/app/users/[address]/components/NFTList";
-import { Footer } from "@/app/lib/components/Footer";
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
-import { getCheckin } from "@/app/lib/api/getCheckin";
-import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { getAddress } from "ethers";
 import { Suspense } from "react";
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { address } = await params;
   const csAddress = getAddress(address);
-  const lastCheckin = await getCheckin(getAddress(address));
+  const lastCheckin = await getCheckinDB(getAddress(address));
 
   const title = `${lastCheckin.streak}-DAY STREAK 🔥`;
   const description = `Check-in ${lastCheckin.count} times into Based Bits!`;
@@ -59,7 +59,7 @@ export default async function Page(props: Props) {
   const { address } = params;
 
   const csAddress = getAddress(address);
-  const lastCheckin = await getCheckin(csAddress);
+  const lastCheckin = await getCheckinDB(csAddress);
   const userNFTs = await getNFTsForOwner({
     address: csAddress,
     contract: [

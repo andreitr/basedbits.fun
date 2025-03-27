@@ -1,12 +1,12 @@
 "use client";
 
-import { CheckIn } from "@/app/lib/types/types";
-import { Avatar } from "connectkit";
 import { ENSName } from "@/app/lib/components/client/ENSName";
+import { DBCheckin } from "@/app/lib/types/types";
+import { Avatar } from "connectkit";
 
 interface Props {
   address: string;
-  checkin: CheckIn;
+  checkin: DBCheckin;
 }
 
 export const UserInfo = ({ address, checkin }: Props) => {
