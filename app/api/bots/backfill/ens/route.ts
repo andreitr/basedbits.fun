@@ -77,12 +77,12 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        message: "ENS backfill completed",
-        processed: processedCount,
-        updated: updatedCount,
-      }),
+    console.log("Backfill ENS Results:", {
+      processed: processedCount,
+      updated: updatedCount,
+    });
+
+    return new Response("Backfill ENS completed",
       {
         status: 200,
         headers: {

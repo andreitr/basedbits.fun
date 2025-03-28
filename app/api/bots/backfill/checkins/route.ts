@@ -57,23 +57,53 @@ export async function GET(req: NextRequest) {
     const currentBlock = parseInt(currentBlockData.result, 16);
 
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
-    const fromBlockResponse = await fetch(baseRpcUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "eth_getBlockByTimestamp",
-        params: [`0x${twentyFourHoursAgo.toString(16)}`, false],
-      }),
-    });
 
-    const fromBlockData = await fromBlockResponse.json();
-    let fromBlock = fromBlockData.result
-      ? parseInt(fromBlockData.result.number, 16)
-      : Math.max(0, currentBlock - 7200);
+    // Binary search to find the block number for a given timestamp
+    async function findBlockByTimestamp(targetTimestamp: number, startBlock: number, endBlock: number): Promise<number> {
+      if (startBlock >= endBlock) {
+        return startBlock;
+      }
+
+      const midBlock = Math.floor((startBlock + endBlock) / 2);
+      const response = await fetch(baseRpcUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "eth_getBlockByNumber",
+          params: [`0x${midBlock.toString(16)}`, false],
+        }),
+      });
+
+      const data = await response.json();
+      if (!data.result) {
+        return startBlock;
+      }
+
+      const blockTimestamp = parseInt(data.result.timestamp, 16);
+
+      if (blockTimestamp === targetTimestamp) {
+        return midBlock;
+      }
+
+      if (blockTimestamp < targetTimestamp) {
+        return findBlockByTimestamp(targetTimestamp, midBlock + 1, endBlock);
+      } else {
+        return findBlockByTimestamp(targetTimestamp, startBlock, midBlock - 1);
+      }
+    }
+
+    // Try to find the block number for 24 hours ago
+    let fromBlock;
+    try {
+      fromBlock = await findBlockByTimestamp(twentyFourHoursAgo, Math.max(0, currentBlock - 72000), currentBlock);
+    } catch (error) {
+      // Fallback to a larger range if timestamp lookup fails
+      fromBlock = Math.max(0, currentBlock - 72000); // Look back 72k blocks as fallback
+    }
 
     let allEvents: any[] = [];
     const uniqueTransactionHashes = new Set<string>();
@@ -85,8 +115,10 @@ export async function GET(req: NextRequest) {
     }
     const checkInEventSignature = checkInEvent.topicHash;
 
+    // Use smaller block ranges to avoid RPC limits
+    const BLOCK_RANGE = 1000;
     while (fromBlock < currentBlock) {
-      const toBlock = Math.min(fromBlock + 10000, currentBlock);
+      const toBlock = Math.min(fromBlock + BLOCK_RANGE, currentBlock);
       const fromBlockHex = `0x${fromBlock.toString(16)}`;
       const toBlockHex = `0x${toBlock.toString(16)}`;
 
@@ -114,6 +146,11 @@ export async function GET(req: NextRequest) {
 
       if (data.error) {
         if (data.error.code === -32005) {
+          // If the range is too large, try with a smaller range
+          if (BLOCK_RANGE > 100) {
+            const newBlockRange = Math.floor(BLOCK_RANGE / 2);
+            continue;
+          }
           await new Promise((resolve) => setTimeout(resolve, 1000));
           continue;
         }
