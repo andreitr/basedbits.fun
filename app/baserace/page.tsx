@@ -43,7 +43,7 @@ export default async function Page() {
             <RacePending race={race} mintTime={mintTime} mintPrice={price} />
           )}
 
-          {race.isLive && <RaceLive race={race} lapTime={lapTime} />}
+          {race.isLive && <RaceLive race={race} />}
 
           {race.isFinished && <RaceFinished race={race} />}
         </div>

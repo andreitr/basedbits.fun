@@ -1,23 +1,18 @@
 "use client";
 
+import { RaceLivePositions } from "@/app/baserace/components/RaceLivePositions";
 import { RaceSkeleton } from "@/app/baserace/components/RaceSkeleton";
-import { Racers } from "@/app/baserace/components/Racers";
 import { IBaseRace } from "@/app/lib/classes/BaseRace";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useEntriesForAddress } from "@/app/lib/hooks/baserace/useEntriesForAddress";
-import { useLap } from "@/app/lib/hooks/baserace/useLap";
 import { useRace } from "@/app/lib/hooks/baserace/useRace";
-import { BaseRaceEntry } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
-import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 interface Props {
   race: IBaseRace;
-  lapTime: number;
 }
 
-export const RaceLive = ({ race, lapTime }: Props) => {
+export const RaceLive = ({ race }: Props) => {
   const prize = `${formatUnits(race?.prize, 18).slice(0, 7)}Ξ`;
 
   const { address, isConnected } = useAccount();
@@ -34,43 +29,17 @@ export const RaceLive = ({ race, lapTime }: Props) => {
     enabled: isConnected,
   });
 
-  const { data: lap, refetch } = useLap({
-    raceId: race.id,
-    lapId: race.lapCount,
-    enabled: true,
-    refetchInterval: 1000 * 3,
-  });
-
   const currentRace = loadedRace || race;
-  const [allRacers, setAllRacers] = useState<BaseRaceEntry[]>([]);
-  const [key, setKey] = useState(0);
 
-  useEffect(() => {
-    setKey((prev) => prev + 1);
-    refetch();
-  }, [race.lapCount, refetch]);
 
-  useEffect(() => {
-    if (lap?.positions) {
-      const filtered = lap.positions.map((tokenId, index) => ({
-        tokenId: Number(tokenId),
-        index,
-      }));
 
-      setAllRacers(filtered);
-    }
-  }, [lap]);
-
-  if (!lap || !allRacers) return <RaceSkeleton />;
+  if (!currentRace) return <RaceSkeleton />;
 
   return (
-    <div key={key}>
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
-          <CountDownToDate
-            targetDate={lap.startedAt + lapTime}
-            message={`LAP FINISHED`}
-          />
+
 
           <div>
             <div className="text-2xl md:text-4xl mb-2">
@@ -103,30 +72,13 @@ export const RaceLive = ({ race, lapTime }: Props) => {
           </div>
         </div>
       </div>
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-4 my-6 md:my-8 gap-6 md:gap-8">
-          <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center text-xs uppercase">
-              All Racers
-            </div>
-            <Racers
-              race={currentRace}
-              entries={allRacers}
-              eliminated={lap.eliminations}
-              userEntries={
-                userEntries
-                  ? userEntries.map((tokenId) => ({
-                      tokenId: Number(tokenId),
-                      index: allRacers.findIndex(
-                        (racer) => racer.tokenId === Number(tokenId),
-                      ),
-                    }))
-                  : []
-              }
-            />
-          </div>
-        </div>
-      </div>
+      <RaceLivePositions
+        race={currentRace}
+        userEntries={userEntries?.map((entry, index) => ({
+          tokenId: parseInt(entry),
+          index,
+        }))}
+      />
     </div>
   );
 };
