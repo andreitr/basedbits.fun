@@ -1,3 +1,4 @@
+import { getENSData } from "@/app/lib/api/getENSData";
 import {
   getFarcasterUser,
   postToFarcaster,
@@ -126,6 +127,26 @@ export async function POST(request: Request) {
         }
       } catch (error) {
         console.warn("Failed to fetch Farcaster username:", error);
+      }
+    }
+
+    // Try to get ENS name if not already set
+    if (!user.ens_name) {
+      try {
+        const { ensName, ensAvatar } = await getENSData(checkInEvent.sender);
+        if (ensName) {
+          const updates = {
+            ens_name: ensName,
+            ens_avatar: ensAvatar || undefined,
+          };
+
+          const updatedUser = await updateUser(checkInEvent.sender, updates);
+          if (updatedUser) {
+            user = updatedUser;
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to fetch ENS data:", error);
       }
     }
 

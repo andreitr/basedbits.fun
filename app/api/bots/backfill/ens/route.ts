@@ -1,6 +1,6 @@
+import { getENSData } from "@/app/lib/api/getENSData";
 import { supabase } from "@/app/lib/supabase/client";
 import { NextRequest } from "next/server";
-import { getENSData } from "@/app/lib/api/getENSData";
 
 export async function GET(req: NextRequest) {
   try {
