@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+when creating a new posgresql table or a migration follow these standards:
+
+- column names must be lowecase and underscrore. eg user_id not userId
+- always include created_at auto timestamp 
+- always include updated_at auto timestamp
+- always include auto icrement id as primary key
