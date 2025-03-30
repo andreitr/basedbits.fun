@@ -94,3 +94,13 @@ export interface DBUser {
   farcaster_name: string | null;
   farcaster_avatar: string | null;
 }
+
+export interface DBMessage {
+  id: number;
+  user_id: number;
+  opened_at: string | null;
+  message_hash: string;
+  bounty: number | null;
+  created_at: string;
+  updated_at: string;
+}

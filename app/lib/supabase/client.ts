@@ -1,24 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import { DBMessage, DBUser } from "../types/types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Type for our users table
-export interface User {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  address: string;
-  ens_name?: string;
-  ens_avatar?: string;
-  farcaster_name?: string;
-  farcaster_avatar?: string;
-}
-
 // Helper function to get or create a user
-export async function getOrCreateUser(address: string): Promise<User | null> {
+export async function getOrCreateUser(address: string): Promise<DBUser | null> {
   const normalizedAddress = address.toLowerCase();
 
   // First try to get the user
@@ -35,7 +24,7 @@ export async function getOrCreateUser(address: string): Promise<User | null> {
   }
 
   // If user exists, return it
-  if (user) return user as User;
+  if (user) return user as DBUser;
 
   // If user doesn't exist, create it
   const { data: newUser, error: insertError } = await supabase
@@ -49,14 +38,14 @@ export async function getOrCreateUser(address: string): Promise<User | null> {
     return null;
   }
 
-  return newUser as User;
+  return newUser as DBUser;
 }
 
 // Helper function to update a user
 export async function updateUser(
   address: string,
-  updates: Partial<User>,
-): Promise<User | null> {
+  updates: Partial<DBUser>,
+): Promise<DBUser | null> {
   const normalizedAddress = address.toLowerCase();
 
   const { data: updatedUser, error } = await supabase
@@ -71,7 +60,7 @@ export async function updateUser(
     return null;
   }
 
-  return updatedUser as User;
+  return updatedUser as DBUser;
 }
 
 // Helper function to create a checkin record
@@ -100,4 +89,28 @@ export async function createCheckin(
   }
 
   return true;
+}
+
+// Helper function to create a message record
+export async function createMessage(
+  userId: number,
+  bounty?: number,
+): Promise<DBMessage | null> {
+  const { data: message, error } = await supabase
+    .from("messages")
+    .insert([
+      {
+        user_id: userId,
+        bounty,
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating message:", error);
+    return null;
+  }
+
+  return message as DBMessage;
 }
