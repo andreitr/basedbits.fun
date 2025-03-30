@@ -12,3 +12,4 @@ when creating a new posgresql table or a migration follow these standards:
 - always include created_at auto timestamp 
 - always include updated_at auto timestamp
 - always include auto icrement id as primary key
+- always capitalize SQL function names and variable names. eg `SELECT FROM` not `select from`

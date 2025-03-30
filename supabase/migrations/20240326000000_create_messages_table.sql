@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS messages (
     id BIGSERIAL PRIMARY KEY,
-    user_id UUID REFERENCES users(id) NOT NULL,
+    user_id BIGINT REFERENCES users(id) NOT NULL,
     opened_at TIMESTAMP WITH TIME ZONE,
     message_hash TEXT UNIQUE NOT NULL,
     bounty NUMERIC,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- Create an index on the message_hash column for faster lookups
