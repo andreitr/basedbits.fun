@@ -1,43 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import { flip, offset, shift, useFloating } from "@floating-ui/react";
+import {
+  useFloating,
+  useHover,
+  useInteractions,
+  FloatingArrow,
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+} from "@floating-ui/react";
+import { ReactNode } from "react";
 
 interface Props {
-  content: string;
-  children: React.ReactNode;
+  content: ReactNode;
+  children: ReactNode;
 }
 
 export const Tooltip = ({ content, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { x, y, strategy } = useFloating({
-    placement: "top-start",
-    middleware: [offset(40), flip(), shift()],
+
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    placement: "top",
+    middleware: [offset(8), flip(), shift()],
+    whileElementsMounted: autoUpdate,
   });
+
+  const hover = useHover(context, {
+    delay: { open: 100, close: 0 },
+    mouseOnly: true,
+  });
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 
   return (
     <div
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      ref={refs.setReference}
+      {...getReferenceProps()}
       className="relative flex"
     >
       {children}
-      {isOpen && (
-        <div
-          style={{
-            position: strategy,
-            top: y ?? 20,
-            left: x ?? 20,
-            zIndex: 9999,
-            opacity: isOpen ? 1 : 0,
-            transform: isOpen ? "translateY(0)" : "translateY(-40px)",
-            transition: "opacity 0.9s ease-in-out, transform 0.9s ease-in-out",
-          }}
-          className="bg-black text-white text-sm rounded p-2"
-        >
-          {content}
-        </div>
-      )}
+      <div
+        ref={refs.setFloating}
+        style={{
+          ...floatingStyles,
+          opacity: isOpen ? 1 : 0,
+          transition: "opacity 200ms ease-in-out",
+          pointerEvents: isOpen ? "auto" : "none",
+        }}
+        {...getFloatingProps()}
+        className="bg-black bg-opacity-90 text-white text-sm rounded-lg px-3 py-2 shadow-lg"
+        role="tooltip"
+      >
+        {content}
+        <FloatingArrow
+          context={context}
+          className="fill-black absolute left-1/2 -translate-x-1/2"
+          tipRadius={2}
+        />
+      </div>
     </div>
   );
 };
