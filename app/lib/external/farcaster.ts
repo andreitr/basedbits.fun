@@ -133,25 +133,31 @@ export async function sendFarcasterDM(
     const recipientFid = user.fid;
 
     // Send DM using Warpcast Programmable Direct Casts API
-    const response = await fetch("https://api.warpcast.com/v2/ext-send-direct-cast", {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${process.env.FARCASTER_API_KEY || ""}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "https://api.warpcast.com/v2/ext-send-direct-cast",
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${process.env.FARCASTER_API_KEY || ""}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          recipientFid,
+          message,
+          idempotencyKey: crypto.randomUUID(),
+        }),
       },
-      body: JSON.stringify({
-        recipientFid,
-        message,
-        idempotencyKey: crypto.randomUUID()
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       const errorJson = JSON.parse(errorText);
 
       // Handle specific error cases
-      if (errorJson.errors?.[0]?.message === "Conversation users must be different") {
+      if (
+        errorJson.errors?.[0]?.message ===
+        "Conversation users must be different"
+      ) {
         throw new Error("Cannot send DM to yourself");
       }
 

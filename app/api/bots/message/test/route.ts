@@ -1,8 +1,8 @@
+import { fetchUserDB } from "@/app/lib/api/getUserDB";
 import { sendFarcasterDM } from "@/app/lib/external/farcaster";
+import { createMessage } from "@/app/lib/supabase/client";
 import { NextRequest } from "next/server";
 import { isAddress } from "viem";
-import { fetchUserDB } from "@/app/lib/api/getUserDB";
-import { createMessage } from "@/app/lib/supabase/client";
 
 export async function GET(req: NextRequest) {
     try {
