@@ -31,16 +31,12 @@ export const RaceLive = ({ race }: Props) => {
 
   const currentRace = loadedRace || race;
 
-
-
   if (!currentRace) return <RaceSkeleton />;
 
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-4 w-full p-4 md:p-6 bg-black rounded-lg text-white min-h-[210px]">
         <div className="col-span-1 md:col-span-3 flex flex-col justify-between h-full">
-
-
           <div>
             <div className="text-2xl md:text-4xl mb-2">
               BaseRace #{currentRace.id} is LIVE

@@ -59,7 +59,11 @@ export async function GET(req: NextRequest) {
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
 
     // Binary search to find the block number for a given timestamp
-    async function findBlockByTimestamp(targetTimestamp: number, startBlock: number, endBlock: number): Promise<number> {
+    async function findBlockByTimestamp(
+      targetTimestamp: number,
+      startBlock: number,
+      endBlock: number,
+    ): Promise<number> {
       if (startBlock >= endBlock) {
         return startBlock;
       }
@@ -99,7 +103,11 @@ export async function GET(req: NextRequest) {
     // Try to find the block number for 24 hours ago
     let fromBlock;
     try {
-      fromBlock = await findBlockByTimestamp(twentyFourHoursAgo, Math.max(0, currentBlock - 72000), currentBlock);
+      fromBlock = await findBlockByTimestamp(
+        twentyFourHoursAgo,
+        Math.max(0, currentBlock - 72000),
+        currentBlock,
+      );
     } catch (error) {
       // Fallback to a larger range if timestamp lookup fails
       fromBlock = Math.max(0, currentBlock - 72000); // Look back 72k blocks as fallback

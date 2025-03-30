@@ -85,7 +85,7 @@ export interface DBCheckin {
 }
 
 export interface DBUser {
-  user_id: number;
+  id: number;
   created_at: string;
   updated_at: string;
   address: string;

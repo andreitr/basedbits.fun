@@ -2,7 +2,6 @@
 
 import { useCheckins } from "@/app/lib/hooks/useCheckins";
 import { Avatar } from "connectkit";
-import Image from "next/image";
 import { getAddress } from "ethers";
 import Link from "next/link";
 

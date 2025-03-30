@@ -82,14 +82,12 @@ export async function GET(req: NextRequest) {
       updated: updatedCount,
     });
 
-    return new Response("Backfill ENS completed",
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+    return new Response("Backfill ENS completed", {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    });
   } catch (error) {
     return new Response(
       JSON.stringify({
