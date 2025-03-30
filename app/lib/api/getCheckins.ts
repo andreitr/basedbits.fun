@@ -14,7 +14,7 @@ export async function getCheckins(seconds: number = 86400) {
         `,
     )
     .gte("block_timestamp", timeAgo)
-    .order("created_at", { ascending: false });
+    .order("block_number", { ascending: false });
 
   if (error) {
     throw error;
