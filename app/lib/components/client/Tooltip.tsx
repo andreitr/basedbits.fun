@@ -1,17 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import {
-  useFloating,
-  useHover,
-  useInteractions,
   FloatingArrow,
   autoUpdate,
   flip,
   offset,
   shift,
+  useFloating,
+  useHover,
+  useInteractions,
 } from "@floating-ui/react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 interface Props {
   content: ReactNode;

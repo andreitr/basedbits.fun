@@ -1,11 +1,12 @@
 "use client";
 
 import { useCheckins } from "@/app/lib/hooks/useCheckins";
+import { formatTimeAgo } from "@/app/lib/utils/timeUtils";
 import { Avatar } from "connectkit";
 import { getAddress } from "ethers";
 import Link from "next/link";
+import { truncateAddress } from "../../utils/addressUtils";
 import { Tooltip } from "./Tooltip";
-import { formatTimeAgo } from "@/app/lib/utils/timeUtils";
 
 export const UserList = () => {
   const { data: users, isError } = useCheckins({ enabled: true });
@@ -22,14 +23,12 @@ export const UserList = () => {
     <div className="flex flex-wrap gap-2">
       {users.map((checkin, index) => {
         const tooltipContent = (
-          <div>
-            <div className="font-medium">
-              {checkin.user.ens_name || checkin.user.address}
+          <div className="min-w-[200px]">
+            <div>
+              {checkin.user.ens_name || truncateAddress(checkin.user.address)}
             </div>
-            <div className="text-xs text-gray-300">
-              {checkin.streak}-day streak
-            </div>
-            <div className="text-xs text-gray-400">
+
+            <div className="text-xs mt-2 text-gray-400">
               Checked in {formatTimeAgo(checkin.block_timestamp)}
             </div>
           </div>
@@ -38,7 +37,10 @@ export const UserList = () => {
         return (
           <div className="flex items-center justify-center" key={index}>
             <Tooltip content={tooltipContent}>
-              <Link href={`/users/${getAddress(checkin.user.address)}`}>
+              <Link
+                href={`/users/${getAddress(checkin.user.address)}`}
+                prefetch={true}
+              >
                 <div className="flex rounded-full p-0.5 bg-black bg-opacity-80 transition-all duration-300 hover:bg-opacity-100">
                   <Avatar
                     address={checkin.user.address as `0x${string}`}
