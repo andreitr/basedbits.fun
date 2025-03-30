@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     }
     // Create checkin record
     await createCheckin(
-      user.user_id,
+      user.id,
       checkInEvent.streak,
       checkInEvent.totalCheckIns,
       eventData.transaction.hash,

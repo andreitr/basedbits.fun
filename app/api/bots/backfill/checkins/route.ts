@@ -261,7 +261,7 @@ export async function GET(req: NextRequest) {
         // Save checkin immediately
         const { error: insertError } = await supabase.from("checkins").insert([
           {
-            user_id: user.user_id,
+            user_id: user.id,
             streak: Number(decodedLog.args[2]),
             count: Number(decodedLog.args[3]),
             hash: log.transactionHash,
