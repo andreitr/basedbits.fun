@@ -26,7 +26,7 @@ export const BASE_RACE_STATUS = {
 } as const;
 
 export const emptyDBUser: DBUser = {
-  user_id: 0,
+  id: 0,
   created_at: "",
   updated_at: "",
   address: "",
