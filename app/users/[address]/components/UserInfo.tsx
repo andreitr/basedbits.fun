@@ -13,7 +13,6 @@ export const UserInfo = ({ user, checkin }: Props) => {
   const { streak, count } = checkin;
   const title = `${streak}-day streak 🔥 ${count} check-in${count === 1 ? "" : "s"}`;
 
-
   return (
     <div>
       <div className="flex flex-row gap-4 items-center">

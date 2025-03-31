@@ -1,20 +1,14 @@
-import { supabase } from "@/app/lib/supabase/client";
 import { DBMessage } from "@/app/lib/types/types";
-import { cache } from "react";
 
-export const claimMessageDB = async (message: DBMessage): Promise<DBMessage | null> => {
-    const { data, error } = await supabase
-        .from("messages")
-        .update({ opened_at: new Date().toISOString() })
-        .eq("id", message.id)
-        .select()
-        .single();
+export const claimMessage = async (message: DBMessage): Promise<DBMessage> => {
+  const response = await fetch(`/api/messages/${message.id}/claim`, {
+    method: "POST",
+  });
 
-    if (error) {
-        console.error("Error claiming message:", error);
-        return null;
-    }
-    return data as DBMessage;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to claim message");
+  }
+
+  return response.json();
 };
-
-export const claimMessage = cache(claimMessageDB); 

@@ -1,27 +1,37 @@
 "use client";
 
+import { useClaimMessage } from "@/app/lib/hooks/messages/useClaimMessage";
 import { useMessage } from "@/app/lib/hooks/messages/useMessage";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export const MessageClaim = () => {
+  const [loadingToastId, setLoadingToastId] = useState<string | undefined>();
+  const searchParams = useSearchParams();
+  const messageHash = searchParams.get("airdrop");
 
-    const searchParams = useSearchParams();
-    const messageHash = searchParams.get("airdrop");
+  const { data: message } = useMessage(
+    messageHash ? messageHash.toString() : undefined,
+  );
+  const { call, isSuccess } = useClaimMessage();
 
-    const { data: message } = useMessage(messageHash ? messageHash.toString() : undefined);
+  useEffect(() => {
+    if (message && !message.opened_at) {
+      const toastId = toast.loading(`Claiming ${message?.bounty} BBITS`);
+      setLoadingToastId(toastId);
+      call(message);
+    }
+  }, [message]);
 
+  useEffect(() => {
+    if (isSuccess && loadingToastId) {
+      toast.dismiss(loadingToastId);
+      toast.success(`Successfully claimed ${message?.bounty} BBITS!`, {
+        duration: 10000,
+      });
+    }
+  }, [isSuccess, message?.bounty, loadingToastId]);
 
-
-    useEffect(() => {
-        if (message) {
-            if (message.opened_at) {
-                console.log(`Airdrop already claimed for ${message.bounty}`);
-            } else {
-                console.log("Airdrop not claimed");
-            }
-        }
-    }, [message]);
-
-    return <div>MessageClaim {messageHash}</div>;
+  return null;
 };
