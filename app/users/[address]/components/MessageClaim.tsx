@@ -12,7 +12,7 @@ export const MessageClaim = () => {
   const messageHash = searchParams.get("message");
 
   const { data: message } = useMessage(messageHash || undefined);
-  const { call, isSuccess } = useClaimMessage();
+  const { call, isSuccess, isError } = useClaimMessage();
 
   useEffect(() => {
     if (message && !message.txn_hash && (!message.expires_at || new Date(message.expires_at) > new Date())) {
@@ -31,13 +31,20 @@ export const MessageClaim = () => {
     }
   }, [isSuccess, message?.bounty, loadingToastId]);
 
+  useEffect(() => {
+    if (isError && loadingToastId) {
+      toast.dismiss(loadingToastId);
+      toast.error("Failed to claim message. Please try again later.");
+    }
+  }, [isError, loadingToastId]);
+
   if (message?.txn_hash) {
     toast.error("Message already claimed");
     return;
   }
 
   if (message?.expires_at && new Date(message.expires_at) < new Date()) {
-    toast.error("Oh sorry, that airdrop has already expired 🕒");
+    toast.error("Oh sorry, that airdrop has already expired");
     return;
   }
 
