@@ -47,6 +47,10 @@
     {
       "path": "/api/bots/baserace/race/start",
       "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/bots/message/weekly",
+      "schedule": "0 16 * * 0"
     }
   ]
 }
