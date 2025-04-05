@@ -25,6 +25,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Message not found" }, { status: 404 });
         }
 
+        if (message?.txn_hash) {
+            return NextResponse.json({ error: "Message already claimed" }, { status: 400 });
+        }
+
+        if (message?.expires_at && new Date(message.expires_at) < new Date()) {
+            return NextResponse.json({ error: "Message has expired" }, { status: 400 });
+        }
+
         // Get the user's address from the database
         const { data: userData, error: userError } = await supabase
             .from("users")

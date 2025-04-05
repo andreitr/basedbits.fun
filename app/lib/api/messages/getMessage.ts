@@ -2,11 +2,13 @@ import { supabase } from "@/app/lib/supabase/client";
 import { DBMessage } from "@/app/lib/types/types";
 import { cache } from "react";
 
-export const fetchMessageDB = async (id: number): Promise<DBMessage | null> => {
+export const fetchMessageDB = async (
+  rand_hash: string,
+): Promise<DBMessage | null> => {
   const { data, error } = await supabase
     .from("messages")
-    .select("*")
-    .eq("id", id)
+    .select("id, user_id, bounty, txn_hash, rand_hash, created_at, updated_at")
+    .eq("rand_hash", rand_hash)
     .single();
 
   if (error) {

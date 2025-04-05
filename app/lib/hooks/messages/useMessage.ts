@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { getMessage } from "@/app/lib/api/messages/getMessage";
+import { useQuery } from "@tanstack/react-query";
 import { DBMessage } from "@/app/lib/types/types";
 
-export function useMessage(id?: number) {
+export function useMessage(rand_hash?: string) {
   return useQuery<DBMessage | null>({
-    queryKey: ["message", id],
-    queryFn: () => getMessage(id!),
-    enabled: !!id,
+    queryKey: ["message", rand_hash],
+    queryFn: () => (rand_hash ? getMessage(rand_hash) : null),
+    enabled: !!rand_hash,
   });
 }

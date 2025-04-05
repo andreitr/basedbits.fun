@@ -9,15 +9,13 @@ import toast from "react-hot-toast";
 export const MessageClaim = () => {
   const [loadingToastId, setLoadingToastId] = useState<string | undefined>();
   const searchParams = useSearchParams();
-  const messageId = searchParams.get("message");
+  const messageHash = searchParams.get("message");
 
-  const { data: message } = useMessage(
-    messageId ? parseInt(messageId) : undefined,
-  );
+  const { data: message } = useMessage(messageHash || undefined);
   const { call, isSuccess } = useClaimMessage();
 
   useEffect(() => {
-    if (message && !message.hash) {
+    if (message && !message.txn_hash && (!message.expires_at || new Date(message.expires_at) > new Date())) {
       const toastId = toast.loading(`Claiming ${message?.bounty} BBITS`);
       setLoadingToastId(toastId);
       call(message);
@@ -32,6 +30,16 @@ export const MessageClaim = () => {
       });
     }
   }, [isSuccess, message?.bounty, loadingToastId]);
+
+  if (message?.txn_hash) {
+    toast.error("Message already claimed");
+    return;
+  }
+
+  if (message?.expires_at && new Date(message.expires_at) < new Date()) {
+    toast.error("Oh sorry, that airdrop has already expired 🕒");
+    return;
+  }
 
   return null;
 };
