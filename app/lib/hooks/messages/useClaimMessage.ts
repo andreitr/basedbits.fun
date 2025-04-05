@@ -1,5 +1,6 @@
 import { DBMessage } from "@/app/lib/types/types";
 import { useCallback, useState } from "react";
+import { claimMessage } from "../../api/messages/claimMessage";
 
 export const useClaimMessage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -8,9 +9,7 @@ export const useClaimMessage = () => {
   const call = useCallback(async (message: DBMessage) => {
     try {
       setIsLoading(true);
-      await fetch(`/api/messages/${message.id}/claim`, {
-        method: "POST",
-      });
+      await claimMessage(message.id);
 
       setIsSuccess(true);
     } catch (error) {

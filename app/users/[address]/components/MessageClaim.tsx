@@ -9,15 +9,15 @@ import toast from "react-hot-toast";
 export const MessageClaim = () => {
   const [loadingToastId, setLoadingToastId] = useState<string | undefined>();
   const searchParams = useSearchParams();
-  const messageHash = searchParams.get("airdrop");
+  const messageId = searchParams.get("message");
 
   const { data: message } = useMessage(
-    messageHash ? messageHash.toString() : undefined,
+    messageId ? parseInt(messageId) : undefined,
   );
   const { call, isSuccess } = useClaimMessage();
 
   useEffect(() => {
-    if (message && !message.opened_at) {
+    if (message && !message.hash) {
       const toastId = toast.loading(`Claiming ${message?.bounty} BBITS`);
       setLoadingToastId(toastId);
       call(message);

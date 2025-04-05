@@ -98,8 +98,7 @@ export interface DBUser {
 export interface DBMessage {
   id: number;
   user_id: number;
-  opened_at: string | null;
-  message_hash: string;
+  hash: string | null;
   bounty: number | null;
   created_at: string;
   updated_at: string;

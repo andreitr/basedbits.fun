@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       return new Response("Failed to create message record", { status: 500 });
     }
 
-    const message = `Hello world! This is a test DM from BBITS ${messageCreated.message_hash}`;
+    const message = `Hello world! This is a test DM from BBITS ${messageCreated.id}`;
 
     try {
       await sendFarcasterDM(user.farcaster_name, message);

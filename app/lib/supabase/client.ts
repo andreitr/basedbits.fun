@@ -95,6 +95,7 @@ export async function createCheckin(
 export async function createMessage(
   userId: number,
   bounty?: number,
+  hash?: string,
 ): Promise<DBMessage | null> {
   const { data: message, error } = await supabase
     .from("messages")
@@ -102,6 +103,7 @@ export async function createMessage(
       {
         user_id: userId,
         bounty,
+        hash,
       },
     ])
     .select()
