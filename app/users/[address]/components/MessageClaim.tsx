@@ -15,7 +15,11 @@ export const MessageClaim = () => {
   const { call, isSuccess, isError } = useClaimMessage();
 
   useEffect(() => {
-    if (message && !message.txn_hash && (!message.expires_at || new Date(message.expires_at) > new Date())) {
+    if (
+      message &&
+      !message.txn_hash &&
+      (!message.expires_at || new Date(message.expires_at) > new Date())
+    ) {
       const toastId = toast.loading(`Claiming ${message?.bounty} BBITS`);
       setLoadingToastId(toastId);
       call(message);

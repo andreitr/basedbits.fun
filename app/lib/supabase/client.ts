@@ -95,7 +95,7 @@ export async function createCheckin(
 export async function createMessage(
   userId: number,
   bounty?: number,
-  hash?: string,
+  expires_at?: string,
 ): Promise<DBMessage | null> {
   const { data: message, error } = await supabase
     .from("messages")
@@ -103,7 +103,7 @@ export async function createMessage(
       {
         user_id: userId,
         bounty,
-        hash,
+        expires_at,
       },
     ])
     .select()
@@ -115,4 +115,42 @@ export async function createMessage(
   }
 
   return message as DBMessage;
+}
+
+// Helper function to get users with recent checkins and high streaks
+export async function getUsersWithRecentCheckins(): Promise<
+  (DBUser & { streak: number })[]
+> {
+  const oneWeekAgo = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60;
+
+  const { data, error } = await supabase
+    .from("checkins")
+    .select(
+      `
+      streak,
+      user:users(*)
+    `,
+    )
+    .gte("block_timestamp", oneWeekAgo)
+    .gte("streak", 7)
+    .not("user.farcaster_name", "is", null)
+    .order("block_timestamp", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching users with recent checkins:", error);
+    return [];
+  }
+
+  // Extract unique users from the results
+  const uniqueUsers = new Map<number, DBUser & { streak: number }>();
+  data.forEach((checkin: any) => {
+    if (checkin.user && !uniqueUsers.has(checkin.user.id)) {
+      uniqueUsers.set(checkin.user.id, {
+        ...checkin.user,
+        streak: checkin.streak,
+      });
+    }
+  });
+
+  return Array.from(uniqueUsers.values());
 }
