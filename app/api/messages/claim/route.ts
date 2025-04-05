@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (messageError || !message) {
-            console.error("Error fetching message:", messageError);
             return NextResponse.json({ error: "Message not found" }, { status: 404 });
         }
 
@@ -64,7 +63,7 @@ export async function POST(request: NextRequest) {
                 // Update message with transaction hash immediately
                 const { data, error } = await supabase
                     .from("messages")
-                    .update({ hash: tx.hash })
+                    .update({ txn_hash: tx.hash })
                     .eq("id", id)
                     .select()
                     .single();
