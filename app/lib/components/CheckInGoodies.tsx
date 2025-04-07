@@ -38,12 +38,7 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
         {unclaimedMessages?.map((message) => (
           <div key={message.rand_hash}>
             {"• "}
-            <Link
-              className="hover:no-underline underline text-[#0000FF]"
-              href={`/users/${address}?message=${message.rand_hash}`}
-            >
-              Claim a bonus {message.bounty} BBITS airdrop!
-            </Link>
+            Check your Farcaster DMs to claim a {message.bounty} BBITS airdrop!
           </div>
         ))}
         <div>
