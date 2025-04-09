@@ -1,151 +1,102 @@
 import { supabase } from "@/app/lib/supabase/client";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Define article type interface
+const NEWS_CATEGORY = "general";
+const DAYS_TO_FETCH = 1;
+const QUALITY_NEWS_DOMAINS = "cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com";
+const TOP_HEADLINES_ENDPOINT = "https://newsapi.org/v2/top-headlines";
+const EVERYTHING_ENDPOINT = "https://newsapi.org/v2/everything";
+
 interface NewsArticle {
     title: string;
     description: string;
-    url: string;
     publishedAt: string;
-    source: {
-        name: string;
-    };
-    content?: string;
-    urlToImage?: string;
-    author?: string;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
-        // Get the News API key from environment variables
+        const authHeader = req.headers.get("authorization");
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
         const apiKey = process.env.NEWS_API_KEY;
-
         if (!apiKey) {
-            return new Response("Error: NEWS_API_KEY environment variable not set", {
-                status: 500,
-            });
+            return new Response("Error: NEWS_API_KEY not set", { status: 500 });
         }
 
-        // Hard-coded values instead of taking from parameters
-        const category = "general"; // Fixed category
-        const days = 1; // Fixed to 1 day
-
-        // Calculate date for the past day
+        // Calculate date range
         const date = new Date();
-        date.setDate(date.getDate() - days);
-        const fromDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        date.setDate(date.getDate() - DAYS_TO_FETCH);
+        const fromDate = date.toISOString().split("T")[0];
 
-        // Fixed list of high-quality news domains
-        const domains =
-            "cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com";
+        const articles = await fetchAllArticles(apiKey, fromDate);
+        const formattedText = formatArticles(articles);
 
-        // Get top US headlines
-        let url = `https://newsapi.org/v2/top-headlines?country=us&pageSize=100&apiKey=${apiKey}&category=${category}`;
+        await supabase.from("zeitgeist").insert({ context: formattedText });
 
-        const response = await fetch(url, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cache: "no-store",
-        });
-
-        if (!response.ok) {
-            return new Response("Error: Failed to fetch news", {
-                status: response.status,
-            });
-        }
-
-        const data = await response.json();
-
-        // Filter articles by date
-        const fromDateTimestamp = new Date(fromDate).getTime();
-        data.articles = data.articles.filter((article: NewsArticle) => {
-            const publishedDate = new Date(article.publishedAt).getTime();
-            return publishedDate >= fromDateTimestamp;
-        });
-
-        data.totalResults = data.articles.length;
-
-        // If we don't have enough results, supplement with the everything endpoint
-        if (data.totalResults < 50) {
-            const everythingUrl = `https://newsapi.org/v2/everything?domains=${domains}&language=en&pageSize=100&from=${fromDate}&sortBy=popularity&apiKey=${apiKey}`;
-
-            const everythingResponse = await fetch(everythingUrl, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                cache: "no-store",
-            });
-
-            if (everythingResponse.ok) {
-                const everythingData = await everythingResponse.json();
-
-                // Combine results if we got any from top-headlines
-                if (data.totalResults > 0) {
-                    // Create a Set of existing titles to avoid duplicates
-                    const existingTitles = new Set(
-                        data.articles.map((article: NewsArticle) => article.title),
-                    );
-
-                    // Add non-duplicate articles from everything endpoint
-                    everythingData.articles.forEach((article: NewsArticle) => {
-                        if (!existingTitles.has(article.title)) {
-                            data.articles.push(article);
-                            existingTitles.add(article.title);
-                        }
-                    });
-
-                    // Update total results
-                    data.totalResults = data.articles.length;
-                } else {
-                    // Just use everything results if top-headlines had none
-                    data.articles = everythingData.articles;
-                    data.totalResults = everythingData.totalResults;
-                }
-            }
-        }
-
-        // Format articles in the requested text format
-        let formattedText = "";
-
-        // Limit to 100 articles
-        const limitedArticles = data.articles.slice(0, 100);
-
-        for (const article of limitedArticles) {
-            const title = article.title?.trim() || "Untitled";
-            const description =
-                article.description?.trim() || "[No description available]";
-
-            formattedText += `Title: "${title}"\n`;
-            formattedText += `Summary: "${description}"\n\n`;
-        }
-
-        // Save to zeitgeist table in the database
-        const { error: dbError } = await supabase.from("zeitgeist").insert({
-            context: formattedText,
-        });
-
-        if (dbError) {
-            console.error("Error saving to zeitgeist table:", dbError);
-        }
-
-        console.log(
-            `Saved ${limitedArticles.length} news headlines to zeitgeist table`,
-        );
-
-        return new Response(
-            `Saved ${limitedArticles.length} news headlines to zeitgeist table`,
-            {
-                status: 200,
-            },
-        );
+        return new Response(`Saved ${articles.length} news headlines`, { status: 200 });
     } catch (error) {
         console.error("Error fetching news:", error);
-
-        return new Response("Error: Failed to fetch news", {
-            status: 500,
-        });
+        return new Response("Error: Failed to fetch news", { status: 500 });
     }
+}
+
+async function fetchAllArticles(apiKey: string, fromDate: string): Promise<NewsArticle[]> {
+    // Get top headlines
+    const headlinesUrl = `${TOP_HEADLINES_ENDPOINT}?country=us&pageSize=100&apiKey=${apiKey}&category=${NEWS_CATEGORY}`;
+    const headlinesResponse = await fetch(headlinesUrl, {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+
+    if (!headlinesResponse.ok) {
+        throw new Error(`Failed to fetch headlines: ${headlinesResponse.status}`);
+    }
+
+    const headlinesData = await headlinesResponse.json();
+
+    // Get additional articles
+    const everythingUrl = `${EVERYTHING_ENDPOINT}?domains=${QUALITY_NEWS_DOMAINS}&language=en&pageSize=100&from=${fromDate}&sortBy=popularity&apiKey=${apiKey}`;
+    const everythingResponse = await fetch(everythingUrl, {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+
+    if (!everythingResponse.ok) {
+        // If this fails, still return headline results
+        return headlinesData.articles;
+    }
+
+    const everythingData = await everythingResponse.json();
+
+    // Combine and deduplicate articles
+    const allArticles = [...headlinesData.articles];
+    const existingTitles = new Set(allArticles.map(article => article.title));
+
+    everythingData.articles.forEach((article: NewsArticle) => {
+        if (!existingTitles.has(article.title)) {
+            allArticles.push(article);
+            existingTitles.add(article.title);
+        }
+    });
+
+    return allArticles;
+}
+
+function formatArticles(articles: NewsArticle[]): string {
+    let formattedText = "";
+
+    for (const article of articles) {
+        const title = article.title?.trim() || "Untitled";
+        const description = article.description?.trim() || "[No description available]";
+
+        formattedText += `Title: "${title}"\n`;
+        formattedText += `Summary: "${description}"\n\n`;
+    }
+
+    return formattedText;
 }
