@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { supabase } from "@/app/lib/supabase/client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -116,6 +117,18 @@ export async function GET(req: NextRequest) {
 
             formattedText += `Title: "${title}"\n`;
             formattedText += `Summary: "${description}"\n\n`;
+        }
+
+        // Save to zeitgeist table in the database
+        const todayDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        const { error: dbError } = await supabase
+            .from("zeitgeist")
+            .insert({
+                context: formattedText
+            });
+
+        if (dbError) {
+            console.error("Error saving to zeitgeist table:", dbError);
         }
 
         return new Response(formattedText, {
