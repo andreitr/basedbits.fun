@@ -38,7 +38,8 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
         {unclaimedMessages?.map((message) => (
           <div key={message.rand_hash}>
             {"• "}
-            Check your Farcaster DMs to claim a {message.bounty} BBITS airdrop 🎉🎉
+            Check your Farcaster DMs to claim a {message.bounty} BBITS airdrop
+            🎉🎉
           </div>
         ))}
         <div>

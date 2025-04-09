@@ -1,4 +1,3 @@
-import { NextRequest } from "next/server";
 import { supabase } from "@/app/lib/supabase/client";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +17,7 @@ interface NewsArticle {
     author?: string;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         // Get the News API key from environment variables
         const apiKey = process.env.NEWS_API_KEY;
@@ -30,16 +29,17 @@ export async function GET(req: NextRequest) {
         }
 
         // Hard-coded values instead of taking from parameters
-        const category = 'general'; // Fixed category
+        const category = "general"; // Fixed category
         const days = 1; // Fixed to 1 day
 
         // Calculate date for the past day
         const date = new Date();
         date.setDate(date.getDate() - days);
-        const fromDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        const fromDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
 
         // Fixed list of high-quality news domains
-        const domains = 'cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com';
+        const domains =
+            "cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com";
 
         // Get top US headlines
         let url = `https://newsapi.org/v2/top-headlines?country=us&pageSize=100&apiKey=${apiKey}&category=${category}`;
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
             headers: {
                 "Content-Type": "application/json",
             },
-            next: { revalidate: 3600 }, // Cache for 1 hour
+            cache: "no-store",
         });
 
         if (!response.ok) {
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                next: { revalidate: 3600 },
+                cache: "no-store",
             });
 
             if (everythingResponse.ok) {
@@ -85,7 +85,9 @@ export async function GET(req: NextRequest) {
                 // Combine results if we got any from top-headlines
                 if (data.totalResults > 0) {
                     // Create a Set of existing titles to avoid duplicates
-                    const existingTitles = new Set(data.articles.map((article: NewsArticle) => article.title));
+                    const existingTitles = new Set(
+                        data.articles.map((article: NewsArticle) => article.title),
+                    );
 
                     // Add non-duplicate articles from everything endpoint
                     everythingData.articles.forEach((article: NewsArticle) => {
@@ -113,31 +115,32 @@ export async function GET(req: NextRequest) {
 
         for (const article of limitedArticles) {
             const title = article.title?.trim() || "Untitled";
-            const description = article.description?.trim() || "[No description available]";
+            const description =
+                article.description?.trim() || "[No description available]";
 
             formattedText += `Title: "${title}"\n`;
             formattedText += `Summary: "${description}"\n\n`;
         }
 
         // Save to zeitgeist table in the database
-        const todayDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        const { error: dbError } = await supabase
-            .from("zeitgeist")
-            .insert({
-                context: formattedText
-            });
+        const { error: dbError } = await supabase.from("zeitgeist").insert({
+            context: formattedText,
+        });
 
         if (dbError) {
             console.error("Error saving to zeitgeist table:", dbError);
         }
 
-        return new Response(formattedText, {
-            status: 200,
-            headers: {
-                "Content-Type": "text/plain",
-                "Cache-Control": "max-age=3600", // Cache for 1 hour
+        console.log(
+            `Saved ${limitedArticles.length} news headlines to zeitgeist table`,
+        );
+
+        return new Response(
+            `Saved ${limitedArticles.length} news headlines to zeitgeist table`,
+            {
+                status: 200,
             },
-        });
+        );
     } catch (error) {
         console.error("Error fetching news:", error);
 
@@ -145,4 +148,4 @@ export async function GET(req: NextRequest) {
             status: 500,
         });
     }
-} 
+}
