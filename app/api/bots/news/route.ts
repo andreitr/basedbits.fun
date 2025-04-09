@@ -114,8 +114,8 @@ export async function GET(req: NextRequest) {
             const title = article.title?.trim() || "Untitled";
             const description = article.description?.trim() || "[No description available]";
 
-            formattedText += `- Title: "${title}"\n`;
-            formattedText += `  Summary: "${description}"\n\n`;
+            formattedText += `Title: "${title}"\n`;
+            formattedText += `Summary: "${description}"\n\n`;
         }
 
         return new Response(formattedText, {
