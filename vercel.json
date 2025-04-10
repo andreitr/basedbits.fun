@@ -49,8 +49,12 @@
       "schedule": "0 20 * * *"
     },
     {
-      "path": "/api/bots/news",
+      "path": "/api/bots/zeitgeist/news",
       "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/zeitgeist/compose",
+      "schedule": "10 19 * * *"
     }
   ]
 }

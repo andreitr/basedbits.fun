@@ -23,6 +23,7 @@
     "frames.js": "^0.18.2",
     "luxon": "^3.4.4",
     "next": "15.1.7",
+    "openai": "^4.93.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
