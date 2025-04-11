@@ -16,6 +16,11 @@ export async function GET(req: NextRequest) {
     //   return new Response("Unauthorized", { status: 401 });
     // }
 
+    const allWords = await supabase
+      .from("zeitgeist")
+      .select("word")
+      .not("word", "is", null);
+
     // Get the last row where word is null
     const { data: zeitgeistRow, error: fetchError } = await supabase
       .from("zeitgeist")
@@ -44,6 +49,8 @@ You are a dispassionate, philosophical, and somewhat whimsical observer of human
 
 Your task is to:
 	1.	Select one word that captures the dominant theme or energy of today’s global events.
+  	•	Important: Choose a word not previously used from the following list: ${allWords}.
+
 	2.	Write a news lede summarizing the day’s events, strictly following these editorial rules:
 
 Rules for Lede Generation:
