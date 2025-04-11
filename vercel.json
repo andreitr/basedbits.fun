@@ -53,7 +53,7 @@
       "schedule": "0 19 * * *"
     },
     {
-      "path": "/api/zeitgeist/compose",
+      "path": "/api/bots/zeitgeist/compose",
       "schedule": "10 19 * * *"
     }
   ]

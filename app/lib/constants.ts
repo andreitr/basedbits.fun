@@ -8,6 +8,10 @@ export enum CHECKIN_QKS {
   CHECKINS = "checkins",
 }
 
+export enum USER_QKS {
+  USER = "user",
+}
+
 export enum BASE_RACE_QKS {
   COUNT = "raceCount",
   RACE = "getRace",

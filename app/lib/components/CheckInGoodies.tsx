@@ -1,12 +1,12 @@
 "use client";
 
-import { streakToDiscount } from "@/app/lib/utils/numberUtils";
-import Link from "next/link";
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
-import NumberFlow from "@number-flow/react";
-import { useEffect, useState } from "react";
 import { CheckIn } from "@/app/lib/types/types";
-import { useMessagesForAddress } from "@/app/lib/hooks/messages/useMessagesForAddress";
+import { streakToDiscount } from "@/app/lib/utils/numberUtils";
+import NumberFlow from "@number-flow/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useUser } from "../hooks/useUser";
 
 interface Props {
   checkin: CheckIn;
@@ -16,7 +16,8 @@ interface Props {
 export const CheckInGoodies = ({ checkin, address }: Props) => {
   const [streak, setStreak] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
-  const { data: unclaimedMessages } = useMessagesForAddress({
+
+  const { data: user } = useUser({
     address,
     enabled: true,
   });
@@ -35,13 +36,6 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
       </div>
 
       <div className="flex flex-col text-black mb-6 bg-white bg-opacity-80 rounded-lg p-4 gap-1">
-        {unclaimedMessages?.map((message) => (
-          <div key={message.rand_hash}>
-            {"• "}
-            Check your Farcaster DMs to claim a {message.bounty} BBITS airdrop
-            🎉🎉
-          </div>
-        ))}
         <div>
           {"• "}
           <Link
@@ -52,6 +46,9 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
           </Link>
         </div>
         <div>{"• Receive daily BBITS airdrop"}</div>
+        {user?.farcaster_name && streak > 7 && (
+          <div>{"• Receive weekly Farcaster airdrop"}</div>
+        )}
         <div>
           {"• "}
           {streakToDiscount(streak)}

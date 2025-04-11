@@ -2,11 +2,11 @@
 
 import { useCheckins } from "@/app/lib/hooks/useCheckins";
 import { formatTimeAgo } from "@/app/lib/utils/timeUtils";
-import { Avatar } from "connectkit";
 import { getAddress } from "ethers";
 import Link from "next/link";
-import { truncateAddress } from "../../utils/addressUtils";
 import { Tooltip } from "./Tooltip";
+import { UserAvatar } from "./UserAvatar";
+import { UserName } from "./UserName";
 
 export const UserList = () => {
   const { data: users, isError } = useCheckins({ enabled: true });
@@ -24,9 +24,7 @@ export const UserList = () => {
       {users.map((checkin, index) => {
         const tooltipContent = (
           <div className="min-w-[200px]">
-            <div>
-              {checkin.user.ens_name || truncateAddress(checkin.user.address)}
-            </div>
+            <UserName user={checkin.user} />
 
             <div className="text-xs mt-2 text-gray-400">
               Checked in {formatTimeAgo(checkin.block_timestamp)}
@@ -42,10 +40,7 @@ export const UserList = () => {
                 prefetch={true}
               >
                 <div className="flex rounded-full p-0.5 bg-black bg-opacity-80 transition-all duration-300 hover:bg-opacity-100">
-                  <Avatar
-                    address={checkin.user.address as `0x${string}`}
-                    size={36}
-                  />
+                  <UserAvatar user={checkin.user} size={36} />
                 </div>
               </Link>
             </Tooltip>
