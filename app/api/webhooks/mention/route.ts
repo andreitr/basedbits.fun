@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 
 export async function POST(request: Request) {
     try {
@@ -9,7 +8,7 @@ export async function POST(request: Request) {
 
         // Extract relevant data from the mention
         const castId = body?.data?.hash;
-        const userWallet = body?.data?.author?.custody_address;
+        const custodyAddress = body?.data?.author?.custody_address;
         const text = body?.data?.text;
         const author = {
             fid: body?.data?.author?.fid,
@@ -20,7 +19,7 @@ export async function POST(request: Request) {
         console.log("Received Neynar mention webhook:", {
             timestamp: new Date().toISOString(),
             castId,
-            userWallet,
+            custodyAddress,
             text,
             author,
             // Log full body for debugging
