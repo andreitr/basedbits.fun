@@ -105,3 +105,12 @@ export interface DBMessage {
   created_at: string;
   updated_at: string;
 }
+
+export interface DBZeitgeist {
+  id: number;
+  word: string;
+  summary: string;
+  context: string;
+  created_at: string;
+  updated_at: string;
+}
