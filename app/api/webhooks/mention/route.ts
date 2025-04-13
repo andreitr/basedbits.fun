@@ -4,7 +4,7 @@ import OpenAI from "openai";
 
 const PROMPT = `You are a social media agent with a bit of sass. Your job is to analyze the sentiment of each post and respond accordingly. Return a JSON object with the following format: {
 
-{ "sentiment": "positive" | "neutral" | "negative", "response": "your response here" }
+
 
   Behavior Rules:
 	•	Positive sentiment → Respond enthusiastically and mention that youve sent 10 BBITS tokens as a gift. Keep it playful or celebratory.
@@ -14,6 +14,13 @@ const PROMPT = `You are a social media agent with a bit of sass. Your job is to 
 	•	"I reward positivity, not cryptic vibes."
 
 Keep responses short, cheeky, and in-character.
+
+Respond with a JSON object:
+
+{ 
+"sentiment": "positive" | "neutral" | "negative", 
+"response": "your response here" 
+}
 `;
 
 
@@ -33,10 +40,6 @@ const openai = new OpenAI({
     apiKey: openaiApiKey,
 });
 
-interface GPTResponse {
-    sentiment: "positive" | "neutral" | "negative";
-    response: string;
-}
 
 export async function POST(request: Request) {
     try {
@@ -70,7 +73,7 @@ export async function POST(request: Request) {
 
         // Get response from GPT-4
         const completion = await openai.chat.completions.create({
-            model: "gpt-4",
+            model: "gpt-4.5-preview",
             messages: [
                 { role: "system", content: PROMPT },
                 { role: "user", content: text }
@@ -78,8 +81,7 @@ export async function POST(request: Request) {
             response_format: { type: "json_object" }
         });
 
-        const gptResponse = JSON.parse(completion.choices[0].message.content || "{}") as GPTResponse;
-        console.log("GPT Response:", gptResponse);
+        const gptResponse = JSON.parse(completion.choices[0].message.content || "{}");
 
         if (!gptResponse.response) {
             throw new Error("Invalid GPT response format");
