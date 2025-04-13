@@ -29,11 +29,19 @@ export async function POST(request: Request) {
             );
         }
 
+        // Create HMAC with SHA256 using the webhook secret
         const hmac = crypto.createHmac("sha256", webhookSecret);
-        const calculatedSignature = hmac.update(rawBody).digest("hex");
+        // Update HMAC with the raw request body
+        hmac.update(rawBody);
+        // Get the hex digest
+        const calculatedSignature = hmac.digest("hex");
 
+        // Compare the signatures
         if (signature !== calculatedSignature) {
-            console.error("Invalid signature");
+            console.error("Invalid signature", {
+                received: signature,
+                calculated: calculatedSignature
+            });
             return NextResponse.json(
                 { success: false, error: "Invalid signature" },
                 { status: 401 },
