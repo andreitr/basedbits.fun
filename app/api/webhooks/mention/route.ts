@@ -77,12 +77,14 @@ export async function POST(request: Request) {
         { role: "system", content: PROMPT },
         { role: "user", content: text },
       ],
-      response_format: { type: "json_object" },
     });
 
-    const gptResponse = JSON.parse(
-      completion.choices[0].message.content || "{}",
-    );
+    let gptResponse;
+    try {
+      gptResponse = JSON.parse(completion.choices[0].message.content || "{}");
+    } catch (e) {
+      throw new Error("Failed to parse GPT response as JSON");
+    }
 
     if (!gptResponse.response) {
       throw new Error("Invalid GPT response format");
