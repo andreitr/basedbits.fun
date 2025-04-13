@@ -1,6 +1,11 @@
+import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
+import { baseRpcUrl } from "@/app/lib/Web3Configs";
+import { Configuration, NeynarAPIClient } from "@neynar/nodejs-sdk";
+import { Contract, JsonRpcProvider, Wallet, parseUnits } from "ethers";
 import { NextResponse } from "next/server";
-import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 import OpenAI from "openai";
+
+const TOKEN_REWARD_AMOUNT = 5;
 
 const PROMPT = `You are a social media agent with a bit of sass. Your job is to analyze the sentiment of each post and respond accordingly. Return a JSON object with the following format: {
 
@@ -28,6 +33,7 @@ Respond with a JSON object:
 const neynarApiKey = process.env.NEYNAR_API_KEY as string;
 const openaiApiKey = process.env.OPENAI_API_KEY as string;
 const signerUuid = process.env.FARCASTER_BASEDBITS_UUID as string;
+const privateKey = process.env.AIRDROP_BOT_PK as string;
 
 // Initialize Neynar client
 const neynarConfig = new Configuration({
@@ -40,6 +46,14 @@ const openai = new OpenAI({
     apiKey: openaiApiKey,
 });
 
+// Initialize BBITS token contract
+const provider = new JsonRpcProvider(baseRpcUrl);
+const signer = new Wallet(privateKey, provider);
+const tokenContract = new Contract(
+    process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as string,
+    BBitsTokenAbi,
+    signer
+);
 
 export async function POST(request: Request) {
     try {
@@ -55,21 +69,8 @@ export async function POST(request: Request) {
         const castHash = castId as string;
         const ethAddresses = body?.data?.author?.verified_addresses?.eth_addresses || [];
         const text = body?.data?.text;
-        const author = {
-            fid: body?.data?.author?.fid,
-            username: body?.data?.author?.username,
-            displayName: body?.data?.author?.display_name,
-        };
 
-        console.log("Received Neynar mention webhook:", {
-            timestamp: new Date().toISOString(),
-            castId: castHash,
-            ethAddresses,
-            text,
-            author,
-            // Log full body for debugging
-            fullBody: body,
-        });
+
 
         // Get response from GPT-4
         const completion = await openai.chat.completions.create({
@@ -87,19 +88,45 @@ export async function POST(request: Request) {
             throw new Error("Invalid GPT response format");
         }
 
-        // Post reply to the cast
-        await neynarClient.publishCast({
-            signerUuid,
-            text: gptResponse.response,
-            parent: castHash,
-        });
+        let responseText = gptResponse.response;
+        let transactionHash = "";
+
+        // If sentiment is positive and we have an ETH address, send tokens
+        if (gptResponse.sentiment === "positive" && ethAddresses.length > 0) {
+            try {
+                const amount = parseUnits(TOKEN_REWARD_AMOUNT.toString(), 18); // BBITS tokens with 18 decimals
+                const tx = await tokenContract.transfer(ethAddresses[0], amount);
+                await tx.wait();
+                transactionHash = tx.hash;
+                responseText += `\n\nhttps://basescan.org/tx/${transactionHash}`;
+
+                // Post reply to the cast only if token transfer was successful
+                await neynarClient.publishCast({
+                    signerUuid,
+                    text: responseText,
+                    parent: castHash,
+                });
+            } catch (error) {
+                // If token transfer fails, just return success without posting
+                return NextResponse.json(
+                    { success: true, message: "Webhook received but token transfer failed" },
+                    { status: 200 },
+                );
+            }
+        } else {
+            // Post reply for non-positive sentiment or no ETH address
+            await neynarClient.publishCast({
+                signerUuid,
+                text: responseText,
+                parent: castHash,
+            });
+        }
 
         return NextResponse.json(
-            { success: true, message: "Webhook received and processed" },
+            { success: true, message: "Webhook received and processed", transactionHash },
             { status: 200 },
         );
     } catch (error) {
-        console.error("Error processing Neynar mention webhook:", error);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
             { status: 500 },
