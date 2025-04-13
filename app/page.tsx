@@ -1,5 +1,6 @@
 "use server";
 
+import Image from "next/image";
 import { Header } from "@/app/lib/components/client/Header";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { Footer } from "@/app/lib/components/Footer";
@@ -8,6 +9,7 @@ import { MintComponent } from "@/app/burn/components/MintComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { UserList } from "@/app/lib/components/client/UserList";
+import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -49,6 +51,20 @@ export default async function Home() {
               link="/token"
             />
           </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 sm:pb-0">
+        <div className="container max-w-screen-lg bg-[#855DCD] rounded-md p-4 text-white">
+          Farcaster{" "}
+          <Link
+            href="https://warpcast.com/andreitr.eth/0x2dc108f7"
+            target="_blank"
+            className="underline"
+          >
+            Airdrop AI Agent
+          </Link>{" "}
+          is live! Mention @basedbits in a cast and see what happens :)
         </div>
       </div>
 
