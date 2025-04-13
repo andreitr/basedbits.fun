@@ -31,8 +31,8 @@ export async function POST(request: Request) {
 
         // Create HMAC with SHA256 using the webhook secret
         const hmac = crypto.createHmac("sha256", webhookSecret);
-        // Update HMAC with the raw request body
-        hmac.update(rawBody);
+        // Update HMAC with the raw request body exactly as received
+        hmac.update(rawBody, "utf8");
         // Get the hex digest
         const calculatedSignature = hmac.digest("hex");
 
@@ -40,7 +40,9 @@ export async function POST(request: Request) {
         if (signature !== calculatedSignature) {
             console.error("Invalid signature", {
                 received: signature,
-                calculated: calculatedSignature
+                calculated: calculatedSignature,
+                rawBody: rawBody,
+                webhookSecret: webhookSecret.substring(0, 4) + "...", // Only log first 4 chars for security
             });
             return NextResponse.json(
                 { success: false, error: "Invalid signature" },
