@@ -16,21 +16,11 @@ const PROMPT = `You are a social media agent with a bit of sass. Your job is to 
 Keep responses short, cheeky, and in-character.
 `;
 
-// Check required environment variables
-if (!process.env.NEYNAR_API_KEY) {
-    throw new Error("NEYNAR_API_KEY is not set");
-}
-if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY is not set");
-}
-if (!process.env.NEYNAR_SIGNER_UUID) {
-    throw new Error("NEYNAR_SIGNER_UUID is not set");
-}
 
 // After checks, we can safely assert these are strings
 const neynarApiKey = process.env.NEYNAR_API_KEY as string;
 const openaiApiKey = process.env.OPENAI_API_KEY as string;
-const signerUuid = process.env.NEYNAR_SIGNER_UUID as string;
+const signerUuid = process.env.FARCASTER_BASEDBITS_UUID as string;
 
 // Initialize Neynar client
 const neynarConfig = new Configuration({
