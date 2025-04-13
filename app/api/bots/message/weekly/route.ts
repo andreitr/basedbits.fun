@@ -1,4 +1,3 @@
-import { fetchUserDB } from "@/app/lib/api/getUserDB";
 import { sendFarcasterDM } from "@/app/lib/external/farcaster";
 import {
   createMessage,
@@ -46,7 +45,7 @@ export async function GET(req: NextRequest) {
             throw new Error("Failed to create message record");
           }
 
-          const message = `Solid work on maintaining your streak! I've sent you an additional ${messageCreated.bounty} BBITS you can claim by going to your Based Bits profile https://www.basedbits.fun/users/${user.address}?message=${messageCreated.rand_hash}`;
+          const message = `Good job maintaining your streak—you’ve earned yourself a bonus ${messageCreated.bounty} BBITS! This claim link expires in 7 days, so don’t sleep on it https://www.basedbits.fun/users/${user.address}?message=${messageCreated.rand_hash}`;
           await sendFarcasterDM(user.farcaster_name!, message);
           return { success: true, user: user.farcaster_name };
         } catch (error) {
