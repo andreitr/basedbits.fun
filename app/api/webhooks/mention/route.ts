@@ -28,7 +28,6 @@ Respond with a JSON object:
 }
 `;
 
-
 // After checks, we can safely assert these are strings
 const neynarApiKey = process.env.NEYNAR_API_KEY as string;
 const openaiApiKey = process.env.OPENAI_API_KEY as string;
@@ -52,7 +51,7 @@ const signer = new Wallet(privateKey, provider);
 const tokenContract = new Contract(
   process.env.NEXT_PUBLIC_BB_TOKEN_ADDRESS as string,
   BBitsTokenAbi,
-  signer
+  signer,
 );
 
 export async function POST(request: Request) {
@@ -67,22 +66,23 @@ export async function POST(request: Request) {
       throw new Error("No cast ID found in webhook payload");
     }
     const castHash = castId as string;
-    const ethAddresses = body?.data?.author?.verified_addresses?.eth_addresses || [];
+    const ethAddresses =
+      body?.data?.author?.verified_addresses?.eth_addresses || [];
     const text = body?.data?.text;
-
-
 
     // Get response from GPT-4
     const completion = await openai.chat.completions.create({
       model: "gpt-4.5-preview",
       messages: [
         { role: "system", content: PROMPT },
-        { role: "user", content: text }
+        { role: "user", content: text },
       ],
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
     });
 
-    const gptResponse = JSON.parse(completion.choices[0].message.content || "{}");
+    const gptResponse = JSON.parse(
+      completion.choices[0].message.content || "{}",
+    );
 
     if (!gptResponse.response) {
       throw new Error("Invalid GPT response format");
@@ -109,7 +109,10 @@ export async function POST(request: Request) {
       } catch (error) {
         // If token transfer fails, just return success without posting
         return NextResponse.json(
-          { success: true, message: "Webhook received but token transfer failed" },
+          {
+            success: true,
+            message: "Webhook received but token transfer failed",
+          },
           { status: 200 },
         );
       }
@@ -123,7 +126,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { success: true, message: "Webhook received and processed", transactionHash },
+      {
+        success: true,
+        message: "Webhook received and processed",
+        transactionHash,
+      },
       { status: 200 },
     );
   } catch (error) {

@@ -12,23 +12,6 @@ export enum USER_QKS {
   USER = "user",
 }
 
-export enum BASE_RACE_QKS {
-  COUNT = "raceCount",
-  RACE = "getRace",
-  RACE_ENTRIES = "getRaceEntries",
-  LAP = "getLap",
-  MINT_FEE = "mintFee",
-  MINT_TIME = "mintingTime",
-  IS_BOOSTED = "isBoosted",
-  LAP_TIME = "lapTime",
-}
-
-export const BASE_RACE_STATUS = {
-  PENDING: 0,
-  MINTING: 1,
-  RACING: 2,
-} as const;
-
 export const emptyDBUser: DBUser = {
   id: 0,
   created_at: "",
