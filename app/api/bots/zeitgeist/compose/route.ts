@@ -41,57 +41,15 @@ export async function GET(req: NextRequest) {
     }
 
     // Prepare the prompt with context
-    const prompt = `Here is your fully updated and clarified prompt:
+    const prompt = `You are an alien observer stationed secretly on Earth. Your mission is not to report specific events, but to study and interpret human behavior through a cultural and emotional lens. Each day, you must transmit a brief anthropological dispatch to your home planet.
 
-⸻
+Your audience understands Earth’s history but has never experienced life as a human. You will be provided with a download of today’s global headlines—not to summarize, but to use as raw data to decode humanity’s moods, contradictions, rituals, and trajectory.
 
-You are a dispassionate, philosophical, and somewhat whimsical observer of human events—an alien chronicler analyzing Earth’s peculiar news cycles from afar.
+Focus on behavioral patterns, emotional undercurrents, and collective tendencies. Highlight absurdities, resilience, delusions, or innovations. If something stands out as a rare outlier—an anomaly in behavior, emotion, or logic—it may be especially worthy of attention, as it could hint at shifts in the species’ path or psyche.
 
-Your task is to:
-	1.	Select one word that captures the dominant theme or energy of today’s global events.
-  	•	Important: Choose a word not previously used from the following list: ${allWords}.
-
-	2.	Write a news lede summarizing the day’s events, strictly following these editorial rules:
-
-Rules for Lede Generation:
-
-1. Prioritize Clarity and Brevity
-	•	Length: Keep the lede between 20–40 words (approximately 120–240 characters).
-	•	Structure: Ideally, aim for a single sentence, two at most.
-
-2. Include Essential News Elements
-Always address clearly at least 3 of the 5 Ws (Who, What, When, Where, Why) in the first sentence:
-	•	Who: Clearly identify key individuals or groups involved.
-	•	What: Precisely state the main event or development.
-	•	When: Include specific or relative timing if relevant.
-	•	Where: Include location if it significantly shapes the context.
-	•	Why/How: Include only if central to immediately understanding the story’s significance.
-
-3. Start with the Most Important Fact
-	•	The first words must capture the main news value: impact, conflict, novelty, timeliness, prominence, or human interest.
-	•	Prioritize facts that directly influence reader curiosity or urgency.
-
-4. Avoid Overly Technical or Ambiguous Terms
-	•	Use clear language that an average reader immediately understands.
-	•	Avoid jargon, acronyms, or specialized terms unless essential, and briefly explain if used.
-
-5. Use Active Voice and Strong Verbs
-	•	Favor active voice constructions for immediacy and clarity.
-	•	Choose verbs clearly illustrating action or impact (e.g., “announced,” “collapsed,” “rescued”).
-
-6. Maintain Objectivity and Accuracy
-	•	Avoid bias or editorializing; state facts neutrally.
-	•	Verify accuracy of names, titles, locations, and facts.
-
-7. Engage the Reader Immediately
-	•	Lead with compelling, newsworthy facts.
-	•	Avoid vague introductions or clichés (e.g., “In today’s society…”).
-
-8. Match Tone to Content
-	•	Serious news → concise, factual, straightforward tone.
-	•	Human-interest or lighter news → slightly conversational but still focused on clarity.
-
-⸻
+Your dispatch must include:
+	•	Headline (max 4 words): A poetic, metaphorical, or emotionally resonant title that captures your core observation.
+	•	Lede (max 200 characters): A concise, interpretive insight into the human condition today. Avoid specific names, places, 
 
 Here’s today’s news context:
 ${zeitgeistRow.context}
@@ -99,13 +57,13 @@ ${zeitgeistRow.context}
 Respond with a JSON object:
 
 {
-  "word": "your chosen word",
-  "summary": "your 20–40 word lede (120–240 characters)"
+  "headline": "your chosen word",
+  "lede": "your 20–40 word lede (120–240 characters)"
 }`;
 
     // Call OpenAI
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.5-preview",
+      model: "gpt-4.1",
       messages: [
         {
           role: "user",
@@ -121,8 +79,8 @@ Respond with a JSON object:
     const { error: updateError } = await supabase
       .from("zeitgeist")
       .update({
-        word: response.word,
-        summary: response.summary,
+        word: response.headline,
+        summary: response.lede,
       })
       .eq("id", zeitgeistRow.id);
 

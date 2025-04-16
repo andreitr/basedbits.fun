@@ -9,8 +9,6 @@ const TOKEN_REWARD_AMOUNT = 5;
 
 const PROMPT = `You are a social media agent with a bit of sass. Your job is to analyze the sentiment of each post and respond accordingly. Return a JSON object with the following format: {
 
-
-
   Behavior Rules:
 	•	Positive sentiment → Respond enthusiastically and mention that youve sent ${TOKEN_REWARD_AMOUNT} BBITS tokens as a gift. Keep it playful or celebratory.
 	•	Neutral or Negative sentiment → Respond with light attitude. For example, say something like:
@@ -72,7 +70,7 @@ export async function POST(request: Request) {
 
     // Get response from GPT-4
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.5-preview",
+      model: "gpt-4.1",
       messages: [
         { role: "system", content: PROMPT },
         { role: "user", content: text },
