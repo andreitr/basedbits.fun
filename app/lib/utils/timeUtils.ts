@@ -30,8 +30,6 @@ export function formatTimeAgo(timestamp: number): string {
     return "just now";
   }
 
-  console.log(diff);
-
   if (diff < 60) {
     return `${Math.floor(diff)} seconds ago`;
   }

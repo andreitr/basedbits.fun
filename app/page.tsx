@@ -1,14 +1,13 @@
 "use server";
 
-import Image from "next/image";
-import { Header } from "@/app/lib/components/client/Header";
-import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
-import { Footer } from "@/app/lib/components/Footer";
-import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { MintComponent } from "@/app/burn/components/MintComponent";
+import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
-import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
+import { Header } from "@/app/lib/components/client/Header";
 import { UserList } from "@/app/lib/components/client/UserList";
+import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
+import { FeatureCard } from "@/app/lib/components/FeatureCard";
+import { Footer } from "@/app/lib/components/Footer";
 import Link from "next/link";
 
 export default async function Home() {

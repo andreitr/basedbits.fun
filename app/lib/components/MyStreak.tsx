@@ -1,15 +1,14 @@
 "use client";
 
 import { CheckInButton } from "@/app/lib/components/CheckInButton";
-import { DateTime } from "luxon";
-import { useQueryClient } from "@tanstack/react-query";
-import { useCheckin } from "@/app/lib/hooks/useCheckin";
 import { CheckInGoodies } from "@/app/lib/components/CheckInGoodies";
+import { useCheckin } from "@/app/lib/hooks/useCheckin";
 import { useCheckinAbility } from "@/app/lib/hooks/useCheckinAbility";
-import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
-import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useCheckinEligibility } from "@/app/lib/hooks/useCheckinEligibility";
 import { useHydrateUser } from "@/app/lib/hooks/useHydrateUser";
+import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
+import { useQueryClient } from "@tanstack/react-query";
+import { DateTime } from "luxon";
 import { CHECKIN_QKS } from "../constants";
 
 interface Props {
@@ -18,7 +17,6 @@ interface Props {
 
 export const MyStreak = ({ address }: Props) => {
   const queryClient = useQueryClient();
-  const { call: revalidateTags } = useRevalidateTags();
   const { call: hydrateUser } = useHydrateUser();
   const { data: isEligible } = useCheckinEligibility({
     address,
@@ -28,7 +26,7 @@ export const MyStreak = ({ address }: Props) => {
   const { data: canChecking } = useCheckinAbility({ address, enabled: true });
 
   const { show } = useSocialDisplay({
-    message: "I just checked-in into Based Bits!",
+    message: "I just checked-in into @basedbits!",
     title: "You are checked-in! Spread the word 🙏",
     url: `https://basedbits.fun/users/${address}`,
   });

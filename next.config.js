@@ -42,6 +42,11 @@ module.exports = {
                 hostname: "res.cloudinary.com",
                 pathname: "/**",
             },
+            {
+                protocol: "https",
+                hostname: "basepaint.xyz",
+                pathname: "/**",
+            },
 
         ],
     },
