@@ -31,14 +31,14 @@ export async function GET(req: NextRequest) {
         }
 
         const latestZeitgeist = data[0] as DBZeitgeist;
-        const { word, summary } = latestZeitgeist;
+        const { headline, lede, emotion, signal } = latestZeitgeist;
 
-        if (!word || !summary) {
-            return new Response("Invalid zeitgeist data: missing word or summary", { status: 400 });
+        if (!headline || !lede) {
+            return new Response("Invalid zeitgeist data: missing headline, lede, emotion, or signal", { status: 400 });
         }
 
         // Generate SVG
-        const svg = generateSvg(word, summary);
+        const svg = generateSvg(headline, lede);
 
         // Convert SVG to base64
         const base64Svg = Buffer.from(svg).toString('base64');
@@ -46,13 +46,13 @@ export async function GET(req: NextRequest) {
 
         // Create metadata
         const metadata = JSON.stringify({
-            name: `Zeitgeist: ${word}`,
-            description: summary,
+            name: `Zeitgeist: ${headline}`,
+            description: lede,
             image: encodedSvg,
             attributes: [
                 {
-                    trait_type: "Word",
-                    value: word
+                    trait_type: "headline",
+                    value: headline
                 },
                 {
                     trait_type: "Created",
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
         const tx = await contract.createToken(encodedSvg, metadata);
         await tx.wait();
 
-        return new Response(`Successfully minted Zeitgeist token for word: ${word}`, {
+        return new Response(`Successfully minted Zeitgeist token for word: ${headline}`, {
             status: 200,
         });
     } catch (error) {

@@ -95,9 +95,11 @@ export interface DBMessage {
 
 export interface DBZeitgeist {
   id: number;
-  word: string;
-  summary: string;
   context: string;
+  headline: string;
+  lede: string;
+  signal: string;
+  emotion: string;
   created_at: string;
   updated_at: string;
 }

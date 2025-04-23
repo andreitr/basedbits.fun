@@ -32,7 +32,7 @@ export default async function Page(props: Props) {
               <div className="bg-white p-8 rounded-lg shadow-md">
                 <div className="flex justify-between items-start mb-6">
                   <h1 className="text-4xl font-bold text-gray-900">
-                    {record.word}
+                    {record.headline}
                   </h1>
                   <span className="text-gray-500">
                     {new Date(record.created_at).toLocaleDateString("en-US", {
@@ -45,14 +45,18 @@ export default async function Page(props: Props) {
 
                 <div className="prose max-w-none">
                   <h2 className="text-2xl font-semibold mb-4">Summary</h2>
-                  <p className="text-gray-700 mb-8">{record.summary}</p>
+                  <p className="text-gray-700 mb-8">{record.lede}</p>
 
-                  {record.context && (
-                    <>
-                      <h2 className="text-2xl font-semibold mb-4">Context</h2>
-                      <p className="text-gray-700">{record.context}</p>
-                    </>
-                  )}
+                  <div className="flex flex-col sm:flex-row gap-6 mb-8">
+                    <div className="flex-1 bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-xl font-semibold mb-2 text-blue-600">Emotion</h3>
+                      <p className="text-gray-700">{record.emotion}</p>
+                    </div>
+                    <div className="flex-1 bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-xl font-semibold mb-2 text-green-600">Signal</h3>
+                      <p className="text-gray-700">{record.signal}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

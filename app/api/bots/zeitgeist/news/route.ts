@@ -7,7 +7,7 @@ export const revalidate = 0;
 const NEWS_CATEGORY = "general";
 const DAYS_TO_FETCH = 1;
 const QUALITY_NEWS_DOMAINS =
-  "cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com";
+  "cnn.com,nytimes.com,washingtonpost.com,nbcnews.com,foxnews.com,bbc.com,reuters.com,cbsnews.com,usatoday.com,apnews.com,theguardian.com,wsj.com,bloomberg.com,techcrunch.com,theverge.com,wired.com,engadget.com,arstechnica.com,zdnet.com,venturebeat.com,cnet.com";
 const TOP_HEADLINES_ENDPOINT = "https://newsapi.org/v2/top-headlines";
 const EVERYTHING_ENDPOINT = "https://newsapi.org/v2/everything";
 

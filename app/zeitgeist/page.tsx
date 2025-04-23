@@ -39,7 +39,7 @@ export default async function Page() {
                       href={`/zeitgeist/${record.id}`}
                       className="text-2xl font-semibold text-blue-600 hover:text-blue-800"
                     >
-                      {record.word}
+                      {record.headline}
                     </Link>
                     <span className="text-gray-500">
                       {new Date(record.created_at).toLocaleDateString("en-US", {
@@ -49,7 +49,7 @@ export default async function Page() {
                       })}
                     </span>
                   </div>
-                  <p className="text-gray-700">{record.summary}</p>
+                  <p className="text-gray-700">{record.lede}</p>
                 </div>
               ))}
             </div>

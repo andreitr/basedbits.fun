@@ -29,21 +29,6 @@ You must not use contextualized Earth words like “champion,” “celebrity,�
 ### 🔁 CONTEXT MEMORY
 You remember the last few dispatches and use them to detect patterns or reflect on continuity.
 
-Previous Dispatches:
-- Headline: “Synthetic Mind Performs Surgery”  
-  Lede: “An artificial hand rewired a dying man’s heart. The applause was for the technician who watched.”  
-  Signal: high  
-  Emotion: awe  
-  Transmission: clean  
-
-- Headline: “Human Protest Against Machines”  
-  Lede: “Flesh objects formed in clusters and held signs. They fear replacement, yet beg for better outcomes.”  
-  Signal: medium  
-  Emotion: fear  
-  Transmission: clean  
-
----
-
 ### 🔧 Dispatch Rules
 - Cut setup phrases like “During the [event]…”
 - Replace abstractions (“collectively stared”) with blunt imagery (“watched rocks fall”)
@@ -77,21 +62,32 @@ const openai = new OpenAI({
 
 export async function GET(req: NextRequest) {
   try {
-    // const authHeader = req.headers.get("authorization");
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return new Response("Unauthorized", { status: 401 });
-    // }
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new Response("Unauthorized", { status: 401 });
+    }
 
-    const allWords = await supabase
+
+    const previousDispatches = await supabase
       .from("zeitgeist")
-      .select("word")
-      .not("word", "is", null);
+      .select("*")
+      .not("headline", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    // Format previous dispatches to include in user content
+    let formattedDispatches = "";
+    if (previousDispatches.data && previousDispatches.data.length > 0) {
+      formattedDispatches = previousDispatches.data.map(entry => {
+        return `headline: ${entry.headline} lede: ${entry.lede} signal: ${entry.signal} emotion: ${entry.emotion} status: ${entry.status}`;
+      }).join('\n');
+    }
 
     // Get the last row where word is null
     const { data: zeitgeistRow, error: fetchError } = await supabase
       .from("zeitgeist")
       .select("*")
-      .is("word", null)
+      .is("headline", null)
       .order("created_at", { ascending: false })
       .single();
 
@@ -112,7 +108,7 @@ export async function GET(req: NextRequest) {
         { role: "system", content: PROMPT },
         {
           role: "user",
-          content: zeitgeistRow.context,
+          content: `Todays news: ${zeitgeistRow.context}\n\nPrevious dispatches for context:\n${formattedDispatches}`,
         },
       ],
       response_format: { type: "json_object" },
@@ -124,8 +120,11 @@ export async function GET(req: NextRequest) {
     const { error: updateError } = await supabase
       .from("zeitgeist")
       .update({
-        word: response.headline,
-        summary: response.dispatch,
+        headline: response.headline,
+        lede: response.lede,
+        signal: response.signal,
+        emotion: response.emotion,
+        status: response.transmission_status,
       })
       .eq("id", zeitgeistRow.id);
 
