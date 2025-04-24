@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
       }).join('\n');
     }
 
-    // Get the last row where word is null
+
     const { data: zeitgeistRow, error: fetchError } = await supabase
       .from("zeitgeist")
       .select("*")
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!zeitgeistRow) {
-      return new Response("No zeitgeist row found with null word", {
+      return new Response("No zeitgeist row found with null headline", {
         status: 404,
       });
     }

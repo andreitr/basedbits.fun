@@ -15,7 +15,7 @@ export const getZeitgeistBotContract = () => {
   const provider = getProvider();
   const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
   return new Contract(
-    "0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666",
+    "0x893a51fb1facd1a511b4b11f01eef6f3e473356a",
     ZeitgeistAbi,
     signer,
   );

@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
         const { data, error } = await supabase
             .from("zeitgeist")
             .select("*")
+            .is("token", null)
             .order("created_at", { ascending: false })
             .limit(1);
 
@@ -55,6 +56,18 @@ export async function GET(req: NextRequest) {
                     value: headline
                 },
                 {
+                    trait_type: "lede",
+                    value: lede
+                },
+                {
+                    trait_type: "emotion",
+                    value: emotion
+                },
+                {
+                    trait_type: "signal",
+                    value: signal
+                },
+                {
                     trait_type: "Created",
                     value: new Date().toISOString()
                 }
@@ -63,8 +76,36 @@ export async function GET(req: NextRequest) {
 
         // Get contract and mint token
         const contract = getZeitgeistBotContract();
+
+
+
         const tx = await contract.createToken(encodedSvg, metadata);
         await tx.wait();
+
+
+        // Log successful transaction
+        console.log(`Zeitgeist token minted successfully. Transaction hash: ${tx.hash}`);
+
+        // Call startNextMint to schedule the next token minting
+        try {
+            const tx = await contract.startNextMint();
+            await tx.wait();
+
+
+            const currentMint = await contract.currentMint();
+
+            const { error: updateError } = await supabase
+                .from("zeitgeist")
+                .update({ token: currentMint })
+                .eq("id", latestZeitgeist.id);
+
+
+
+            console.log("Successfully scheduled next mint");
+        } catch (nextMintError) {
+            console.error("Error scheduling next mint:", nextMintError);
+            // Continue execution even if startNextMint fails
+        }
 
         return new Response(`Successfully minted Zeitgeist token for word: ${headline}`, {
             status: 200,
