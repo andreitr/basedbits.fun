@@ -83,16 +83,12 @@ export async function GET(req: NextRequest) {
         await tx.wait();
 
 
-        // Log successful transaction
-        console.log(`Zeitgeist token minted successfully. Transaction hash: ${tx.hash}`);
-
         // Call startNextMint to schedule the next token minting
         try {
-            const tx = await contract.startNextMint();
-            await tx.wait();
 
 
             const currentMint = await contract.currentMint();
+
 
             const { error: updateError } = await supabase
                 .from("zeitgeist")
