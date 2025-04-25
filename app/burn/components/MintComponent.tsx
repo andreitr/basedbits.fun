@@ -22,7 +22,7 @@ export const MintComponent = () => {
           src={"/images/burnedbit.svg"}
           alt="Preview"
           width="460"
-          height="4600"
+          height="460"
         />
       </div>
     </div>

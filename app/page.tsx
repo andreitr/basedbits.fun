@@ -8,7 +8,6 @@ import { UserList } from "@/app/lib/components/client/UserList";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -30,18 +29,18 @@ export default async function Home() {
               link="/burn"
             />
             <FeatureCard
-              title="Punkalot"
-              description="Sold out"
-              image={"/images/punkalot.svg"}
-              style={"rounded-lg"}
-              link="/punks"
+              title="The Emergence"
+              description="Coming soon"
+              image={"/images/emergence.png"}
+              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
+              link="https://warpcast.com/andreitr.eth/0x37fcd16d"
             />
             <FeatureCard
-              title="Base Race"
-              description="Coming soon"
-              image={"/images/race.svg"}
-              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="/race"
+              title="Airdrop Agent"
+              description="Share → BBITS"
+              image={"/images/fcairdrop.svg"}
+              style={"rounded-lg"}
+              link="https://warpcast.com/andreitr.eth/0x2dc108f7"
             />
             <FeatureCard
               title="BBITS Token"
@@ -53,19 +52,11 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 sm:pb-0">
-        <div className="container max-w-screen-lg bg-[#855DCD] rounded-md p-4 text-white">
-          Farcaster{" "}
-          <Link
-            href="https://warpcast.com/andreitr.eth/0x2dc108f7"
-            target="_blank"
-            className="underline"
-          >
-            Airdrop AI Agent
-          </Link>{" "}
-          is live! Mention @basedbits in a cast and see what happens :)
+      {/* <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
+        <div className="container max-w-screen-lg mb-10">
+          <BasePaint />
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
