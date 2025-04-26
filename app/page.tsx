@@ -9,6 +9,7 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
 import { FeatureBasePaintCard } from "./lib/components/FeatureBasePaintCard";
+import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -62,8 +63,14 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
-        <div className="container max-w-screen-lg mb-10">
+      <div className="hidden md:flex justify-center items-center w-full pt-10">
+        <div className="container max-w-screen-lg mb-10 bg-white rounded-lg p-4">
+          Mint BasePaint using <Link href="https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1" target="_blank" className="text-blue-500 underline">our link</Link>, and we will burn the referral fee so your tokens go up!
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center w-full pb-8 mt-10 md:mt-0">
+        <div className="container max-w-screen-lg mb-8">
           <MintComponent />
         </div>
       </div>
@@ -90,6 +97,6 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
         <Footer />
       </div>
-    </div>
+    </div >
   );
 }

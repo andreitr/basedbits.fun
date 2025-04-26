@@ -21,15 +21,17 @@ export async function GET(req: NextRequest) {
     );
 
     const signer = new Wallet(process.env.BURNER_BOT_PK as string, provider);
-
     const burnAmount = parseUnits("0.0004", 18);
-
 
     const bprContract = getBasePaintRewardsContract();
     const bprBalance = await bprContract.balanceOf(signer.address);
 
     if (bprBalance > 0) {
       await bprContract.cashOut(signer.address);
+
+      return new Response("Cash out successful", {
+        status: 200,
+      })
     }
 
     // Check wallet balance before proceeding
