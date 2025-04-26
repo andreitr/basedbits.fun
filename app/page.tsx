@@ -8,6 +8,7 @@ import { UserList } from "@/app/lib/components/client/UserList";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
+import { FeatureBasePaintCard } from "./lib/components/FeatureBasePaintCard";
 
 export default async function Home() {
   return (
@@ -35,13 +36,22 @@ export default async function Home() {
               style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
               link="https://warpcast.com/andreitr.eth/0x37fcd16d"
             />
-            <FeatureCard
-              title="Airdrop Agent"
-              description="Share → BBITS"
-              image={"/images/fcairdrop.svg"}
-              style={"rounded-lg"}
-              link="https://warpcast.com/andreitr.eth/0x2dc108f7"
+            <FeatureBasePaintCard
+              title="Mint BasePaint"
+              description="Burn BBITS"
+              link="https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1"
+              style="rounded-lg"
             />
+            <div className="md:hidden w-full">
+
+              <FeatureCard
+                title="Airdrop Agent"
+                description="Share → BBITS"
+                image={"/images/fcairdrop.svg"}
+                style={"rounded-lg"}
+                link="https://warpcast.com/andreitr.eth/0x2dc108f7"
+              />
+            </div>
             <FeatureCard
               title="BBITS Token"
               description="NFTs → BBITS"
@@ -51,12 +61,6 @@ export default async function Home() {
           </div>
         </div>
       </div>
-
-      {/* <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
-        <div className="container max-w-screen-lg mb-10">
-          <BasePaint />
-        </div>
-      </div> */}
 
       <div className="flex justify-center items-center w-full pt-10 px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10">
