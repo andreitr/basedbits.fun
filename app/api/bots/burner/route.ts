@@ -23,11 +23,11 @@ export async function GET(req: NextRequest) {
     const signer = new Wallet(process.env.BURNER_BOT_PK as string, provider);
     const burnAmount = parseUnits("0.0004", 18);
 
-
     // Check wallet balance before proceeding
     const ethBalance = await provider.getBalance(signer.address);
     if (ethBalance < burnAmount) {
 
+      // Check if we have any BPR to cash out
       const bprContract = getBasePaintRewardsContract();
       const bprBalance = await bprContract.balanceOf(signer.address);
 
@@ -46,6 +46,8 @@ export async function GET(req: NextRequest) {
 
 
     } else {
+
+      // Burn BBITs
       const contract = new Contract(
         process.env.NEXT_PUBLIC_BB_BURNER_ADDRESS as string,
         BBitsBurnerAbi,
@@ -56,16 +58,10 @@ export async function GET(req: NextRequest) {
         value: burnAmount,
       });
 
-      // Wait for transaction confirmation
       const receipt = await tx.wait();
-
-      // Format the burn amount for display
       const formattedAmount = formatEther(burnAmount);
-
-      // Create transaction link for Base
       const txLink = `https://basescan.org/tx/${receipt.hash}`;
 
-      // Post to Farcaster
       await postToFarcaster(
         `We just burned ${formattedAmount} ETH worth of BBITS 🔥`,
         txLink
