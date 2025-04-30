@@ -8,7 +8,8 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
     try {
-        // Verify authorization
+
+
         const authHeader = req.headers.get("authorization");
         if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             return new Response("Unauthorized", { status: 401 });
@@ -45,9 +46,13 @@ export async function GET(req: NextRequest) {
         const base64Svg = Buffer.from(svg).toString('base64');
         const encodedSvg = `data:image/svg+xml;base64,${base64Svg}`;
 
+        const contract = getZeitgeistBotContract();
+        const currentMint = await contract.currentMint();
+        const dispatch = Number(currentMint.toString()) + 1;
+
         // Create metadata
         const metadata = JSON.stringify({
-            name: `Zeitgeist: ${headline}`,
+            name: `Dispatch ${dispatch}`,
             description: lede,
             image: encodedSvg,
             attributes: [
@@ -74,33 +79,19 @@ export async function GET(req: NextRequest) {
             ]
         });
 
-        // Get contract and mint token
-        const contract = getZeitgeistBotContract();
-
-
-
+        // Mint token
         const tx = await contract.createToken(encodedSvg, metadata);
         await tx.wait();
 
-
-        // Call startNextMint to schedule the next token minting
         try {
 
-
-            const currentMint = await contract.currentMint();
-
-
-            const { error: updateError } = await supabase
+            await supabase
                 .from("zeitgeist")
-                .update({ token: currentMint })
+                .update({ token: dispatch })
                 .eq("id", latestZeitgeist.id);
 
-
-
-            console.log("Successfully scheduled next mint");
-        } catch (nextMintError) {
-            console.error("Error scheduling next mint:", nextMintError);
-            // Continue execution even if startNextMint fails
+        } catch (error) {
+            console.error("Error updating db token:", error);
         }
 
         return new Response(`Successfully minted Zeitgeist token for word: ${headline}`, {
