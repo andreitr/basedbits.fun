@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { getOrCreateUser } from "@/app/lib/supabase/client";
-import { getFarcasterUser } from "@/app/lib/external/farcaster";
+import { NextResponse } from "next/server";
 
 interface GraphQLWebhookPayload {
     webhookId: string;
@@ -69,19 +69,11 @@ export async function POST(request: Request) {
 
             // Get or create user
             const user = await getOrCreateUser(senderAddress);
-            if (!user) {
-                console.error(`Failed to get/create user for address: ${senderAddress}`);
-                continue;
-            }
 
-            // If user doesn't have a Farcaster username, try to fetch it
-            if (!user.farcaster_name) {
-                const fcUser = await getFarcasterUser(senderAddress);
-                if (fcUser) {
-                    console.log(`Found Farcaster username for ${senderAddress}: @${fcUser.username}`);
-                }
-            } else {
-                console.log(`User ${senderAddress} already has Farcaster username: @${user.farcaster_name}`);
+            if (user && user.farcaster_name) {
+                const message = `Props to @${user.farcaster_name} for burning BBITS while minting a BasePaint 🔥🔥🔥`;
+                const url = "https://basedbits.fun/basepaint";
+                await postToFarcaster(message, url);
             }
         }
 
