@@ -71,7 +71,7 @@ export async function POST(request: Request) {
             const user = await getOrCreateUser(senderAddress);
 
             if (user && user.farcaster_name) {
-                const message = `Props to @${user.farcaster_name} for burning BBITS while minting a BasePaint 🔥🔥🔥`;
+                const message = `Props to @${user.farcaster_name} for sending BasePaint mint fees to BBITS burner 🔥🔥🔥`;
                 const url = "https://basedbits.fun/basepaint";
                 await postToFarcaster(message, url);
             }
