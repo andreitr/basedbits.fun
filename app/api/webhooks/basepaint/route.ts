@@ -1,90 +1,94 @@
 import { NextResponse } from "next/server";
+import { getOrCreateUser } from "@/app/lib/supabase/client";
+import { getFarcasterUser } from "@/app/lib/external/farcaster";
 
-interface AlchemyWebhookPayload {
+interface GraphQLWebhookPayload {
     webhookId: string;
     id: string;
     createdAt: string;
     type: string;
     event: {
-        activity: Array<{
-            fromAddress: string;
-            toAddress: string;
-            blockNum: number;
-            hash: string;
-            value: number;
-            asset: string;
-            category: string;
-            rawContract: {
-                value: string;
-                address: string;
-                decimal: string;
+        data: {
+            block: {
+                hash: string;
+                number: number;
+                timestamp: number;
+                logs: Array<{
+                    data: string;
+                    topics: string[];
+                    index: number;
+                    account: {
+                        address: string;
+                    };
+                    transaction: {
+                        hash: string;
+                        nonce: number;
+                        index: number;
+                        from: {
+                            address: string;
+                        };
+                        to: {
+                            address: string;
+                        };
+                        value: string;
+                        gasPrice: string;
+                        maxFeePerGas: string;
+                        maxPriorityFeePerGas: string;
+                        gas: number;
+                        status: number;
+                        gasUsed: number;
+                        cumulativeGasUsed: number;
+                        effectiveGasPrice: string;
+                        createdContract: null | {
+                            address: string;
+                        };
+                    };
+                }>;
             };
-        }>;
+        };
+        sequenceNumber: string;
         network: string;
     };
 }
 
 export async function POST(request: Request) {
-    console.log("Received webhook request");
-
     try {
         const rawBody = await request.text();
-        console.log("Raw request body:", rawBody);
+        const payload = JSON.parse(rawBody) as GraphQLWebhookPayload;
 
-        const payload = JSON.parse(rawBody) as AlchemyWebhookPayload;
-        console.log("Parsed payload:", JSON.stringify(payload, null, 2));
-
-        if (
-            !payload.event?.activity ||
-            !Array.isArray(payload.event.activity) ||
-            payload.event.activity.length === 0
-        ) {
-            console.log("Invalid payload structure:", {
-                hasEvent: !!payload.event,
-                hasActivity: !!payload.event?.activity,
-                isArray: Array.isArray(payload.event?.activity),
-                activityLength: payload.event?.activity?.length
-            });
+        if (!payload.event?.data?.block?.logs) {
             return NextResponse.json(
                 { error: "Invalid webhook payload structure" },
                 { status: 400 },
             );
         }
 
-        console.log(`Processing ${payload.event.activity.length} activities`);
+        // Process each log
+        for (const log of payload.event.data.block.logs) {
+            const senderAddress = log.transaction.from.address.toLowerCase();
 
-        // Process each transfer event
-        for (const activity of payload.event.activity) {
-            console.log("Processing activity:", {
-                category: activity.category,
-                from: activity.fromAddress,
-                to: activity.toAddress,
-                value: activity.value,
-                asset: activity.asset
-            });
+            // Get or create user
+            const user = await getOrCreateUser(senderAddress);
+            if (!user) {
+                console.error(`Failed to get/create user for address: ${senderAddress}`);
+                continue;
+            }
 
-            if (activity.category === "external") {
-                // Log transfer details
-                console.log("Processing transfer:", {
-                    from: activity.fromAddress,
-                    to: activity.toAddress,
-                    value: activity.value,
-                    asset: activity.asset,
-                    transactionHash: activity.hash,
-                    blockNumber: activity.blockNum,
-                    contractAddress: activity.rawContract.address,
-                    decimals: activity.rawContract.decimal,
-                });
+            // If user doesn't have a Farcaster username, try to fetch it
+            if (!user.farcaster_name) {
+                const fcUser = await getFarcasterUser(senderAddress);
+                if (fcUser) {
+                    console.log(`Found Farcaster username for ${senderAddress}: @${fcUser.username}`);
+                }
             } else {
-                console.log("Skipping non-external activity");
+                console.log(`User ${senderAddress} already has Farcaster username: @${user.farcaster_name}`);
             }
         }
 
-        console.log("Successfully processed all activities");
         return NextResponse.json({ success: true });
     } catch (error) {
         // Log the full error for debugging
-        console.error("Full error details:", {
+        console.error("Webhook processing error:", {
             message: error instanceof Error ? error.message : "Unknown error",
             error,
             stack: error instanceof Error ? error.stack : undefined,
@@ -93,7 +97,6 @@ export async function POST(request: Request) {
         // Provide more specific error messages based on the error type
         if (error instanceof Error) {
             if (error.message.includes("JSON")) {
-                console.error("JSON parsing error:", error);
                 return NextResponse.json(
                     { error: "Invalid JSON payload" },
                     { status: 400 },
