@@ -21,16 +21,16 @@ export async function generateMetadata(): Promise<Metadata> {
     const tokenId = await getTokenId();
 
     return {
-        title: `Mint Day ${tokenId} on BasePaint - Based Bits`,
+        title: `Mint Day ${tokenId} on BasePaint`,
         description: 'Every NFT minted using this link burns BBITS tokens.',
         openGraph: {
-            title: `Mint Day ${tokenId} on BasePaint - Based Bits`,
+            title: `Mint Day ${tokenId} on BasePaint`,
             description: 'Every NFT minted using this link burns BBITS tokens.',
             images: [
                 {
                     url: `https://basepaint.xyz/api/art/image?day=${tokenId}`,
                     width: 1200,
-                    height: 630,
+                    height: 1200,
                 },
             ],
         },
