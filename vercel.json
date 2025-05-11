@@ -17,20 +17,20 @@
       "schedule": "30 * * * *"
     },
     {
-      "path": "/api/bots/zeitgeist/news",
+      "path": "/api/bots/message/weekly",
+      "schedule": "0 16 * * 0"
+    },
+    {
+      "path": "/api/cron/aeye/collect",
       "schedule": "0 19 * * *"
     },
     {
-      "path": "/api/bots/zeitgeist/compose",
+      "path": "/api/cron/aeye/compose",
       "schedule": "10 19 * * *"
     },
     {
-      "path": "/api/bots/zeitgeist/mint",
+      "path": "/api/cron/aeye/mint",
       "schedule": "20 19 * * *"
-    },
-    {
-      "path": "/api/bots/message/weekly",
-      "schedule": "0 16 * * 0"
     }
   ]
 }

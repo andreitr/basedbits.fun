@@ -27,7 +27,7 @@ export default async function Page() {
           <Header />
           <MintComponent />
 
-          <div className="flex flex-col items-center justify-center mt-12 gap-6">
+          <div className="flex flex-col items-center justify-center mt-12 gap-6 w-full">
 
             {records.map((record: DBZeitgeist) => (
               <div

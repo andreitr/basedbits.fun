@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
         const currentMint = await contract.currentMint();
         const dispatch = Number(currentMint.toString()) + 1;
 
+
         // Create metadata
         const metadata = JSON.stringify({
             name: `Dispatch ${dispatch}`,
@@ -57,11 +58,11 @@ export async function GET(req: NextRequest) {
             image: encodedSvg,
             attributes: [
                 {
-                    trait_type: "headline",
+                    trait_type: "headline", // remove this
                     value: headline
                 },
                 {
-                    trait_type: "lede",
+                    trait_type: "lede", //remove this
                     value: lede
                 },
                 {
