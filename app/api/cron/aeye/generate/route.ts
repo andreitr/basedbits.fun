@@ -26,7 +26,6 @@ export async function GET(req: NextRequest) {
         const { data, error } = await supabase
             .from("zeitgeist")
             .select("*")
-            .is("token", null)
             .order("created_at", { ascending: false })
             .limit(1);
 
