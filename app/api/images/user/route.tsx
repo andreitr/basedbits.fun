@@ -1,7 +1,7 @@
 import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
-import { humanizeNumber, streakToDiscount } from "@/app/lib/utils/numberUtils";
+import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { formatUnits } from "ethers";
 import { ImageResponse } from "next/og";
 
@@ -34,7 +34,6 @@ export async function GET(request: Request) {
     const total = `${lastCheckin.count} total check-in${lastCheckin.count === 1 ? "" : "s"}`;
     const nfts = `${contractNFTs.totalCount} Based Bits NFTs`;
     const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
-    const discount = `Mint discount ${streakToDiscount(lastCheckin.streak)}% OFF`;
 
     const preview = token
       ? token.image.originalUrl
@@ -75,7 +74,6 @@ export async function GET(request: Request) {
               <div tw="text-6xl font-bold p-4 text-[#363E36]">{streak}</div>
               <div tw="text-5xl font-bold mb-20 text-[#677467]">{total}</div>
               <div tw="flex flex-col mx-6 px-10 text-[#677467] text-4xl">
-                <div tw="flex mt-4 mb-6">{discount}</div>
                 <div tw="flex">{nfts}</div>
                 <div tw="flex">{tokens}</div>
               </div>

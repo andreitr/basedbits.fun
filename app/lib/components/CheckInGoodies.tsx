@@ -2,7 +2,6 @@
 
 import { AddressToEns } from "@/app/lib/components/AddressToEns";
 import { CheckIn } from "@/app/lib/types/types";
-import { streakToDiscount } from "@/app/lib/utils/numberUtils";
 import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -49,11 +48,6 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
         {user?.farcaster_name && streak > 7 && (
           <div>{"• Receive weekly Farcaster airdrop"}</div>
         )}
-        <div>
-          {"• "}
-          {streakToDiscount(streak)}
-          {"% OFF on upcoming mints"}
-        </div>
       </div>
     </div>
   );
