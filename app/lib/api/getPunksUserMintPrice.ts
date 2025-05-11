@@ -1,7 +1,6 @@
-import { readContract } from "@wagmi/core";
 import { baseConfig } from "@/app/lib/Web3Configs";
-import { Bit98ABI } from "@/app/lib/abi/Bit98.abi";
 import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
+import { readContract } from "@wagmi/core";
 
 export async function getPunksUserMintPrice(address: `0x${string}`) {
   const data: any = await readContract(baseConfig, {
