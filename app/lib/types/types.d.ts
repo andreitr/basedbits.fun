@@ -100,6 +100,7 @@ export interface DBZeitgeist {
   lede: string;
   signal: string;
   emotion: string;
+  image: string | null;
   created_at: string;
   updated_at: string;
 }

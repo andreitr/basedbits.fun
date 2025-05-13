@@ -51,7 +51,7 @@ export async function GET(request: Request) {
           <div tw="flex flex-col justify-between w-[400px] h-[400px] bg-black text-[#2CB57F] p-10">
             <div tw="h-[300px] flex flex-col justify-center">
               <div tw="text-2xl font-bold mb-5">{headline}</div>
-              <div tw="text-1xl" >{lede.replace(/\.$/, '')}</div>
+              <div tw="text-lg" >{lede.replace(/\.$/, '')}</div>
             </div>
             <div tw="text-sm uppercase">{`${emotion} ${date}`}</div>
           </div>

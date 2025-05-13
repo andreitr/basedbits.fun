@@ -26,11 +26,15 @@
     },
     {
       "path": "/api/cron/aeye/compose",
+      "schedule": "5 19 * * *"
+    },
+    {
+      "path": "/api/cron/aeye/generate",
       "schedule": "10 19 * * *"
     },
     {
       "path": "/api/cron/aeye/mint",
-      "schedule": "20 19 * * *"
+      "schedule": "15 19 * * *"
     }
   ]
 }
