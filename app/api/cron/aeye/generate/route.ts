@@ -9,14 +9,14 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const PROMPT = `
-  Render the text in pixelated monospaced font, simulating a classic flat CRT monitor display:
-  - Text color must be exactly #62CDA7 without any variation.
-  - Maintain the aspect ratio of the original image.
-  - Overlay horizontal green scan lines with 80% opacity and consistent 3-pixel spacing.
-  - Apply mild static noise and subtle horizontal jitter lines at 50% opacity.
-  - Add a soft, consistent green glow halo around each character with a 5-pixel radius.
-  - Introduce mild RGB channel separation (2-pixel offset).
-  - No screen curvature—keep the display perfectly flat.
+  Apply a flat, square CRT monitor effect to this image:
+  - Maintain aspect ratio of the original image.
+  - Render all text in pixelated monospaced font reminiscent of classic CRT terminals.
+  - Use #62CDA7 for the text color.
+  - Overlay heavier horizontal green scan-lines and intermittent CRT screen-tearing artifacts.
+  - Introduce stronger pixel flicker, amplified analog noise, and frequent horizontal jitter lines.
+  - Add a soft, luminous green glow halo around each character and intensified RGB channel separation/ghosting.
+  - Do not add any curvature—keep the display perfectly flat.
 `.trim();
 
 const openai = new OpenAI({
