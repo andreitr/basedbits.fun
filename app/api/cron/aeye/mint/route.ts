@@ -1,4 +1,4 @@
-import { getZeitgeistBotContract } from "@/app/lib/contracts/zeitgeist";
+import { getAEYEContract } from "@/app/lib/contracts/aeye";
 import { supabase } from "@/app/lib/supabase/client";
 import { DBZeitgeist } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
             return new Response("Invalid zeitgeist data: missing headline, lede, emotion, signal, or image", { status: 400 });
         }
 
-        const contract = getZeitgeistBotContract();
+        const contract = getAEYEContract();
         const currentMint = await contract.currentMint();
         const dispatch = Number(currentMint.toString()) + 1;
 

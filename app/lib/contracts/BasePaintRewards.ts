@@ -1,4 +1,3 @@
-import { ZeitgeistAbi } from "@/app/lib/abi/Zeitgeist.abi";
 import { Contract, getAddress, JsonRpcProvider, Wallet } from "ethers";
 import { baseRpcUrl } from "../Web3Configs";
 import { BasePaintRewardsAbi } from "../abi/BasePaintRewards.abi";

@@ -1,6 +1,7 @@
-import { ZeitgeistAbi } from "@/app/lib/abi/Zeitgeist.abi";
+
 import { Contract, JsonRpcProvider, Wallet } from "ethers";
 import { baseTestnetRpcUrl } from "../Web3Configs";
+import { AEYEAbi } from "../abi/AEYE.abi";
 
 let provider: JsonRpcProvider | null = null;
 
@@ -11,12 +12,12 @@ const getProvider = (): JsonRpcProvider => {
   return provider;
 };
 
-export const getZeitgeistBotContract = () => {
+export const getAEYEContract = () => {
   const provider = getProvider();
   const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
   return new Contract(
-    "0xe0825EF7f3Ef89Ff6c1DcCbF24b82DD9fa9865CA",
-    ZeitgeistAbi,
+    "0xE969De9A34C2010D87701BDC392c261cd78EA640",
+    AEYEAbi,
     signer,
   );
 };
