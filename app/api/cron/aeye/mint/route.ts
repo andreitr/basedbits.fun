@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
         });
 
         // Mint token
-        const tx = await contract.createToken(image, metadata);
+        const tx = await contract.createToken(metadata);
         await tx.wait();
 
         try {
