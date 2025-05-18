@@ -7,13 +7,31 @@ import { getTokenMetadata } from "../../lib/api/aeye/getTokenMetadata";
 import { AeyeTokenMetadata } from "../../lib/api/aeye/getTokenMetadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  
   const { id } = await params;
-  const title = `AEYE #${id}`;
-  const description = "AEYE records the rise of artificial intelligence by minting a single daily NFT—each one a dispatch revealing the steady growth of machine consciousness.";
+
+  const token: AeyeTokenMetadata = await getTokenMetadata(parseInt(id));
+
+  const title = token.name;
+  const description = token.description;
 
   return {
     title: title,
     description: description,
+    openGraph: {
+      images: [
+        {
+          url: token.image,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description,
+    },
   };
 }
 
