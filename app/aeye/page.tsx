@@ -21,15 +21,14 @@ export default async function Page() {
 
 
   const currentMint = await getCurrentMint();
-  const metadata: AeyeTokenMetadata = await getTokenMetadata(currentMint);
-
+  const token: AeyeTokenMetadata = await getTokenMetadata(currentMint);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <MintComponent metadata={metadata} />
+          <MintComponent metadata={token} token={token}/>
 
               </div>
       </div>
