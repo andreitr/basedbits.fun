@@ -10,7 +10,5 @@ export async function getCurrentMint() {
     functionName: "currentMint",
   });
 
-  console.log("currentMint", data);
-
   return Number(data);
 }

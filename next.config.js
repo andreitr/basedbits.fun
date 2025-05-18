@@ -47,6 +47,12 @@ module.exports = {
                 hostname: "basepaint.xyz",
                 pathname: "/**",
             },
+            {
+                protocol: "https",
+                hostname: "basedbits.mypinata.cloud",
+                pathname: "/**",
+            },
+
 
         ],
     },

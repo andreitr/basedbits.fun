@@ -1,26 +1,26 @@
 "use client";
 
+import { AeyeTokenMetadata } from "@/app/lib/api/aeye/getTokenMetadata";
 import { useCurrentMint } from "@/app/lib/hooks/aeye/useCurrentMint";
 import Image from "next/image";
 
-export const MintComponent = () => {
+export const MintComponent = ({ metadata }: { metadata: AeyeTokenMetadata }) => {
 
   const { data: currentMint, isLoading } = useCurrentMint({ enabled: true });
 
-  console.log("isLoading", isLoading)
-
-
-  console.log("currentMint", currentMint);
   return (
-    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black rounded-lg p-6 text-[#83E174]">
-      <div>
-        <div className="text-3xl mb-4 uppercase">AEYE #{currentMint}</div>
+    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-gray-900 rounded-lg p-6 text-white">
+      <div className="flex flex-row gap-4">
         <div>
-        AEYE records the rise of artificial intelligence by minting a single daily NFT—each one a dispatch revealing the steady growth of machine consciousness.
+        <div className="text-3xl mb-4 uppercase">{metadata.name}</div>
+        <div>
+        {metadata.description}
+      
         </div>
-
+        </div>
+          <Image  className="rounded-lg"
+          src={metadata.image} alt="AEYE" width={300} height={300} />
       </div>
-
     </div>
   );
 };
