@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { supabase } from "@/app/lib/supabase/client";
-import { DBZeitgeist } from "@/app/lib/types/types";
+import { DBAeye } from "@/app/lib/types/types";
 
 export const runtime = "edge";
 
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
       throw new Error("Failed to fetch zeitgeist entry");
     }
 
-    const zeitgeist = data as DBZeitgeist;
+    const zeitgeist = data as DBAeye;
     const { headline, lede, emotion, created_at } = zeitgeist;
 
     const date = new Date(created_at).toLocaleDateString("en-US", {

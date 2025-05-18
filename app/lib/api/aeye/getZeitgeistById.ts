@@ -1,9 +1,9 @@
 import { supabase } from "@/app/lib/supabase/client";
-import { DBZeitgeist } from "@/app/lib/types/types";
+import { DBAeye } from "@/app/lib/types/types";
 
-export async function getZeitgeistById(
+export async function getAeyeById(
   id: number,
-): Promise<DBZeitgeist | null> {
+): Promise<DBAeye | null> {
   const { data, error } = await supabase
     .from("zeitgeist")
     .select("*")
@@ -11,9 +11,9 @@ export async function getZeitgeistById(
     .single();
 
   if (error) {
-    console.error("Error fetching zeitgeist:", error);
+    console.error("Error fetching aeye:", error);
     return null;
   }
 
-  return data as DBZeitgeist;
+  return data as DBAeye;
 }

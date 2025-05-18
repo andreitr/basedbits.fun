@@ -1,6 +1,6 @@
 import { aeyeSepoliaContract } from "@/app/lib/contracts/aeye"; 
 import { supabase } from "@/app/lib/supabase/client";   
-import { DBZeitgeist } from "@/app/lib/types/types";
+import { DBAeye } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
             return new Response("No zeitgeist entries found", { status: 404 });
         }
 
-        const latestZeitgeist = data[0] as DBZeitgeist;
+        const latestZeitgeist = data[0] as DBAeye;
         const { headline, lede, emotion, signal, image } = latestZeitgeist;
 
         if (!headline || !lede || !image) {
@@ -84,7 +84,6 @@ export async function GET(req: NextRequest) {
         await tx.wait();
 
         try {
-
             await supabase
                 .from("zeitgeist")
                 .update({ token: dispatch })

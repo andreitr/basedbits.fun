@@ -93,7 +93,7 @@ export interface DBMessage {
   updated_at: string;
 }
 
-export interface DBZeitgeist {
+export interface DBAeye {
   id: number;
   context: string;
   headline: string;

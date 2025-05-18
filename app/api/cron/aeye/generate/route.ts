@@ -1,5 +1,5 @@
 import { supabase } from "@/app/lib/supabase/client";
-import { DBZeitgeist } from "@/app/lib/types/types";
+import { DBAeye } from "@/app/lib/types/types";
 import pinataSDK from "@pinata/sdk";
 import { NextRequest } from "next/server";
 import { OpenAI } from "openai";
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
             return new Response("No zeitgeist entries found", { status: 404 });
         }
 
-        const latestZeitgeist = data[0] as DBZeitgeist;
+        const latestZeitgeist = data[0] as DBAeye;
 
         // Generate image template URL
         const imageUrl = `${process.env.NEXT_PUBLIC_URL}/api/images/aeye/template?id=${latestZeitgeist.id}`;

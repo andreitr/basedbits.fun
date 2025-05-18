@@ -3,7 +3,6 @@
 import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import Image from "next/image";
 import { getCurrentMint } from "../lib/api/aeye/getCurrentMint";
 import { AeyeTokenMetadata, getTokenMetadata } from "../lib/api/aeye/getTokenMetadata";
 

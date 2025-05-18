@@ -1,7 +1,7 @@
 import { supabase } from "@/app/lib/supabase/client";
-import { DBZeitgeist } from "@/app/lib/types/types";
+import { DBAeye } from "@/app/lib/types/types";
 
-export async function getZeitgeist(): Promise<DBZeitgeist[]> {
+export async function getZeitgeist(): Promise<DBAeye[]> {
   const { data, error } = await supabase
     .from("zeitgeist")
     .select("*")
@@ -12,5 +12,5 @@ export async function getZeitgeist(): Promise<DBZeitgeist[]> {
     return [];
   }
 
-  return data as DBZeitgeist[];
+  return data as DBAeye[];
 }
