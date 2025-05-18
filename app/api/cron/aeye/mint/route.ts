@@ -1,4 +1,4 @@
-import { getAEYEContract } from "@/app/lib/contracts/aeye";
+import { getAEYEContract } from "@/app/lib/contracts/Aeye";
 import { supabase } from "@/app/lib/supabase/client";
 import { DBZeitgeist } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";

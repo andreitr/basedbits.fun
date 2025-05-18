@@ -3,8 +3,7 @@
 import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { getZeitgeist } from "../lib/api/zeitgeist/getZeitgeist";
-import { DBZeitgeist } from "../lib/types/types";
+import { getZeitgeist } from "../lib/api/aeye/getZeitgeist";
 
 export async function generateMetadata() {
   const title = "AEYE";
@@ -27,35 +26,7 @@ export default async function Page() {
           <Header />
           <MintComponent />
 
-          <div className="flex flex-col items-center justify-center mt-12 gap-6 w-full">
-
-            {records.map((record: DBZeitgeist) => (
-              <div
-                key={record.id}
-                className="bg-black p-6 rounded-lg text-[#83E174]"
-              >
-                <div className="">
-
-                  <div className="flex flex-row justify-between mb-4">
-                    <div className="text-2xl font-semibold">
-                      {record.headline}
-                    </div>
-                    <div>
-                      {new Date(record.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </div>
-                  </div>
-                  <p>{record.lede}</p>
-                </div>
               </div>
-            ))}
-          </div>
-
-
-        </div>
       </div>
 
 
