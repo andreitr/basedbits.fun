@@ -12,7 +12,7 @@ const getProvider = (): JsonRpcProvider => {
   return provider;
 };
 
-export const getAEYEContract = () => {
+export const aeyeSepoliaContract = () => {
   const provider = getProvider();
   const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
   return new Contract(
