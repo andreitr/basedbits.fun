@@ -6,8 +6,9 @@ import { Footer } from "@/app/lib/components/Footer";
 import { getTokenMetadata } from "../../lib/api/aeye/getTokenMetadata";
 import { AeyeTokenMetadata } from "../../lib/api/aeye/getTokenMetadata";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const title = `AEYE #${params.id}`;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const title = `AEYE #${id}`;
   const description = "AEYE records the rise of artificial intelligence by minting a single daily NFT—each one a dispatch revealing the steady growth of machine consciousness.";
 
   return {
@@ -16,8 +17,10 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const token: AeyeTokenMetadata = await getTokenMetadata(parseInt(params.id));
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  
+  const token: AeyeTokenMetadata = await getTokenMetadata(parseInt(id));
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
