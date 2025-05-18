@@ -16,7 +16,7 @@ export const getAEYEContract = () => {
   const provider = getProvider();
   const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
   return new Contract(
-    "0xE969De9A34C2010D87701BDC392c261cd78EA640",
+    process.env.AEYE_CONTRACT_ADDRESS as string,
     AEYEAbi,
     signer,
   );

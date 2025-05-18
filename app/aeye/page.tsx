@@ -1,14 +1,14 @@
 "use server";
 
-import { MintComponent } from "@/app/emergence/components/MintComponent";
+import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { getZeitgeist } from "../lib/api/zeitgeist/getZeitgeist";
 import { DBZeitgeist } from "../lib/types/types";
 
 export async function generateMetadata() {
-  const title = "The Emergence";
-  const description = "Run, Boost, Win!";
+  const title = "AEYE";
+  const description = "AEYE records the rise of artificial intelligence by minting a single daily NFT—each one a dispatch revealing the steady growth of machine consciousness.";
 
   return {
     title: title,
