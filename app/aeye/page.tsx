@@ -26,6 +26,10 @@ export default async function Page() {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
+          <div className="w-full bg-yellow-400 text-red-500 text-center py-2 mb-4 font-semibold rounded-lg text-2xl">
+            SEPOLIA TEST
+          </div>
+
           <MintComponent token={aeye || undefined}/>
           </div>
       </div>
