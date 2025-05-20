@@ -1,15 +1,17 @@
 "use client";
 
-import { AeyeTokenMetadata } from "@/app/lib/api/aeye/getTokenMetadata";
+import { useAeyeById } from "@/app/lib/hooks/aeye/useAeyeById";
 import { useCurrentMint } from "@/app/lib/hooks/aeye/useCurrentMint";
 import { useTokenMetadata } from "@/app/lib/hooks/aeye/useTokenMetadata";
+import { DBAeye } from "@/app/lib/types/types";
 import Image from "next/image";
+import { MintButton } from "./MintButton";
 
-export const MintComponent = ({ token }: { token?: AeyeTokenMetadata }) => {
+export const MintComponent = ({ token }: { token?: DBAeye }) => {
   
-  const { data: currentMint, isLoading } = useCurrentMint({ enabled: true });
-  const { data: loadedTokenMeta } = useTokenMetadata({
-    tokenId: currentMint,
+  const { data: currentMint } = useCurrentMint({ enabled: true });
+  const { data: loadedTokenMeta } = useAeyeById({
+    id: currentMint,
     enabled: !token && !!currentMint
   });
 
@@ -18,16 +20,19 @@ export const MintComponent = ({ token }: { token?: AeyeTokenMetadata }) => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-gray-900 rounded-lg p-6 text-white">
       <div className="flex flex-row gap-4">
-        <div>
-          <div className="text-3xl mb-4 uppercase">{displayToken?.name}</div>
+        <div className="flex flex-col justify-between">
           <div>
-            {displayToken?.description}
+            <div className="text-3xl mb-4 uppercase">{displayToken?.headline}</div>
+            <div>
+              {displayToken?.lede}
+            </div>
           </div>
+          <MintButton />
         </div>
         <Image 
           className="rounded-lg"
           src={displayToken?.image || ''} 
-          alt="AEYE" 
+          alt={displayToken?.headline || ''} 
           width={300} 
           height={300} 
         />

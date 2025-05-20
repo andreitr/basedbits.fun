@@ -3,8 +3,8 @@
 import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+import { getAeyeById } from "../lib/api/aeye/getAeyeById";
 import { getCurrentMint } from "../lib/api/aeye/getCurrentMint";
-import { AeyeTokenMetadata, getTokenMetadata } from "../lib/api/aeye/getTokenMetadata";
 
 export async function generateMetadata() {
   const title = "AEYE";
@@ -18,16 +18,15 @@ export async function generateMetadata() {
 
 export default async function Page() {
 
-
   const currentMint = await getCurrentMint();
-  const token: AeyeTokenMetadata = await getTokenMetadata(currentMint);
+  const aeye = await getAeyeById(currentMint);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
-          <MintComponent token={token}/>
+          <MintComponent token={aeye || undefined}/>
 
               </div>
       </div>

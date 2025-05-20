@@ -16,7 +16,7 @@ export const aeyeSepoliaContract = () => {
   const provider = getProvider();
   const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
   return new Contract(
-    process.env.AEYE_CONTRACT_ADDRESS as string,
+    process.env.NEXT_PUBLIC_AEYE_ADDRESS as string,
     AEYEAbi,
     signer,
   );

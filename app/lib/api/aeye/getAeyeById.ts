@@ -1,9 +1,11 @@
 import { supabase } from "@/app/lib/supabase/client";
 import { DBAeye } from "@/app/lib/types/types";
+import { cache } from "react";
 
-export async function getAeyeById(
+export const fetchAeyeById = async (
   id: number,
-): Promise<DBAeye | null> {
+): Promise<DBAeye | null> => {
+  
   const { data, error } = await supabase
     .from("zeitgeist")
     .select("*")
@@ -16,4 +18,6 @@ export async function getAeyeById(
   }
 
   return data as DBAeye;
-}
+};
+
+export const getAeyeById = cache(fetchAeyeById);
