@@ -7,14 +7,19 @@ import { useModal } from "connectkit";
 import { formatUnits } from "ethers";
 import {
   useAccount,
+  useChainId,
+  useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { baseSepolia } from "wagmi/chains";
 
 const MINT_PRICE = BigInt(0.0008 * 10 ** 18);
 
 export const MintButton = () => {
   const { setOpen } = useModal();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
 
   const { isConnected, address } = useAccount();
   const { data, writeContract } = useWriteContract();
@@ -30,7 +35,6 @@ export const MintButton = () => {
   });
 
   const mint = () => {
-
     writeContract({
       abi: AEYEAbi,
       address: process.env.NEXT_PUBLIC_AEYE_ADDRESS as `0x${string}`,
@@ -46,19 +50,28 @@ export const MintButton = () => {
       <Button
         className={"bg-black/20 hover:bg-black text-white/60 font-regular"}
         onClick={() => setOpen(true)}
-        >
+      >
         Connect to Mint
+      </Button>
+    );
+  }
+
+  if (chainId !== baseSepolia.id) {
+    return (
+      <Button
+        className={"bg-black/20 hover:bg-black text-white/60 font-regular"}
+        onClick={() => switchChain({ chainId: baseSepolia.id })}
+      >
+        Switch to Base Sepolia
       </Button>
     );
   }
   
   return (
     <Button
-    className={"bg-black hover:bg-black/20 font-regular"}
-
+      className={"bg-black hover:bg-black hover:text-white font-regular"}
       onClick={() => {
         mint();
-
       }}
     >
       {isFetching ? "Minting..." : label}
