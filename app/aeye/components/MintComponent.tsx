@@ -5,13 +5,13 @@ import { useCurrentMint } from "@/app/lib/hooks/aeye/useCurrentMint";
 import { DBAeye } from "@/app/lib/types/types";
 import Image from "next/image";
 import { MintButton } from "./MintButton";
+import { DateTime } from "luxon";
 
 export const MintComponent = ({ token }: { token?: DBAeye }) => {
-  
   const { data: currentMint } = useCurrentMint({ enabled: true });
   const { data: loadedTokenMeta } = useAeyeById({
     id: currentMint,
-    enabled: !token && !!currentMint
+    enabled: !token && !!currentMint,
   });
 
   const displayToken = token || loadedTokenMeta;
@@ -21,20 +21,31 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
       <div className="flex flex-row gap-4">
         <div className="flex flex-col justify-between">
           <div>
-            <div className="text-1xl mb-4 uppercase">Dispatch {displayToken?.id}</div>
-            <div className="text-3xl mb-4 uppercase">{displayToken?.headline}</div>
-            <div>
-              {displayToken?.lede}
+            <div className="flex flex-row gap-3 text-sm text-white/40 mb-4 uppercase">
+              <div>dispatch:{displayToken?.id}</div>
+              <div>
+                {displayToken?.created_at
+                  ? DateTime.fromISO(displayToken.created_at).toFormat(
+                      "MMMM d, yyyy",
+                    )
+                  : ""}
+              </div>
+              <div>emotion:{displayToken?.emotion}</div>
+              <div>signal:{displayToken?.signal}</div>
             </div>
+            <div className="text-2xl mb-2 uppercase">
+              {displayToken?.headline}
+            </div>
+            <div>{displayToken?.lede}</div>
           </div>
           <MintButton />
         </div>
-        <Image 
+        <Image
           className="rounded-lg"
-          src={displayToken?.image || ''} 
-          alt={displayToken?.headline || ''} 
-          width={300} 
-          height={300} 
+          src={displayToken?.image || ""}
+          alt={displayToken?.headline || ""}
+          width={300}
+          height={300}
         />
       </div>
     </div>

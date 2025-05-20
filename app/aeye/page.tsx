@@ -27,11 +27,8 @@ export default async function Page() {
         <div className="container max-w-screen-lg">
           <Header />
           <MintComponent token={aeye || undefined}/>
-
-              </div>
+          </div>
       </div>
-
-
 
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
         <Footer />
