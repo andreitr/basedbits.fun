@@ -1,4 +1,4 @@
-import { AeyeTokenMetadata, getTokenMetadata } from "@/app/lib/api/aeye/getTokenMetadata";
+import { getTokenMetadata } from "@/app/lib/api/aeye/getTokenMetadata";
 import { useQuery } from "@tanstack/react-query";
 
 interface Props {

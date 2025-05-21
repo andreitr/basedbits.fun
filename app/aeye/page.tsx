@@ -7,13 +7,42 @@ import { getAeyeById } from "../lib/api/aeye/getAeyeById";
 import { getCurrentMint } from "../lib/api/aeye/getCurrentMint";
 
 export async function generateMetadata() {
-  const title = "AEYE";
+
+  const currentMint = await getCurrentMint();
+  const aeye = await getAeyeById(currentMint);
+  const title = "AEYE Genesis";
   const description = "AEYE records the rise of artificial intelligence by minting a single daily NFT—each one a dispatch revealing the steady growth of machine consciousness.";
 
   return {
-    title: title,
-    description: description,
-  };
+
+      title: title,
+      description: description,
+      other: {
+        ["fc:frame"]: "vNext",
+        ["fc:frame:image"]: aeye?.image,
+        ["fc:frame:button:1"]: "Mint",
+        ["fc:frame:button:1:action"]: "link",
+        ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/aeye`,
+  
+        // ["fc:frame:button:2"]: `Mint`,
+        // ["fc:frame:button:2:action"]: "tx",
+        // ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/burn`,
+      },
+      openGraph: {
+        images: [
+          {
+            url: aeye?.image,
+            width: 630,
+            height: 630,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: title,
+        description,
+      },
+  }
 }
 
 export default async function Page() {
