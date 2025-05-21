@@ -55,17 +55,12 @@ const {data: mints} = useMintsPerToken({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs">Today's Mints</div>
+                <div className="uppercase text-xs">Todays Mints</div>
                 <div className="text-2xl">
                   {mints}
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs">Your Rewards</div>
-                <div className="text-2xl">
-                  {mints}
-                </div>
-              </div>
+              
             </div>
           </div>
           {displayToken && <MintButton token={displayToken} />}
