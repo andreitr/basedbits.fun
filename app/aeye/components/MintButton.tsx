@@ -31,7 +31,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   const { data, writeContract } = useWriteContract();
 
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
-    hash: data,
+    hash: data
   });
 
   const { show } = useSocialDisplay({
@@ -61,7 +61,6 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
           queryKey: [AEYE_QKS.MINTS, token.id],
         }),
       ]).then(() => {
-        console.log("invalidated");
         show();
       });
     }
@@ -81,7 +80,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   if (chainId !== baseSepolia.id) {
     return (
       <Button
-        className={"bg-black/20 hover:bg-black text-white/60 font-regular"}
+        className={"bg-black/20 hover:bg-black text-white/60 font-regular w-full sm:w-auto"}
         onClick={() => switchChain({ chainId: baseSepolia.id })}
       >
         Switch to Base Sepolia
@@ -91,7 +90,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   
   return (
     <Button
-      className={"bg-black hover:bg-black hover:text-white font-regular"}
+      className={"bg-black hover:bg-black hover:text-white font-regular w-full sm:w-auto"}
       onClick={() => {
         mint();
       }}

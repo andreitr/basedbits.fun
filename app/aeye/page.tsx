@@ -3,8 +3,8 @@
 import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { getAeyeById } from "../lib/api/aeye/getAeyeById";
-import { getCurrentMint } from "../lib/api/aeye/getCurrentMint";
+import { getAeyeById } from "@/app/lib/api/aeye/getAeyeById";
+import { getCurrentMint } from "@/app/lib/api/aeye/getCurrentMint";
 
 export async function generateMetadata() {
 
