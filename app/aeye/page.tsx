@@ -1,10 +1,11 @@
 "use server";
 
 import { MintComponent } from "@/app/aeye/components/MintComponent";
-import { Header } from "@/app/lib/components/client/Header";
-import { Footer } from "@/app/lib/components/Footer";
 import { getAeyeById } from "@/app/lib/api/aeye/getAeyeById";
 import { getCurrentMint } from "@/app/lib/api/aeye/getCurrentMint";
+import { Header } from "@/app/lib/components/client/Header";
+import { Footer } from "@/app/lib/components/Footer";
+import { UserComponent } from "./components/UserComponent";
 
 export async function generateMetadata() {
 
@@ -60,6 +61,7 @@ export default async function Page() {
           </div>
 
           <MintComponent token={aeye || undefined}/>
+          <UserComponent />
           </div>
       </div>
 
