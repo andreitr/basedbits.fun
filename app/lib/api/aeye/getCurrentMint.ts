@@ -1,4 +1,3 @@
-
 import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
 import { readContract } from "@wagmi/core";
 import { AEYEAbi } from "../../abi/AEYE.abi";

@@ -4,13 +4,18 @@ import { MintComponent } from "@/app/aeye/components/MintComponent";
 import { getAeyeById } from "@/app/lib/api/aeye/getAeyeById";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { AeyeTokenMetadata, getTokenMetadata } from "../../lib/api/aeye/getTokenMetadata";
+import {
+  AeyeTokenMetadata,
+  getTokenMetadata,
+} from "../../lib/api/aeye/getTokenMetadata";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const aeye = await getAeyeById(parseInt(id));
-
 
   return {
     title: aeye?.headline,
@@ -32,11 +37,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const aeye = await getAeyeById(parseInt(id));
-  
-
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -52,4 +59,4 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       </div>
     </div>
   );
-} 
+}

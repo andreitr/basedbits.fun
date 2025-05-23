@@ -1,4 +1,3 @@
-
 import { Contract, JsonRpcProvider, Wallet } from "ethers";
 import { baseTestnetRpcUrl } from "../Web3Configs";
 import { AEYEAbi } from "../abi/AEYE.abi";

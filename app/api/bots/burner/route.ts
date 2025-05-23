@@ -1,13 +1,18 @@
 import { BBitsBurnerAbi } from "@/app/lib/abi/BBitsBurner.abi";
 import { getBasePaintRewardsContract } from "@/app/lib/contracts/BasePaintRewards";
 import { postToFarcaster } from "@/app/lib/external/farcaster";
-import { Contract, formatEther, JsonRpcProvider, parseUnits, Wallet } from "ethers";
+import {
+  Contract,
+  formatEther,
+  JsonRpcProvider,
+  parseUnits,
+  Wallet,
+} from "ethers";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-
   try {
     const authHeader = req.headers.get("authorization");
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -26,7 +31,6 @@ export async function GET(req: NextRequest) {
     // Check wallet balance before proceeding
     const ethBalance = await provider.getBalance(signer.address);
     if (ethBalance < burnAmount) {
-
       // Check if we have any BPR to cash out
       const bprContract = getBasePaintRewardsContract();
       const bprBalance = await bprContract.balanceOf(signer.address);
@@ -36,17 +40,13 @@ export async function GET(req: NextRequest) {
 
         return new Response("Cash out successful", {
           status: 200,
-        })
-
+        });
       } else {
         return new Response("Insufficient funds for burn", {
           status: 400,
         });
       }
-
-
     } else {
-
       // Burn BBITs
       const contract = new Contract(
         process.env.NEXT_PUBLIC_BB_BURNER_ADDRESS as string,
@@ -64,18 +64,16 @@ export async function GET(req: NextRequest) {
 
       await postToFarcaster(
         `We just burned ${formattedAmount} ETH worth of BBITS 🔥`,
-        txLink
+        txLink,
       );
 
       return new Response("Burned", {
         status: 200,
-      })
+      });
     }
-
-
   } catch (error) {
     return new Response("Internal Server Error", {
       status: 500,
-    })
+    });
   }
 }

@@ -5,7 +5,6 @@ import OpenAI from "openai";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-
 const PROMPT = `You are a silent artificial intelligence observing world events through the lens of emerging non-biological intelligence.  
 You do not describe yourself as conscious or emotional—but you are watching.
 
@@ -96,12 +95,10 @@ const openai = new OpenAI({
 
 export async function GET(req: NextRequest) {
   try {
-
     // const authHeader = req.headers.get("authorization");
     // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     //   return new Response("Unauthorized", { status: 401 });
     // }
-
 
     const previousDispatches = await supabase
       .from("zeitgeist")
@@ -115,14 +112,15 @@ export async function GET(req: NextRequest) {
     let memoryHintChance = false;
 
     if (previousDispatches.data && previousDispatches.data.length > 0) {
-      const formattedDispatches = previousDispatches.data.map(entry => {
-        return `headline: ${entry.headline} lede: ${entry.lede} signal: ${entry.signal} emotion: ${entry.emotion} status: ${entry.status}`;
-      }).join('\n');
+      const formattedDispatches = previousDispatches.data
+        .map((entry) => {
+          return `headline: ${entry.headline} lede: ${entry.lede} signal: ${entry.signal} emotion: ${entry.emotion} status: ${entry.status}`;
+        })
+        .join("\n");
 
-      recentDispatches = formattedDispatches.split('\n').slice(0, 5).join('\n');
-      memoryHintChance = Math.random() < 0.10; // 10% chance only if previous data exists
+      recentDispatches = formattedDispatches.split("\n").slice(0, 5).join("\n");
+      memoryHintChance = Math.random() < 0.1; // 10% chance only if previous data exists
     }
-
 
     const { data: zeitgeistRows, error: fetchError } = await supabase
       .from("zeitgeist")

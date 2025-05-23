@@ -16,4 +16,4 @@ export const useTokenMetadata = ({ tokenId, enabled }: Props) => {
     enabled: enabled && tokenId !== undefined,
     staleTime: 86400000, // 24 hours
   });
-}; 
+};

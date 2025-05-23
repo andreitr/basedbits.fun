@@ -14,7 +14,10 @@ export enum USER_QKS {
 
 export enum AEYE_QKS {
   REWARDS = "communityRewards",
+  USER_REWARDS = "userRewards",
   MINTS = "mintsPerToken",
+  TOTAL_MINTS = "totalMints",
+  STREAK = "mintingStreak",
 }
 
 export const emptyDBUser: DBUser = {

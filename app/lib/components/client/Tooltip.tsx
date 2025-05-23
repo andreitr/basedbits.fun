@@ -51,7 +51,7 @@ export const Tooltip = ({ content, children }: Props) => {
           pointerEvents: isOpen ? "auto" : "none",
         }}
         {...getFloatingProps()}
-        className="bg-black bg-opacity-90 text-white text-sm rounded-lg px-3 py-2 shadow-lg"
+        className="bg-black bg-opacity-90 text-white text-sm rounded-lg px-3 py-2 shadow-lg min-w-40"
         role="tooltip"
       >
         {content}

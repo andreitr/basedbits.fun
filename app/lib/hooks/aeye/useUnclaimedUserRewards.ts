@@ -5,22 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { readContract } from "@wagmi/core";
 
 interface Props {
-  tokenId: number;
+  address: `0x${string}`;
   enabled: boolean;
 }
 
-export const useMintsPerToken = ({ tokenId, enabled }: Props) => {
+export const useUnclaimedUserRewards = ({ address, enabled }: Props) => {
   return useQuery({
-    queryKey: [AEYE_QKS.MINTS, tokenId],
+    queryKey: [AEYE_QKS.USER_REWARDS, address],
     queryFn: async () => {
       return await readContract(baseSepoliaConfig, {
         abi: AEYEAbi,
         address: process.env.NEXT_PUBLIC_AEYE_ADDRESS as `0x${string}`,
-        functionName: "mintsPerToken",
-        args: [BigInt(tokenId)],
+        functionName: "unclaimedRewards",
+        args: [address],
       });
     },
     enabled: enabled,
-    refetchInterval: 60000, // 1 minute
   });
 };

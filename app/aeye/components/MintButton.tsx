@@ -21,17 +21,17 @@ import { baseSepolia } from "wagmi/chains";
 const MINT_PRICE = BigInt(0.0008 * 10 ** 18);
 
 export const MintButton = ({ token }: { token: DBAeye }) => {
-  
   const { setOpen } = useModal();
   const queryClient = useQueryClient();
-  
+
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { isConnected } = useAccount();
   const { data, writeContract } = useWriteContract();
 
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
-    hash: data
+    hash: data,
+    chainId: baseSepolia.id,
   });
 
   const { show } = useSocialDisplay({
@@ -60,6 +60,15 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
         queryClient.invalidateQueries({
           queryKey: [AEYE_QKS.MINTS, token.id],
         }),
+        queryClient.invalidateQueries({
+          queryKey: [AEYE_QKS.USER_REWARDS],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [AEYE_QKS.STREAK],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [AEYE_QKS.TOTAL_MINTS],
+        }),
       ]).then(() => {
         show();
       });
@@ -80,17 +89,21 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   if (chainId !== baseSepolia.id) {
     return (
       <Button
-        className={"bg-black/20 hover:bg-black text-white/60 font-regular w-full sm:w-auto"}
+        className={
+          "bg-black/20 hover:bg-black text-white/60 font-regular w-full sm:w-auto"
+        }
         onClick={() => switchChain({ chainId: baseSepolia.id })}
       >
         Switch to Base Sepolia
       </Button>
     );
   }
-  
+
   return (
     <Button
-      className={"bg-black hover:bg-black hover:text-white font-regular w-full sm:w-auto"}
+      className={
+        "bg-black hover:bg-black hover:text-white font-regular w-full sm:w-auto"
+      }
       onClick={() => {
         mint();
       }}

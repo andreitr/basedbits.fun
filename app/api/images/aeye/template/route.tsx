@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     // Extract ID from URL
     const url = new URL(request.url);
-    const id = url.searchParams.get('id');
+    const id = url.searchParams.get("id");
 
     if (!id) {
       throw new Error("ID parameter is required");
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
           <div tw="flex flex-col justify-between w-[400px] h-[400px] bg-black text-[#2CB57F] p-10">
             <div tw="h-[300px] flex flex-col justify-center">
               <div tw="text-2xl font-bold mb-5">{headline}</div>
-              <div tw="text-lg" >{lede.replace(/\.$/, '')}</div>
+              <div tw="text-lg">{lede.replace(/\.$/, "")}</div>
             </div>
             <div tw="text-sm uppercase">{`${emotion} ${date}`}</div>
           </div>

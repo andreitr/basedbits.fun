@@ -10,19 +10,17 @@ interface Props {
 }
 
 export const useCommunityRewards = ({ tokenId, enabled }: Props) => {
-
   return useQuery({
     queryKey: [AEYE_QKS.REWARDS, tokenId],
     queryFn: async () => {
-
-      return await readContract(baseSepoliaConfig,{
+      return await readContract(baseSepoliaConfig, {
         abi: AEYEAbi,
         address: process.env.NEXT_PUBLIC_AEYE_ADDRESS as `0x${string}`,
         functionName: "tokenCommunityRewards",
         args: [BigInt(tokenId)],
-      })
+      });
     },
     enabled: enabled,
     refetchInterval: 60000, // 1 minute
   });
-}; 
+};

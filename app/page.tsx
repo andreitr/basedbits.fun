@@ -44,7 +44,6 @@ export default async function Home() {
               style="rounded-lg"
             />
             <div className="md:hidden w-full">
-
               <FeatureCard
                 title="Airdrop Agent"
                 description="Share → BBITS"
@@ -65,7 +64,15 @@ export default async function Home() {
 
       <div className="hidden md:flex justify-center items-center w-full pt-10">
         <div className="container max-w-screen-lg mb-10 bg-white rounded-lg p-4">
-          Mint BasePaint using <Link href="https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1" target="_blank" className="text-blue-500 underline">our link</Link>, and we will burn the referral fee so your tokens go up!
+          Mint BasePaint using{" "}
+          <Link
+            href="https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1"
+            target="_blank"
+            className="text-blue-500 underline"
+          >
+            our link
+          </Link>
+          , and we will burn the referral fee so your tokens go up!
         </div>
       </div>
 
@@ -97,6 +104,6 @@ export default async function Home() {
       <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
         <Footer />
       </div>
-    </div >
+    </div>
   );
 }
