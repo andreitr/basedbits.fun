@@ -31,11 +31,11 @@ export default async function Home() {
               link="/burn"
             />
             <FeatureCard
-              title="The Emergence"
+              title="AEYE Agent"
               description="Coming soon"
-              image={"/images/emergence.png"}
+              image={"/images/aeye.png"}
               style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="https://warpcast.com/andreitr.eth/0x37fcd16d"
+              link="https://warpcast.com/andreitr.eth/0x9adb8e92"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
