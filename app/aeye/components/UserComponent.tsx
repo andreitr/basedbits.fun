@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 
 export const UserComponent = () => {
+
   const { address, isConnected } = useAccount();
   const { data: user } = useUser({
     address: address as `0x${string}`,
@@ -47,31 +48,33 @@ export const UserComponent = () => {
     return null;
   }
 
-  const hasRewards = rewards && rewards > 0;
+  const hasRewards = Boolean(rewards && rewards > BigInt(0));
+  console.log(hasRewards, rewards);
 
   return (
-    <div className="flex flex-row items-center justify-between bg-white rounded-lg p-2 w-full">
-      <div className="flex flex-row gap-2 items-center">
-        <div className="flex rounded-full p-0.5 bg-black bg-opacity-80 w-10 h-10">
-          <UserAvatar user={user} size={36} />
-        </div>
-        <UserName user={user} />
-      </div>
-      <div className="flex flex-row gap-4 items-center">
-        <div className="text-blue-500">Streak {streak || 0}</div>
-        <div className="text-blue-500">Total Minted {mints || 0}</div>
-        {hasRewards && (
-          <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={claim}
-            loading={isFetching}
-          >
-            {isFetching
-              ? "Claiming..."
-              : `Claim ${formatUnits(rewards, 18).slice(0, 7)}Ξ`}
-          </Button>
+    <div className="flex flex-row items-center justify-between rounded-lg gap-4 ">
+      
+
+        {Boolean(streak && streak > BigInt(0)) && (
+          <div><span className="font-bold">{"Your Streak: "}</span>{streak || 0}</div>
+        )}
+        {Boolean(mints && mints > BigInt(0)) && (
+          <div><span className="font-bold">{"Mints: "}</span>{mints || 0}</div>
+        )}
+      
+        {rewards && Boolean(rewards && rewards > BigInt(0)) && (
+          <div className="flex flex-row items-center gap-2">
+            <div><span className="font-bold">{"Rewards: "}</span></div>
+            <Button
+              className="bg-white text-black"
+              onClick={claim}
+              loading={isFetching}
+            >
+              Claim
+            </Button>
+          </div>
         )}
       </div>
-    </div>
+
   );
 };
