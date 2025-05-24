@@ -31,7 +31,7 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
       <div className="font-semibold uppercase text-[#363E36]">
         <NumberFlow value={streak} />
         -day streak 🔥 <NumberFlow value={count} />
-        {" check-ins"}
+        {" check ins"}
       </div>
 
       <div className="flex flex-col text-black mb-6 bg-white bg-opacity-80 rounded-lg p-4 gap-1">

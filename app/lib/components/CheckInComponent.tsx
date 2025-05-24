@@ -22,7 +22,7 @@ export const CheckInComponent = () => {
 
       <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
         <div className="text-4xl font-semibold text-[#363E36] mb-2">
-          Hold Based Bits? Check-in!
+          Hold Based Bits? Check in!
         </div>
         <div className="text-[#677467]">
           Check in to receive the daily BBITS airdrop and other goodies! You
