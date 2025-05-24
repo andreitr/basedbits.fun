@@ -82,7 +82,7 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
               </div>
               <div className="flex flex-col gap-1 hidden sm:flex">
                 <div className="uppercase text-xs text-gray-400">
-                  Total Mints
+                  Mints
                 </div>
                 <div className="text-3xl text-[#62CDA7]">{mints}</div>
               </div>
