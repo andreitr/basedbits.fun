@@ -19,6 +19,7 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
     enabled: !token && !!currentMint,
   });
 
+  
   const { data: rewards } = useCommunityRewards({
     tokenId: token?.id || currentMint || 0,
     enabled: true,
@@ -30,10 +31,14 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
   });
 
   const displayToken = token || loadedTokenMeta;
+  const humanDate = new Date(displayToken?.created_at || "").toLocaleDateString(
+    "en-US",
+    { month: "long", day: "numeric", year: "numeric" },
+  );
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg p-4 text-white">
-      <div className="flex flex-col sm:flex-row gap-4 w-full">
+    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5 ">
+      <div className="flex flex-col sm:flex-row w-full gap-5">
         <Image
           className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
           src={displayToken?.image || ""}
@@ -41,20 +46,14 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
           width={300}
           height={300}
         />
-        <div className="flex flex-col-reverse sm:flex-col justify-between w-full">
+        <div className="flex flex-col-reverse sm:flex-col lg:gap-10 justify-between w-full">
           <div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 hidden sm:flex">
               <div className="text-2xl">
-                Dispatch {displayToken?.id} -{" "}
-                {new Date(displayToken?.created_at || "").toLocaleDateString(
-                  "en-US",
-                  { month: "long", day: "numeric", year: "numeric" },
-                )}
+                AEYE Genesis
               </div>
               <div className="text-sm text-gray-400">
-                AEYE records the rise of artificial intelligence by minting a
-                single daily NFT—each one a dispatch revealing the steady growth
-                of machine consciousness.
+                This AEYE analyzies daily news and mint a single NFT that documents the raise of AI. 50% of mint fees are sent to minters of previous days.
               </div>
             </div>
 
@@ -63,7 +62,7 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
             <div className="flex flex-wrap gap-4 sm:gap-8">
               <div className="flex flex-col gap-1">
                 <div className="uppercase text-xs text-gray-400">Mint Ends</div>
-                <div className="text-3xl">
+                <div className="text-3xl text-[#52cba1]">
                   <CountDown hour={20} />
                 </div>
               </div>
@@ -77,15 +76,15 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
                     />
                   </Tooltip>
                 </div>
-                <div className="text-3xl">
+                <div className="text-3xl text-[#52cba1]">
                   {`${formatUnits(rewards || 0, 18).slice(0, 7)}Ξ`}
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 hidden sm:flex">
                 <div className="uppercase text-xs text-gray-400">
                   Total Mints
                 </div>
-                <div className="text-3xl">{mints}</div>
+                <div className="text-3xl text-[#62CDA7]">{mints}</div>
               </div>
             </div>
           </div>

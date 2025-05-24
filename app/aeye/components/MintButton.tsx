@@ -78,7 +78,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   if (!isConnected) {
     return (
       <Button
-        className={"bg-black/20 hover:bg-black text-white/60 font-regular"}
+        className={"bg-[#52cba1]/10 text-white/80 hover:text-white font-regular sm:w-auto"}
         onClick={() => setOpen(true)}
       >
         Connect to Mint
@@ -90,7 +90,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
     return (
       <Button
         className={
-          "bg-black/20 hover:bg-black text-white/60 font-regular w-full sm:w-auto"
+          "bg-[#52cba1]/10 text-white/60 font-regular w-full sm:w-auto"
         }
         onClick={() => switchChain({ chainId: baseSepolia.id })}
       >
@@ -102,7 +102,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   return (
     <Button
       className={
-        "bg-black hover:bg-black hover:text-white font-regular w-full sm:w-auto"
+        "bg-[#52cba1]/10 font-regular w-full sm:w-auto"
       }
       onClick={() => {
         mint();

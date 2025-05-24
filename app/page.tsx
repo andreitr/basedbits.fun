@@ -35,7 +35,7 @@ export default async function Home() {
               description="Coming soon"
               image={"/images/aeye.png"}
               style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="https://warpcast.com/andreitr.eth/0x9adb8e92"
+              link="https://farcaster.xyz/andreitr.eth/0x9adb8e92"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
