@@ -47,14 +47,12 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
           width={300}
           height={300}
         />
-        <div className="flex flex-col-reverse sm:flex-col lg:gap-10 justify-between w-full">
+        <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex">
-              <div className="text-2xl">AEYE Genesis</div>
+              <div className="text-2xl">AEYE: GENESIS</div>
               <div className="text-sm text-gray-400">
-                This AEYE analyzies daily news and mint a single NFT that
-                documents the raise of AI. 50% of mint fees are sent to minters
-                of previous days.
+              The AEYE agent watches the world each day, reflecting on the most important story in the rise of artificial intelligence, and mints a daily NFT dispatch as a lasting cultural artifact.
               </div>
             </div>
 
