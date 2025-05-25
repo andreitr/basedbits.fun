@@ -1,6 +1,6 @@
+import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
 import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
 import { readContract } from "@wagmi/core";
-import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
 
 type AeyeAttribute = {
   trait_type: string;
@@ -25,6 +25,5 @@ export async function getTokenMetadata(
   });
 
   const metadata: AeyeTokenMetadata = JSON.parse(data[0]);
-
   return metadata;
 }

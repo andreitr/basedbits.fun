@@ -8,8 +8,19 @@ interface PaginatedResponse {
   limit: number;
 }
 
-export async function getAeye(limit?: number, page: number = 1): Promise<DBAeye[] | PaginatedResponse> {
-  const pageSize = limit || 10;
+interface PaginationOptions {
+  limit?: number;
+  page?: number;
+}
+
+const DEFAULT_PAGINATION: PaginationOptions = {
+  limit: 20,
+  page: 1
+};
+
+export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): Promise<PaginatedResponse> {
+  const pageSize = options.limit || DEFAULT_PAGINATION.limit!;
+  const page = options.page || DEFAULT_PAGINATION.page!;
   const start = (page - 1) * pageSize;
   const end = start + pageSize - 1;
 
@@ -20,19 +31,19 @@ export async function getAeye(limit?: number, page: number = 1): Promise<DBAeye[
     .range(start, end);
 
   if (error) {
-    console.error("Error fetching zeitgeist:", error);
-    return limit ? {
+    
+    return {
       data: [],
       total: 0,
       page,
       limit: pageSize
-    } : [];
+    };
   }
 
-  return limit ? {
+  return {
     data: data as DBAeye[],
     total: count || 0,
     page,
     limit: pageSize
-  } : data as DBAeye[];
+  };
 }

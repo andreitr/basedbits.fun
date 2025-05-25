@@ -13,6 +13,7 @@ import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { InfoOutline } from "@/app/lib/icons/remix";
 
 export const MintComponent = ({ token }: { token?: DBAeye }) => {
+  
   const { data: currentMint } = useCurrentMint({ enabled: true });
   const { data: loadedTokenMeta } = useAeyeById({
     id: currentMint,
