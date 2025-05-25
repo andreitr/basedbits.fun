@@ -9,20 +9,22 @@ interface Props {
 
 export default function NFTList({ list }: Props) {
   return (
-    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 md:grid-cols-3 grid-cols-2">
       {list.map((nft, index) => {
         return (
           <div
             key={index}
             className="flex flex-col bg-black/90 p-2 rounded-md items-center justify-center text-sm"
           >
-            <Image
-              className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-              src={nft.image || ""}
-              alt={nft.headline}
-              width={175}
-              height={175}
-            />
+            <div className="w-full">
+              <Image
+                className="bg-cover bg-center bg-no-repeat w-full h-auto aspect-square rounded-lg"
+                src={nft.image || ""}
+                alt={nft.headline}
+                width={175}
+                height={175}
+              />
+            </div>
             <div className="mt-2 self-start text-gray-400">
               <Link
                 href={`https://testnets.opensea.io/assets/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}/${nft.id}`}
