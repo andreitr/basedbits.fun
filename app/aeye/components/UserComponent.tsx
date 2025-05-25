@@ -11,6 +11,7 @@ import { useUnclaimedUserRewards } from "@/app/lib/hooks/aeye/useUnclaimedUserRe
 import { useUser } from "@/app/lib/hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatUnits } from "ethers";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 
@@ -33,6 +34,7 @@ export const UserComponent = () => {
     address: address as `0x${string}`,
     enabled: isConnected,
   });
+
   const { claim, hash, isFetching, isSuccess } = useClaimRewards();
   const queryClient = useQueryClient();
 
@@ -52,27 +54,23 @@ export const UserComponent = () => {
   console.log(hasRewards, rewards);
 
   return (
-    <div className="flex flex-row items-center justify-between rounded-lg gap-4 ">
+    <div className="flex flex-row items-center justify-between rounded-lg gap-2 uppercase">
       
-
         {Boolean(streak && streak > BigInt(0)) && (
-          <div><span className="font-bold">{"Your Streak: "}</span>{streak || 0}</div>
-        )}
-        {Boolean(mints && mints > BigInt(0)) && (
-          <div><span className="font-bold">{"Mints: "}</span>{mints || 0}</div>
+          <div>{streak}-day mint streak</div>
         )}
       
+      <div>🔥</div>
+
         {rewards && Boolean(rewards && rewards > BigInt(0)) && (
-          <div className="flex flex-row items-center gap-2">
-            <div><span className="font-bold">{"Rewards: "}</span></div>
-            <Button
-              className="bg-white text-black"
+            <Link
+              href=""
+              className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
               onClick={claim}
-              loading={isFetching}
+              
             >
-              Claim
-            </Button>
-          </div>
+              Claim {formatUnits(rewards, 18).slice(0, 7)}Ξ
+            </Link>
         )}
       </div>
 

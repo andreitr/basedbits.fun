@@ -64,13 +64,11 @@ export default async function Page() {
           <div className="flex flex-col gap-4">
             <MintComponent token={aeye || undefined} />
             <div className="flex flex-row gap-4 justify-between items-center">
-              <div className="text-2xl font-bold">Previous mints</div>
+              <div className="text-2xl font-bold">AEYE Genesis</div>
               <UserComponent />
             </div>
             <div className="mb-12">
-
-
-            <NFTList list={list} />
+              <NFTList list={list} />
             </div>
           </div>
         </div>
