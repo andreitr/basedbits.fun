@@ -7,7 +7,7 @@ import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { UserComponent } from "@/app/aeye/components/UserComponent";
 import NFTList from "@/app/aeye/components/NFTList";
-import { getZeitgeist } from "@/app/lib/api/aeye/getZeitgeist";
+import { getAeye } from "@/app/lib/api/aeye/getAeye";
 
 export async function generateMetadata() {
   const currentMint = await getCurrentMint();
@@ -51,7 +51,7 @@ export async function generateMetadata() {
 export default async function Page() {
   const currentMint = await getCurrentMint();
   const aeye = await getAeyeById(currentMint);
-  const list = await getZeitgeist();
+  const list = await getAeye(20);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -66,7 +66,7 @@ export default async function Page() {
               <UserComponent />
             </div>
             <div className="mb-12">
-              <NFTList list={list} />
+              <NFTList list={Array.isArray(list) ? list : list.data} />
             </div>
           </div>
         </div>
