@@ -1,20 +1,21 @@
 "use client";
 
+import { MintButton } from "@/app/aeye/components/MintButton";
 import { CountDown } from "@/app/lib/components/client/CountDown";
+import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { useAeyeById } from "@/app/lib/hooks/aeye/useAeyeById";
 import { useCommunityRewards } from "@/app/lib/hooks/aeye/useCommunityRewards";
 import { useCurrentMint } from "@/app/lib/hooks/aeye/useCurrentMint";
 import { useMintsPerToken } from "@/app/lib/hooks/aeye/useMintsPerToken";
+import { InfoOutline } from "@/app/lib/icons/remix";
 import { DBAeye } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import Image from "next/image";
-import { MintButton } from "@/app/aeye/components/MintButton";
-import { Tooltip } from "@/app/lib/components/client/Tooltip";
-import { InfoOutline } from "@/app/lib/icons/remix";
 
 export const MintComponent = ({ token }: { token?: DBAeye }) => {
-  
+
   const { data: currentMint } = useCurrentMint({ enabled: true });
+  
   const { data: loadedTokenMeta } = useAeyeById({
     id: currentMint,
     enabled: !token && !!currentMint,

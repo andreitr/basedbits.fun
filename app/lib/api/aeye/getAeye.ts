@@ -19,6 +19,7 @@ const DEFAULT_PAGINATION: PaginationOptions = {
 };
 
 export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): Promise<PaginatedResponse> {
+  
   const pageSize = options.limit || DEFAULT_PAGINATION.limit!;
   const page = options.page || DEFAULT_PAGINATION.page!;
   const start = (page - 1) * pageSize;
@@ -27,6 +28,7 @@ export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): 
   const { data, error, count } = await supabase
     .from("zeitgeist")
     .select("*", { count: "exact" })
+    .not('token', 'is', null)
     .order("created_at", { ascending: false })
     .range(start, end);
 

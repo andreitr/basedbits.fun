@@ -1,4 +1,5 @@
 import { DBAeye } from "@/app/lib/types/types";
+import { DateTime } from "luxon";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,14 +23,17 @@ export default function NFTList({ list }: Props) {
               width={175}
               height={175}
             />
-            <div className="mt-2">
+            <div className="mt-2 self-start text-gray-400">
               <Link
                 href={`https://testnets.opensea.io/assets/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}/${nft.id}`}
                 target="_blank"
-                className="text-gray-400 hover:underline"
+                className="hover:underline"
               >
                 Dispatch #{nft.id}
               </Link>
+              <div className="text-xs text-gray-600">
+                {DateTime.fromISO(nft.created_at).toFormat("MMMM d, yyyy")}
+              </div>
             </div>
           </div>
         );
