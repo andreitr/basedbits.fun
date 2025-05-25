@@ -9,7 +9,7 @@ interface Props {
   enabled: boolean;
 }
 
-export const useTotalMints = ({ address, enabled }: Props) => {
+export const useUserTotalMints = ({ address, enabled }: Props) => {
   return useQuery({
     queryKey: [AEYE_QKS.TOTAL_MINTS, address],
     queryFn: async () => {

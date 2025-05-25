@@ -9,7 +9,7 @@ interface Props {
   enabled: boolean;
 }
 
-export const useUnclaimedUserRewards = ({ address, enabled }: Props) => {
+export const useUserUnclaimedReward = ({ address, enabled }: Props) => {
   return useQuery({
     queryKey: [AEYE_QKS.USER_REWARDS, address],
     queryFn: async () => {

@@ -1,5 +1,5 @@
 import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 export const useClaimRewards = () => {
   const { writeContract, data: hash } = useWriteContract();

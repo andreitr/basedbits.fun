@@ -9,7 +9,7 @@ interface Props {
   enabled: boolean;
 }
 
-export const useMintingStreak = ({ address, enabled }: Props) => {
+export const useUserMintStreak = ({ address, enabled }: Props) => {
   return useQuery({
     queryKey: [AEYE_QKS.STREAK, address],
     queryFn: async () => {

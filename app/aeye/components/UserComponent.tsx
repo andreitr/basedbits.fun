@@ -1,13 +1,10 @@
 "use client";
 
-import { Button } from "@/app/lib/components/Button";
-import { UserAvatar } from "@/app/lib/components/client/UserAvatar";
-import { UserName } from "@/app/lib/components/client/UserName";
 import { AEYE_QKS } from "@/app/lib/constants";
 import { useClaimRewards } from "@/app/lib/hooks/aeye/useClaimRewards";
-import { useMintingStreak } from "@/app/lib/hooks/aeye/useMintingStreak";
-import { useTotalMints } from "@/app/lib/hooks/aeye/useTotalMints";
-import { useUnclaimedUserRewards } from "@/app/lib/hooks/aeye/useUnclaimedUserRewards";
+import { useUserMintStreak } from "@/app/lib/hooks/aeye/useUserMintStreak";
+import { useUserTotalMints } from "@/app/lib/hooks/aeye/useUserTotalMints";
+import { useUserUnclaimedReward } from "@/app/lib/hooks/aeye/useUserUnclaimedReward";
 import { useUser } from "@/app/lib/hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatUnits } from "ethers";
@@ -21,15 +18,15 @@ export const UserComponent = () => {
     address: address as `0x${string}`,
     enabled: isConnected,
   });
-  const { data: streak } = useMintingStreak({
+  const { data: streak } = useUserMintStreak({
     address: address as `0x${string}`,
     enabled: isConnected,
   });
-  const { data: mints } = useTotalMints({
+  const { data: mints } = useUserTotalMints({
     address: address as `0x${string}`,
     enabled: isConnected,
   });
-  const { data: rewards } = useUnclaimedUserRewards({
+  const { data: rewards } = useUserUnclaimedReward({
     address: address as `0x${string}`,
     enabled: isConnected,
   });
