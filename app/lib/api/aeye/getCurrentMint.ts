@@ -1,6 +1,6 @@
 import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
 import { readContract } from "@wagmi/core";
-import { AEYEAbi } from "../../abi/AEYE.abi";
+import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
 
 export async function getCurrentMint() {
   const data: any = await readContract(baseSepoliaConfig, {

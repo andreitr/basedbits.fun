@@ -9,7 +9,7 @@ import { useHydrateUser } from "@/app/lib/hooks/useHydrateUser";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
-import { CHECKIN_QKS } from "../constants";
+import { CHECKIN_QKS } from "@/app/lib/constants";
 
 interface Props {
   address: string;

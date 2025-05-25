@@ -8,7 +8,7 @@ import { UserList } from "@/app/lib/components/client/UserList";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { FeatureBasePaintCard } from "./lib/components/FeatureBasePaintCard";
+import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import Link from "next/link";
 
 export default async function Home() {

@@ -1,6 +1,6 @@
 import { DBMessage } from "@/app/lib/types/types";
 import { useCallback, useState } from "react";
-import { claimMessage } from "../../api/messages/claimMessage";
+import { claimMessage } from "@/app/lib/api/messages/claimMessage";
 
 export const useClaimMessage = () => {
   const [isLoading, setIsLoading] = useState(false);

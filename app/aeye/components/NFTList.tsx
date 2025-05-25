@@ -3,13 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
-    list: DBAeye[];
+  list: DBAeye[];
 }
 
 export default function NFTList({ list }: Props) {
-
-    return (
-        <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+  return (
+    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
       {list.map((nft, index) => {
         return (
           <div
@@ -36,5 +35,5 @@ export default function NFTList({ list }: Props) {
         );
       })}
     </div>
-    )
+  );
 }

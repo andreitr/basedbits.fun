@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentMint } from "../../api/aeye/getCurrentMint";
+import { getCurrentMint } from "@/app/lib/api/aeye/getCurrentMint";
 
 export const useCurrentMint = ({ enabled }: { enabled: boolean }) => {
   return useQuery({

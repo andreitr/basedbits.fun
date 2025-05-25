@@ -8,7 +8,7 @@ import { useMintsPerToken } from "@/app/lib/hooks/aeye/useMintsPerToken";
 import { DBAeye } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import Image from "next/image";
-import { MintButton } from "./MintButton";
+import { MintButton } from "@/app/aeye/components/MintButton";
 import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { InfoOutline } from "@/app/lib/icons/remix";
 
@@ -19,7 +19,6 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
     enabled: !token && !!currentMint,
   });
 
-  
   const { data: rewards } = useCommunityRewards({
     tokenId: token?.id || currentMint || 0,
     enabled: true,
@@ -49,11 +48,11 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
         <div className="flex flex-col-reverse sm:flex-col lg:gap-10 justify-between w-full">
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex">
-              <div className="text-2xl">
-                AEYE Genesis
-              </div>
+              <div className="text-2xl">AEYE Genesis</div>
               <div className="text-sm text-gray-400">
-                This AEYE analyzies daily news and mint a single NFT that documents the raise of AI. 50% of mint fees are sent to minters of previous days.
+                This AEYE analyzies daily news and mint a single NFT that
+                documents the raise of AI. 50% of mint fees are sent to minters
+                of previous days.
               </div>
             </div>
 
@@ -81,9 +80,7 @@ export const MintComponent = ({ token }: { token?: DBAeye }) => {
                 </div>
               </div>
               <div className="flex flex-col gap-1 hidden sm:flex">
-                <div className="uppercase text-xs text-gray-400">
-                  Mints
-                </div>
+                <div className="uppercase text-xs text-gray-400">Mints</div>
                 <div className="text-3xl text-[#62CDA7]">{mints}</div>
               </div>
             </div>

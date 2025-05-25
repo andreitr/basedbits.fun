@@ -1,6 +1,6 @@
 import { Contract, getAddress, JsonRpcProvider, Wallet } from "ethers";
-import { baseRpcUrl } from "../Web3Configs";
-import { BasePaintRewardsAbi } from "../abi/BasePaintRewards.abi";
+import { baseRpcUrl } from "@/app/lib/Web3Configs";
+import { BasePaintRewardsAbi } from "@/app/lib/abi/BasePaintRewards.abi";
 
 let provider: JsonRpcProvider | null = null;
 

@@ -10,7 +10,7 @@ import {
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 import { getAddress } from "ethers";
 import { Suspense } from "react";
-import { MessageClaim } from "./components/MessageClaim";
+import { MessageClaim } from "@/app/users/[address]/components/MessageClaim";
 
 interface Props {
   params: Promise<{

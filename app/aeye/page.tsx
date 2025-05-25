@@ -5,10 +5,9 @@ import { getAeyeById } from "@/app/lib/api/aeye/getAeyeById";
 import { getCurrentMint } from "@/app/lib/api/aeye/getCurrentMint";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { UserComponent } from "./components/UserComponent";
-import NFTList from "./components/NFTList";
-import { getZeitgeist } from "../lib/api/aeye/getZeitgeist";
-
+import { UserComponent } from "@/app/aeye/components/UserComponent";
+import NFTList from "@/app/aeye/components/NFTList";
+import { getZeitgeist } from "@/app/lib/api/aeye/getZeitgeist";
 
 export async function generateMetadata() {
   const currentMint = await getCurrentMint();
@@ -57,10 +56,9 @@ export default async function Page() {
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
-        
         <div className="container max-w-screen-lg">
           <Header />
-      
+
           <div className="flex flex-col gap-4">
             <MintComponent token={aeye || undefined} />
             <div className="flex flex-row gap-4 justify-between items-center">

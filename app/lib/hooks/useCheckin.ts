@@ -1,6 +1,6 @@
 import { getCheckin } from "@/app/lib/api/getCheckin";
 import { useQuery } from "@tanstack/react-query";
-import { CHECKIN_QKS } from "../constants";
+import { CHECKIN_QKS } from "@/app/lib/constants";
 
 interface Props {
   address: string | undefined;

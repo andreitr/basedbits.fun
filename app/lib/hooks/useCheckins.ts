@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCheckins } from "../api/getCheckins";
-import { CHECKIN_QKS } from "../constants";
+import { getCheckins } from "@/app/lib/api/getCheckins";
+import { CHECKIN_QKS } from "@/app/lib/constants";
 
 interface Props {
   seconds?: number;

@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 
 export const UserComponent = () => {
-
   const { address, isConnected } = useAccount();
   const { data: user } = useUser({
     address: address as `0x${string}`,
@@ -55,24 +54,21 @@ export const UserComponent = () => {
 
   return (
     <div className="flex flex-row items-center justify-between rounded-lg gap-2 uppercase">
-      
-        {Boolean(streak && streak > BigInt(0)) && (
-          <div>{streak}-day mint streak</div>
-        )}
-      
+      {Boolean(streak && streak > BigInt(0)) && (
+        <div>{streak}-day mint streak</div>
+      )}
+
       <div>🔥</div>
 
-        {rewards && Boolean(rewards && rewards > BigInt(0)) && (
-            <Link
-              href=""
-              className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
-              onClick={claim}
-              
-            >
-              Claim {formatUnits(rewards, 18).slice(0, 7)}Ξ
-            </Link>
-        )}
-      </div>
-
+      {rewards && Boolean(rewards && rewards > BigInt(0)) && (
+        <Link
+          href=""
+          className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
+          onClick={claim}
+        >
+          Claim {formatUnits(rewards, 18).slice(0, 7)}Ξ
+        </Link>
+      )}
+    </div>
   );
 };

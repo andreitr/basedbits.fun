@@ -4,9 +4,9 @@ import { useCheckins } from "@/app/lib/hooks/useCheckins";
 import { formatTimeAgo } from "@/app/lib/utils/timeUtils";
 import { getAddress } from "ethers";
 import Link from "next/link";
-import { Tooltip } from "./Tooltip";
-import { UserAvatar } from "./UserAvatar";
-import { UserName } from "./UserName";
+import { Tooltip } from "@/app/lib/components/client/Tooltip";
+import { UserAvatar } from "@/app/lib/components/client/UserAvatar";
+import { UserName } from "@/app/lib/components/client/UserName";
 
 export const UserList = () => {
   const { data: users, isError } = useCheckins({ enabled: true });

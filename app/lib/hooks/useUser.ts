@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserDB } from "../api/getUserDB";
-import { USER_QKS } from "../constants";
+import { getUserDB } from "@/app/lib/api/getUserDB";
+import { USER_QKS } from "@/app/lib/constants";
 
 interface Props {
   address: string | undefined;

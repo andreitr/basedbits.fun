@@ -1,6 +1,6 @@
 import { Contract, JsonRpcProvider, Wallet } from "ethers";
-import { baseTestnetRpcUrl } from "../Web3Configs";
-import { AEYEAbi } from "../abi/AEYE.abi";
+import { baseTestnetRpcUrl } from "@/app/lib/Web3Configs";
+import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
 
 let provider: JsonRpcProvider | null = null;
 

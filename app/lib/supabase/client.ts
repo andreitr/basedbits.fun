@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { DBMessage, DBUser } from "../types/types";
+import { DBMessage, DBUser } from "@/app/lib/types/types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;

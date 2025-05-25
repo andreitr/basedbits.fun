@@ -5,7 +5,7 @@ import { CheckIn } from "@/app/lib/types/types";
 import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useUser } from "../hooks/useUser";
+import { useUser } from "@/app/lib/hooks/useUser";
 
 interface Props {
   checkin: CheckIn;
