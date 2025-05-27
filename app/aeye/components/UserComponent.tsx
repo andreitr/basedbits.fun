@@ -3,7 +3,6 @@
 import { AEYE_QKS } from "@/app/lib/constants";
 import { useClaimRewards } from "@/app/lib/hooks/aeye/useClaimRewards";
 import { useUserMintStreak } from "@/app/lib/hooks/aeye/useUserMintStreak";
-import { useUserTotalMints } from "@/app/lib/hooks/aeye/useUserTotalMints";
 import { useUserUnclaimedReward } from "@/app/lib/hooks/aeye/useUserUnclaimedReward";
 import { useUser } from "@/app/lib/hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,10 +21,7 @@ export const UserComponent = () => {
     address: address as `0x${string}`,
     enabled: isConnected,
   });
-  const { data: mints } = useUserTotalMints({
-    address: address as `0x${string}`,
-    enabled: isConnected,
-  });
+  
   const { data: rewards } = useUserUnclaimedReward({
     address: address as `0x${string}`,
     enabled: isConnected,
@@ -47,8 +43,7 @@ export const UserComponent = () => {
   }
 
   const hasRewards = Boolean(rewards && rewards > BigInt(0));
-  console.log(hasRewards, rewards);
-
+  
   return (
     <div className="flex flex-row items-center justify-between rounded-lg gap-2 uppercase">
       {Boolean(streak && streak > BigInt(0)) && (
@@ -57,7 +52,7 @@ export const UserComponent = () => {
 
       <div>🔥</div>
 
-      {rewards && Boolean(rewards && rewards > BigInt(0)) && (
+      {hasRewards && rewards && (
         <Link
           href=""
           className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
