@@ -62,7 +62,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
                   <CountDown hour={20} />
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Community Rewards
                   <Tooltip content={<div>50% of mint fees sent to minters of previous days</div>}>
@@ -76,7 +76,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
                   {`${formatUnits(rewards || 0, 18).slice(0, 7)}Ξ`}
                 </div>
               </div>
-              <div className="flex flex-col gap-1 hidden sm:flex">
+              <div className="flex flex-col gap-2 hidden sm:flex">
                 <div className="uppercase text-xs text-gray-400">Mints</div>
                 <div className="text-3xl text-[#62CDA7]">{mints}</div>
               </div>
