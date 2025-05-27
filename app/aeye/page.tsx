@@ -62,8 +62,12 @@ export default async function Page() {
           <div className="flex flex-col gap-4">
             <MintComponent token={aeye!} />
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-              <div className="order-2 sm:order-1 font-bold uppercase">Minted Dispatches</div>
-              <div className="order-1 sm:order-2"><UserComponent /></div>
+              <div className="order-2 sm:order-1 font-bold uppercase">
+                Minted Dispatches
+              </div>
+              <div className="order-1 sm:order-2">
+                <UserComponent />
+              </div>
             </div>
             <div className="mb-12">
               <NFTList list={list.data} />

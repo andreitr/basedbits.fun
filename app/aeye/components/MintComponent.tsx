@@ -13,9 +13,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export const MintComponent = ({ token }: { token: DBAeye }) => {
-
   const [isMintEnded, setIsMintEnded] = useState(false);
-  const {data:currentMint} = useCurrentMint({ enabled: isMintEnded });
+  const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
   const { data: rewards } = useCommunityRewards({
     tokenId: token?.id,
@@ -42,7 +41,6 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
     return () => clearInterval(interval);
   }, []);
 
-
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
@@ -59,7 +57,9 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
             <div className="flex flex-col gap-2 hidden sm:flex">
               <div className="text-2xl">AEYE: GENESIS</div>
               <div className="text-sm text-gray-400">
-                The AEYE agent watches the world each day, reflecting on the most important story in the rise of artificial intelligence, and mints a daily NFT dispatch as a lasting cultural artifact.
+                The AEYE agent watches the world each day, reflecting on the
+                most important story in the rise of artificial intelligence, and
+                mints a daily NFT dispatch as a lasting cultural artifact.
               </div>
             </div>
 
@@ -75,7 +75,13 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Community Rewards
-                  <Tooltip content={<div>50% of mint fees sent to minters of previous days</div>}>
+                  <Tooltip
+                    content={
+                      <div>
+                        50% of mint fees sent to minters of previous days
+                      </div>
+                    }
+                  >
                     <InfoOutline
                       fill="#CCCCCC"
                       className="inline-block w-4 h-4 fill-gray-400 hover:fill-white cursor-pointer"

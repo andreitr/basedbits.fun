@@ -15,11 +15,12 @@ interface PaginationOptions {
 
 const DEFAULT_PAGINATION: PaginationOptions = {
   limit: 20,
-  page: 1
+  page: 1,
 };
 
-export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): Promise<PaginatedResponse> {
-  
+export async function getAeye(
+  options: PaginationOptions = DEFAULT_PAGINATION,
+): Promise<PaginatedResponse> {
   const pageSize = options.limit || DEFAULT_PAGINATION.limit!;
   const page = options.page || DEFAULT_PAGINATION.page!;
   const start = (page - 1) * pageSize;
@@ -28,17 +29,16 @@ export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): 
   const { data, error, count } = await supabase
     .from("zeitgeist")
     .select("*", { count: "exact" })
-    .not('token', 'is', null)
+    .not("token", "is", null)
     .order("created_at", { ascending: false })
     .range(start, end);
 
   if (error) {
-    
     return {
       data: [],
       total: 0,
       page,
-      limit: pageSize
+      limit: pageSize,
     };
   }
 
@@ -46,6 +46,6 @@ export async function getAeye(options: PaginationOptions = DEFAULT_PAGINATION): 
     data: data as DBAeye[],
     total: count || 0,
     page,
-    limit: pageSize
+    limit: pageSize,
   };
 }

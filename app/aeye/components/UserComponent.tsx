@@ -21,7 +21,7 @@ export const UserComponent = () => {
     address: address as `0x${string}`,
     enabled: isConnected,
   });
-  
+
   const { data: rewards } = useUserUnclaimedReward({
     address: address as `0x${string}`,
     enabled: isConnected,
@@ -43,7 +43,7 @@ export const UserComponent = () => {
   }
 
   const hasRewards = Boolean(rewards && rewards > BigInt(0));
-  
+
   return (
     <div className="flex flex-row items-center justify-between rounded-lg gap-2 uppercase">
       {Boolean(streak && streak > BigInt(0)) && (
