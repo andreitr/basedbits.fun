@@ -6,6 +6,6 @@ export const useCurrentMint = ({ enabled }: { enabled: boolean }) => {
     queryKey: ["currentMint"],
     queryFn: async () => getCurrentMint(),
     enabled,
-    staleTime: 300000, // 5 minutes
+    refetchInterval: 30000,
   });
 };
