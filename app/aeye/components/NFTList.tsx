@@ -25,17 +25,14 @@ export default function NFTList({ list }: Props) {
                 height={175}
               />
             </div>
-            <div className="mt-2 self-start text-gray-400">
+            <div className="mt-2 self-start text-gray-400 p-2">
               <Link
                 href={`https://testnets.opensea.io/assets/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}/${nft.id}`}
                 target="_blank"
                 className="hover:underline"
               >
-                Dispatch #{nft.id}
-              </Link>
-              <div className="text-xs text-gray-600">
                 {DateTime.fromISO(nft.created_at).toFormat("MMMM d, yyyy")}
-              </div>
+              </Link>
             </div>
           </div>
         );
