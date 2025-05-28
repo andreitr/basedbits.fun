@@ -21,6 +21,7 @@ export const useMintsPerToken = ({ tokenId, enabled }: Props) => {
       });
     },
     enabled: enabled,
-    refetchInterval: 60000, // 1 minute
+    refetchInterval: 30000, // 30 seconds
+    refetchOnWindowFocus: true,
   });
 };

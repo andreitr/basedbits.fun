@@ -21,5 +21,6 @@ export const useUserUnclaimedReward = ({ address, enabled }: Props) => {
       });
     },
     enabled: enabled,
+    refetchOnWindowFocus: true,
   });
 };

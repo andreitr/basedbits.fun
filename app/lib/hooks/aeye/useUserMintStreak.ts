@@ -21,5 +21,6 @@ export const useUserMintStreak = ({ address, enabled }: Props) => {
       });
     },
     enabled: enabled,
+    refetchOnWindowFocus: true,
   });
 };
