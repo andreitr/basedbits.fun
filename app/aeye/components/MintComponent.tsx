@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 
 export const MintComponent = ({ token }: { token: DBAeye }) => {
   const [isMintEnded, setIsMintEnded] = useState(false);
+  const [initialLoadTime] = useState(() => new Date().getUTCHours());
+
   const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
   const { data: rewards } = useCommunityRewards({
@@ -34,12 +36,15 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
 
   useEffect(() => {
     const checkMintEnd = () => {
-      setIsMintEnded(new Date().getUTCHours() >= 20);
+      const currentHour = new Date().getUTCHours();
+      if (initialLoadTime < 20 && currentHour >= 20) {
+        setIsMintEnded(true);
+      }
     };
     checkMintEnd();
-    const interval = setInterval(checkMintEnd, 30000);
+    const interval = setInterval(checkMintEnd, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [initialLoadTime]);
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">

@@ -43,7 +43,6 @@ export const UserComponent = () => {
   }
 
   const hasRewards = Boolean(rewards && rewards > BigInt(0));
-  console.log(streak);
 
   return (
     <div className="flex flex-row items-center justify-between rounded-lg gap-2 uppercase">
