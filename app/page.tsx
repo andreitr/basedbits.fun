@@ -31,8 +31,8 @@ export default async function Home() {
               link="/burn"
             />
             <FeatureCard
-              title="AEYE Agent"
-              description="Coming soon"
+              title="AEYE: Genesis"
+              description="Live June 1st"
               image={"/images/aeye.png"}
               style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
               link="https://farcaster.xyz/andreitr.eth/0x9adb8e92"
@@ -43,15 +43,6 @@ export default async function Home() {
               link="https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1"
               style="rounded-lg"
             />
-            <div className="md:hidden w-full">
-              <FeatureCard
-                title="Airdrop Agent"
-                description="Share → BBITS"
-                image={"/images/fcairdrop.svg"}
-                style={"rounded-lg"}
-                link="https://warpcast.com/andreitr.eth/0x2dc108f7"
-              />
-            </div>
             <FeatureCard
               title="BBITS Token"
               description="NFTs → BBITS"
