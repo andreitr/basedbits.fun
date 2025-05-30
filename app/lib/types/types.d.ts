@@ -95,6 +95,7 @@ export interface DBMessage {
 
 export interface DBAeye {
   id: number;
+  token: number;
   context: string;
   headline: string;
   lede: string;

@@ -35,7 +35,7 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
   });
 
   const { show } = useSocialDisplay({
-    message: `I just minted an AEYE ${token?.id} dispatch on Based Bits!`,
+    message: `I just minted "${token?.headline}" AEYE dispatch on @basedbits!`,
     title: "Please spread the word - the machine is watching!",
     url: "https://basedbits.fun/aeye",
   });

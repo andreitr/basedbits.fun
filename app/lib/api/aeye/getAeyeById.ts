@@ -6,7 +6,7 @@ export const fetchAeyeById = async (id: number): Promise<DBAeye | null> => {
   const { data, error } = await supabase
     .from("zeitgeist")
     .select("*")
-    .eq("id", id)
+    .eq("token", id)
     .single();
 
   if (error) {

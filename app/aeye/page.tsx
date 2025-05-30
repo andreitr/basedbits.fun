@@ -27,9 +27,9 @@ export async function generateMetadata() {
       ["fc:frame:button:1:action"]: "link",
       ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/aeye`,
 
-      // ["fc:frame:button:2"]: `Mint`,
-      // ["fc:frame:button:2:action"]: "tx",
-      // ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/burn`,
+      ["fc:frame:button:2"]: `Mint`,
+      ["fc:frame:button:2:action"]: "tx",
+      ["fc:frame:button:2:target"]: `${process.env.NEXT_PUBLIC_URL}/api/aeye`,
     },
     openGraph: {
       images: [

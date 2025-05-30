@@ -27,7 +27,7 @@ export const UserComponent = () => {
     enabled: isConnected,
   });
 
-  const { claim, hash, isFetching, isSuccess } = useClaimRewards();
+  const { claim, hash, isSuccess } = useClaimRewards();
   const queryClient = useQueryClient();
 
   useEffect(() => {

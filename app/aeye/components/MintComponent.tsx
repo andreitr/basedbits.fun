@@ -13,18 +13,19 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export const MintComponent = ({ token }: { token: DBAeye }) => {
+  const tokenId = token.token;
   const [isMintEnded, setIsMintEnded] = useState(false);
   const [initialLoadTime] = useState(() => new Date().getUTCHours());
 
   const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
   const { data: rewards } = useCommunityRewards({
-    tokenId: token?.id,
+    tokenId: tokenId,
     enabled: true,
   });
 
   const { data: mints } = useMintsPerToken({
-    tokenId: token.id,
+    tokenId: tokenId,
     enabled: true,
   });
 
@@ -32,7 +33,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
     if (currentMint && currentMint > token.id) {
       window.location.reload();
     }
-  }, [currentMint, token.id]);
+  }, [currentMint, tokenId]);
 
   useEffect(() => {
     const checkMintEnd = () => {
