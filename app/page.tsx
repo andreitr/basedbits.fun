@@ -32,10 +32,10 @@ export default async function Home() {
             />
             <FeatureCard
               title="AEYE: Genesis"
-              description="Live June 1st"
+              description="Live June 3rd"
               image={"/images/aeye.png"}
               style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="https://farcaster.xyz/andreitr.eth/0x9adb8e92"
+              link="https://farcaster.xyz/andreitr.eth/0xa4100fcc"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
