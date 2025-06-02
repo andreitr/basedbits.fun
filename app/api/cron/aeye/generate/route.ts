@@ -30,29 +30,29 @@ const pinata = new pinataSDK(
 
 export async function GET(req: NextRequest) {
   try {
-    // Get the latest zeitgeist entry that needs generation
+    // Get the latest aeye entry that needs generation
     const { data, error } = await supabase
-      .from("zeitgeist")
+      .from("aeye")
       .select("*")
-      .is("image", null)
+      .eq("state", "composed")
       .order("created_at", { ascending: false })
       .limit(1);
 
     if (error) {
-      console.error("Error fetching zeitgeist:", error);
-      return new Response("Error fetching latest zeitgeist entry", {
+      console.error("Error fetching aeye:", error);
+      return new Response("Error fetching latest aeye entry", {
         status: 500,
       });
     }
 
     if (!data || data.length === 0) {
-      return new Response("No zeitgeist entries found", { status: 404 });
+      return new Response("No aeye entries found with 'composed' state", { status: 404 });
     }
 
-    const latestZeitgeist = data[0] as DBAeye;
+    const latestAeye = data[0] as DBAeye;
 
     // Generate image template URL
-    const imageUrl = `${process.env.NEXT_PUBLIC_URL}/api/images/aeye/template?id=${latestZeitgeist.id}`;
+    const imageUrl = `${process.env.NEXT_PUBLIC_URL}/api/images/aeye/template?id=${latestAeye.id}`;
 
     const templateResponse = await fetch(imageUrl);
     if (!templateResponse.ok) {
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
     try {
       const pinataResult = await pinata.pinFileToIPFS(bufferStream, {
         pinataMetadata: {
-          name: `test-aeye-${latestZeitgeist.id}.png`,
+          name: `test-aeye-${latestAeye.id}.png`,
         },
       });
 
@@ -102,15 +102,18 @@ export async function GET(req: NextRequest) {
       // Construct the gateway URL for the pinned content
       const imagePath = `https://${process.env.PINATA_GATEWAY!}/ipfs/${ipfsHash}`;
 
-      // Update the zeitgeist row with the image path
+      // Update the aeye row with the image path
       const { error: updateError } = await supabase
-        .from("zeitgeist")
-        .update({ image: imagePath })
-        .eq("id", latestZeitgeist.id);
+        .from("aeye")
+        .update({ 
+          image: imagePath,
+          state: 'generated'
+        })
+        .eq("id", latestAeye.id);
 
       if (updateError) {
-        console.error("Error updating zeitgeist row:", updateError);
-        return new Response("Error updating zeitgeist row", { status: 500 });
+        console.error("Error updating aeye row:", updateError);
+        return new Response("Error updating aeye row", { status: 500 });
       }
 
       return new Response(imagePath, { status: 200 });

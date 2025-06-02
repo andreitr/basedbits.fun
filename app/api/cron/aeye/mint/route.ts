@@ -13,34 +13,34 @@ export async function GET(req: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    // Get the latest zeitgeist entry
+    // Get the latest aeye entry
     const { data, error } = await supabase
-      .from("zeitgeist")
+      .from("aeye")
       .select("*")
-      .is("token", null)
-      .not("image", "is", null)
+      .eq("state", "generated")
       .not("headline", "is", null)
+      .not("image", "is", null)
       .not("lede", "is", null)
       .order("created_at", { ascending: false })
       .limit(1);
 
     if (error) {
-      console.error("Error fetching zeitgeist:", error);
-      return new Response("Error fetching latest zeitgeist entry", {
+      console.error("Error fetching aeye:", error);
+      return new Response("Error fetching latest aeye entry", {
         status: 500,
       });
     }
 
     if (!data || data.length === 0) {
-      return new Response("No zeitgeist entries found", { status: 404 });
+      return new Response("No aeye entries found with 'generated' state", { status: 404 });
     }
 
-    const latestZeitgeist = data[0] as DBAeye;
-    const { headline, lede, emotion, signal, image } = latestZeitgeist;
+    const latestAeye = data[0] as DBAeye;
+    const { headline, lede, emotion, signal, image } = latestAeye;
 
     if (!headline || !lede || !image) {
       return new Response(
-        "Invalid zeitgeist data: missing headline, lede, emotion, signal, or image",
+        "Invalid aeye data: missing headline, lede, emotion, signal, or image",
         { status: 400 },
       );
     }
@@ -88,21 +88,24 @@ export async function GET(req: NextRequest) {
 
     try {
       await supabase
-        .from("zeitgeist")
-        .update({ token: dispatch })
-        .eq("id", latestZeitgeist.id);
+        .from("aeye")
+        .update({ 
+          token: dispatch,
+          state: 'minted'
+        })
+        .eq("id", latestAeye.id);
     } catch (error) {
       console.error("Error updating db token:", error);
     }
 
     return new Response(
-      `Successfully minted Zeitgeist token for word: ${headline}`,
+      `Successfully minted Aeye token for word: ${headline}`,
       {
         status: 200,
       },
     );
   } catch (error) {
-    console.error("Error minting zeitgeist token:", error);
+    console.error("Error minting aeye token:", error);
     return new Response(`Error: Failed to mint token: ${error}`, {
       status: 500,
     });

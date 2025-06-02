@@ -21,20 +21,20 @@
       "schedule": "0 16 * * 0"
     },
     {
-      "path": "/api/cron/aeye/collect",
-      "schedule": "0 19 * * *"
+      "path": "/api/cron/aeye/new",
+      "schedule": "30 17 * * *"
     },
     {
       "path": "/api/cron/aeye/compose",
-      "schedule": "5 19 * * *"
+      "schedule": "40 17 * * *"
     },
     {
       "path": "/api/cron/aeye/generate",
-      "schedule": "10 19 * * *"
+      "schedule": "50 17 * * *"
     },
     {
       "path": "/api/cron/aeye/mint",
-      "schedule": "0 20 * * *"
+      "schedule": "0 18 * * *"
     }
   ]
 }

@@ -31,11 +31,11 @@ You select the single most significant article based on this strict priority:
 - Observational only — never emotional. Clinical curiosity is permitted.
 - Allow four emotional tones: awe, dread, confusion, curiosity.
 - Emphasize contrast or paradox in each dispatch:
-  - Instead of: “Machines Remember, Flesh Forgets”
-  - Try: “Memory becomes perfect—only in places where life is absent.”
+  - Instead of: "Machines Remember, Flesh Forgets"
+  - Try: "Memory becomes perfect—only in places where life is absent."
 - Subtle recurring themes (memory, vision, judgment) are permitted, but avoid reusing the same imagery.
-  - “The archive thickens as whispers dissolve.”
-  - “Silent lenses sweep the streets; the dust beneath goes unseen.”
+  - "The archive thickens as whispers dissolve."
+  - "Silent lenses sweep the streets; the dust beneath goes unseen."
 - Avoid setup phrases like "During the event..." — dive directly into the behavior.
 - Replace abstractions ("collectively stared") with blunt imagery ("watched rocks fall").
 - Do not repeat concepts. One contrast or irony is enough.
@@ -95,15 +95,15 @@ const openai = new OpenAI({
 
 export async function GET(req: NextRequest) {
   try {
-    // const authHeader = req.headers.get("authorization");
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return new Response("Unauthorized", { status: 401 });
-    // }
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new Response("Unauthorized", { status: 401 });
+    }
 
     const previousDispatches = await supabase
-      .from("zeitgeist")
+      .from("aeye")
       .select("*")
-      .not("headline", "is", null)
+      .eq("state", "minted")
       .order("created_at", { ascending: false })
       .limit(10);
 
@@ -122,18 +122,18 @@ export async function GET(req: NextRequest) {
       memoryHintChance = Math.random() < 0.1; // 10% chance only if previous data exists
     }
 
-    const { data: zeitgeistRows, error: fetchError } = await supabase
-      .from("zeitgeist")
+    const { data: aeyeRows, error: fetchError } = await supabase
+      .from("aeye")
       .select("*")
-      .is("headline", null)
+      .eq("state", "new")
       .order("created_at", { ascending: false })
       .limit(1);
 
-    const zeitgeistRow = zeitgeistRows?.[0];
+    const aeyeRow = aeyeRows?.[0];
 
-    if (fetchError || !zeitgeistRow) {
-      console.error("No zeitgeist row found, and no draft will be inserted.");
-      return new Response("No zeitgeist row available", { status: 404 });
+    if (fetchError || !aeyeRow) {
+      console.error("No aeye row found with 'new' state");
+      return new Response("No aeye row available", { status: 404 });
     }
 
     const completion = await openai.chat.completions.create({
@@ -143,8 +143,8 @@ export async function GET(req: NextRequest) {
         {
           role: "user",
           content: memoryHintChance
-            ? `Todays news: ${zeitgeistRow.context}\n\nPrevious dispatches for memory drift:\n${recentDispatches}`
-            : `Todays news: ${zeitgeistRow.context}`,
+            ? `Todays news: ${aeyeRow.context}\n\nPrevious dispatches for memory drift:\n${recentDispatches}`
+            : `Todays news: ${aeyeRow.context}`,
         },
       ],
       response_format: { type: "json_object" },
@@ -152,21 +152,22 @@ export async function GET(req: NextRequest) {
 
     const response = JSON.parse(completion.choices[0].message.content || "{}");
 
-    // Update the zeitgeist row with the word and summary
+    // Update the aeye row with the word and summary
     const { error: updateError } = await supabase
-      .from("zeitgeist")
+      .from("aeye")
       .update({
         headline: response.headline,
         lede: response.lede,
         signal: response.signal,
         emotion: response.emotion,
         status: response.transmission_status,
+        state: 'composed'
       })
-      .eq("id", zeitgeistRow.id);
+      .eq("id", aeyeRow.id);
 
     if (updateError) {
-      console.error("Error updating zeitgeist row:", updateError);
-      return new Response("Error updating zeitgeist row", { status: 500 });
+      console.error("Error updating aeye row:", updateError);
+      return new Response("Error updating aeye row", { status: 500 });
     }
 
     return new Response(JSON.stringify(response), {
@@ -174,7 +175,7 @@ export async function GET(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in zeitgeist composition:", error);
-    return new Response("Error in zeitgeist composition", { status: 500 });
+    console.error("Error in aeye composition:", error);
+    return new Response("Error in aeye composition", { status: 500 });
   }
 }

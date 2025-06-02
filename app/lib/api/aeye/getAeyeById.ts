@@ -4,7 +4,7 @@ import { cache } from "react";
 
 export const fetchAeyeById = async (id: number): Promise<DBAeye | null> => {
   const { data, error } = await supabase
-    .from("zeitgeist")
+    .from("aeye")
     .select("*")
     .eq("token", id)
     .single();

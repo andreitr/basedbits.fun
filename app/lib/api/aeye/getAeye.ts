@@ -27,7 +27,7 @@ export async function getAeye(
   const end = start + pageSize - 1;
 
   const { data, error, count } = await supabase
-    .from("zeitgeist")
+    .from("aeye")
     .select("*", { count: "exact" })
     .not("token", "is", null)
     .order("created_at", { ascending: false })

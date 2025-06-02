@@ -37,14 +37,15 @@ export async function GET(req: NextRequest) {
     const articles = await fetchAllArticles(apiKey, fromDate);
     const formattedText = formatArticles(articles);
 
-    await supabase.from("zeitgeist").insert({ context: formattedText });
+    await supabase.from("aeye").insert({ 
+      context: formattedText
+    });
 
     return new Response(`Saved ${articles.length} news headlines`, {
       status: 200,
     });
-  } catch (error) {
-    console.error("Error fetching news:", error);
-    return new Response("Error: Failed to fetch news", { status: 500 });
+  } catch (error: any) {
+    return new Response(`Error: ${error.message}`, { status: 500 });
   }
 }
 
@@ -106,4 +107,4 @@ function formatArticles(articles: NewsArticle[]): string {
   }
 
   return formattedText;
-}
+} 

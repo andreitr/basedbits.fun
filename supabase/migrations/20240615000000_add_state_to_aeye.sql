@@ -1,0 +1,2 @@
+ALTER TABLE aeye
+ADD COLUMN state TEXT NOT NULL DEFAULT 'new'; 

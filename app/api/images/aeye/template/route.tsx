@@ -14,19 +14,19 @@ export async function GET(request: Request) {
       throw new Error("ID parameter is required");
     }
 
-    // Get the zeitgeist entry by ID
+    // Get the aeye entry by ID
     const { data, error } = await supabase
-      .from("zeitgeist")
+      .from("aeye")
       .select("*")
       .eq("id", id)
       .single();
 
     if (error || !data) {
-      throw new Error("Failed to fetch zeitgeist entry");
+      throw new Error("Failed to fetch aeye entry");
     }
 
-    const zeitgeist = data as DBAeye;
-    const { headline, lede, emotion, created_at } = zeitgeist;
+    const aeye = data as DBAeye;
+    const { headline, lede, emotion, created_at } = aeye;
 
     const date = new Date(created_at).toLocaleDateString("en-US", {
       year: "numeric",
