@@ -75,7 +75,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
               <div className="flex flex-col gap-1">
                 <div className="uppercase text-xs text-gray-400">Mint Ends</div>
                 <div className="text-3xl text-[#52cba1]">
-                  {isMintEnded ? "Mint Ended" : <CountDown hour={20} />}
+                  {isMintEnded ? "Mint Ended" : <CountDown hour={18} />}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
