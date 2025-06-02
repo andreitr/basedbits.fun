@@ -32,10 +32,18 @@ export async function GET(req: NextRequest) {
     }
 
     if (!data || data.length === 0) {
-      return new Response("No aeye entries found with 'generated' state", { status: 404 });
+      return new Response("No aeye entries found with 'generated' state", {
+        status: 404,
+      });
     }
 
     const latestAeye = data[0] as DBAeye;
+
+    // Check if this row has already been minted
+    if (latestAeye.state === "minted") {
+      return new Response("Row already minted", { status: 200 });
+    }
+
     const { headline, lede, emotion, signal, image } = latestAeye;
 
     if (!headline || !lede || !image) {
@@ -49,9 +57,15 @@ export async function GET(req: NextRequest) {
     const currentMint = await contract.currentMint();
     const dispatch = Number(currentMint.toString()) + 1;
 
+    const date = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
     // Create metadata
     const metadata = JSON.stringify({
-      name: `AEYE #${dispatch}`,
+      name: date,
       description: lede,
       image: image,
       attributes: [
@@ -72,12 +86,8 @@ export async function GET(req: NextRequest) {
           value: signal,
         },
         {
-          trait_type: "date",
-          value: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
+          trait_type: "dispatch",
+          value: dispatch,
         },
       ],
     });
@@ -89,9 +99,9 @@ export async function GET(req: NextRequest) {
     try {
       await supabase
         .from("aeye")
-        .update({ 
+        .update({
           token: dispatch,
-          state: 'minted'
+          state: "minted",
         })
         .eq("id", latestAeye.id);
     } catch (error) {

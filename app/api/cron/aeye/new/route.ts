@@ -24,6 +24,19 @@ export async function GET(req: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
+    // Check if a row with "new" status already exists
+    const { data: existingRow } = await supabase
+      .from("aeye")
+      .select("id")
+      .eq("status", "new")
+      .single();
+
+    if (existingRow) {
+      return new Response("A row with 'new' status already exists", {
+        status: 200,
+      });
+    }
+
     const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) {
       return new Response("Error: NEWS_API_KEY not set", { status: 500 });
@@ -37,8 +50,8 @@ export async function GET(req: NextRequest) {
     const articles = await fetchAllArticles(apiKey, fromDate);
     const formattedText = formatArticles(articles);
 
-    await supabase.from("aeye").insert({ 
-      context: formattedText
+    await supabase.from("aeye").insert({
+      context: formattedText,
     });
 
     return new Response(`Saved ${articles.length} news headlines`, {
@@ -107,4 +120,4 @@ function formatArticles(articles: NewsArticle[]): string {
   }
 
   return formattedText;
-} 
+}

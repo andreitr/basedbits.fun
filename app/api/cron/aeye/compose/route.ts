@@ -1,4 +1,5 @@
 import { supabase } from "@/app/lib/supabase/client";
+import { DBAeye } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 
@@ -129,11 +130,15 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(1);
 
-    const aeyeRow = aeyeRows?.[0];
+    const aeyeRow = aeyeRows?.[0] as DBAeye;
 
     if (fetchError || !aeyeRow) {
-      console.error("No aeye row found with 'new' state");
       return new Response("No aeye row available", { status: 404 });
+    }
+
+    // Check if this row has already been composed
+    if (aeyeRow.state === "composed") {
+      return new Response("Row already composed", { status: 200 });
     }
 
     const completion = await openai.chat.completions.create({
@@ -161,7 +166,7 @@ export async function GET(req: NextRequest) {
         signal: response.signal,
         emotion: response.emotion,
         status: response.transmission_status,
-        state: 'composed'
+        state: "composed",
       })
       .eq("id", aeyeRow.id);
 

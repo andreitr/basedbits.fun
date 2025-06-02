@@ -102,6 +102,7 @@ export interface DBAeye {
   signal: string;
   emotion: string;
   image: string | null;
+  state: "new" | "composed" | "generated" | "minted";
   created_at: string;
   updated_at: string;
 }

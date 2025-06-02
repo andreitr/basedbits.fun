@@ -25,16 +25,32 @@
       "schedule": "30 17 * * *"
     },
     {
+      "path": "/api/cron/aeye/new",
+      "schedule": "32 17 * * *"
+    },
+    {
       "path": "/api/cron/aeye/compose",
       "schedule": "40 17 * * *"
+    },
+    {
+      "path": "/api/cron/aeye/compose",
+      "schedule": "42 17 * * *"
     },
     {
       "path": "/api/cron/aeye/generate",
       "schedule": "50 17 * * *"
     },
     {
+      "path": "/api/cron/aeye/generate",
+      "schedule": "55 17 * * *"
+    },
+    {
       "path": "/api/cron/aeye/mint",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron/aeye/mint",
+      "schedule": "2 18 * * *"
     }
   ]
 }

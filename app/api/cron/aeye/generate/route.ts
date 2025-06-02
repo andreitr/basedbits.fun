@@ -30,6 +30,11 @@ const pinata = new pinataSDK(
 
 export async function GET(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
     // Get the latest aeye entry that needs generation
     const { data, error } = await supabase
       .from("aeye")
@@ -46,10 +51,17 @@ export async function GET(req: NextRequest) {
     }
 
     if (!data || data.length === 0) {
-      return new Response("No aeye entries found with 'composed' state", { status: 404 });
+      return new Response("No aeye entries found with 'composed' state", {
+        status: 404,
+      });
     }
 
     const latestAeye = data[0] as DBAeye;
+
+    // Check if this row has already been generated
+    if (latestAeye.state === "generated") {
+      return new Response("Row already generated", { status: 200 });
+    }
 
     // Generate image template URL
     const imageUrl = `${process.env.NEXT_PUBLIC_URL}/api/images/aeye/template?id=${latestAeye.id}`;
@@ -105,9 +117,9 @@ export async function GET(req: NextRequest) {
       // Update the aeye row with the image path
       const { error: updateError } = await supabase
         .from("aeye")
-        .update({ 
+        .update({
           image: imagePath,
-          state: 'generated'
+          state: "generated",
         })
         .eq("id", latestAeye.id);
 
