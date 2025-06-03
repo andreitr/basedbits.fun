@@ -13,7 +13,7 @@ const getProvider = (): JsonRpcProvider => {
 
 export const aeyeSepoliaContract = () => {
   const provider = getProvider();
-  const signer = new Wallet(process.env.BACERACE_BOT_PK as string, provider);
+  const signer = new Wallet(process.env.EXECUTER_BOT_PK as string, provider);
   return new Contract(
     process.env.NEXT_PUBLIC_AEYE_ADDRESS as string,
     AEYEAbi,
