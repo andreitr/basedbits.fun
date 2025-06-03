@@ -27,7 +27,7 @@ export default function NFTList({ list }: Props) {
             </div>
             <div className="mt-2 self-start text-gray-400 p-2">
               <Link
-                href={`https://testnets.opensea.io/assets/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}/${nft.id}`}
+                href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}/${nft.id}`}
                 target="_blank"
                 className="hover:underline"
               >

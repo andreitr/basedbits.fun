@@ -18,7 +18,7 @@ import {
 } from "wagmi";
 import { base } from "wagmi/chains";
 
-const MINT_PRICE = BigInt(0.0008 * 10 ** 18);
+const MINT_PRICE = BigInt(1200000000000000);
 
 export const MintButton = ({ token }: { token: DBAeye }) => {
   const { setOpen } = useModal();

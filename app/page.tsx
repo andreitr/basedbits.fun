@@ -1,17 +1,22 @@
 "use server";
 
-import { MintComponent } from "@/app/burn/components/MintComponent";
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { Header } from "@/app/lib/components/client/Header";
 import { UserList } from "@/app/lib/components/client/UserList";
 import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
+import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import Link from "next/link";
+import { MintComponent } from "./aeye/components/MintComponent";
+import { getCurrentMint } from "./lib/api/aeye/getCurrentMint";
+import { getAeyeById } from "./lib/api/aeye/getAeyeById";
 
 export default async function Home() {
+  const currentMint = await getCurrentMint();
+  const aeye = await getAeyeById(currentMint);
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
@@ -25,17 +30,17 @@ export default async function Home() {
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
+              title="AEYE: Genesis"
+              description="Minting now"
+              image={"/images/aeye.png"}
+              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
+              link="/aeye"
+            />
+            <FeatureCard
               title="Burned Bits"
               description="Minting now"
               image={"/images/burnedbit.svg"}
               link="/burn"
-            />
-            <FeatureCard
-              title="AEYE: Genesis"
-              description="Live June 3rd"
-              image={"/images/aeye.png"}
-              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="https://farcaster.xyz/andreitr.eth/0xa4100fcc"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
@@ -67,11 +72,13 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full pb-8 mt-10 md:mt-0">
-        <div className="container max-w-screen-lg mb-8">
-          <MintComponent />
+      {aeye && (
+        <div className="flex justify-center items-center w-full pb-8 mt-10 md:mt-0">
+          <div className="container max-w-screen-lg mb-8">
+            <MintComponent token={aeye} />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
