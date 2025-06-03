@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const { data: existingRow } = await supabase
       .from("aeye")
       .select("id")
-      .eq("status", "new")
+      .eq("state", "new")
       .single();
 
     if (existingRow) {
