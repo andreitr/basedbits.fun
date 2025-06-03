@@ -15,8 +15,6 @@ export async function POST(
   const btnIdx = message?.buttonIndex || 0;
 
   if (btnIdx === 2) {
-    // TODO: Fix chain id to mainnnet 8453
-
     return transaction({
       chainId: "eip155:8453",
       method: "eth_sendTransaction",

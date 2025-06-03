@@ -1,4 +1,4 @@
-import { aeyeSepoliaContract } from "@/app/lib/contracts/aeye";
+import { aeyeContract } from "@/app/lib/contracts/aeye";
 import { supabase } from "@/app/lib/supabase/client";
 import { DBAeye } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const contract = aeyeSepoliaContract();
+    const contract = aeyeContract();
     const currentMint = await contract.currentMint();
     const dispatch = Number(currentMint.toString()) + 1;
 

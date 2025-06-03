@@ -1,4 +1,4 @@
-import { baseSepoliaConfig } from "@/app/lib/Web3Configs";
+import { baseConfig } from "@/app/lib/Web3Configs";
 import { AEYEAbi } from "@/app/lib/abi/AEYE.abi";
 import { AEYE_QKS } from "@/app/lib/constants";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ export const useUserTotalMints = ({ address, enabled }: Props) => {
   return useQuery({
     queryKey: [AEYE_QKS.TOTAL_MINTS, address],
     queryFn: async () => {
-      return await readContract(baseSepoliaConfig, {
+      return await readContract(baseConfig, {
         abi: AEYEAbi,
         address: process.env.NEXT_PUBLIC_AEYE_ADDRESS as `0x${string}`,
         functionName: "totalBalanceOf",

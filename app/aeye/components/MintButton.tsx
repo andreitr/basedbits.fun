@@ -16,7 +16,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 
 const MINT_PRICE = BigInt(0.0008 * 10 ** 18);
 
@@ -31,7 +31,6 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
 
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
-    chainId: baseSepolia.id,
   });
 
   const { show } = useSocialDisplay({
@@ -88,15 +87,15 @@ export const MintButton = ({ token }: { token: DBAeye }) => {
     );
   }
 
-  if (chainId !== baseSepolia.id) {
+  if (chainId !== base.id) {
     return (
       <Button
         className={
           "bg-[#52cba1]/10 text-white/60 font-regular w-full sm:w-auto"
         }
-        onClick={() => switchChain({ chainId: baseSepolia.id })}
+        onClick={() => switchChain({ chainId: base.id })}
       >
-        Switch to Base Sepolia
+        Switch to Base
       </Button>
     );
   }
