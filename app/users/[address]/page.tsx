@@ -84,7 +84,7 @@ export default async function Page(props: Props) {
           <UserInfo user={user} checkin={lastCheckin} />
           <MessageClaim />
           <Suspense fallback={<NFTListSkeleton />}>
-            <NFTList list={userNFTs.ownedNfts} />
+            <NFTList list={userNFTs?.ownedNfts || []} />
           </Suspense>
         </div>
       </div>
