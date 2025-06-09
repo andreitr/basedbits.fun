@@ -134,6 +134,15 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS}`}
+              target="_blank"
+            >
+              Check-in Contract
+            </Link>
+          </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
               href="https://basescan.org/address/0x553c1f87c2ef99cca23b8a7ffaa629c8c2d27666"
               target="_blank"
             >
@@ -152,37 +161,10 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href="https://basescan.org/address/0x8b9ef77160bb4da3ce32805d6833b395d63a4a94"
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}`}
               target="_blank"
             >
-              Raffle Contract
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_CHECKINS_ADDRESS}`}
-              target="_blank"
-            >
-              Check-in Contract
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_BB_SOCIAL_REWARDS_ADDRESS}`}
-              target="_blank"
-            >
-              Social Rewards Contract
-            </Link>
-          </div>
-          <div>
-            <Link
-              className="hover:underline text-sm"
-              href="https://basescan.org/address/0xe0e68930a8cc0c066bb96183870c9949f5396ea8"
-              target="_blank"
-            >
-              Social Contract
+              AEYE: Genesis Contract
             </Link>
           </div>
         </div>
