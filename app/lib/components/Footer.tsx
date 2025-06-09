@@ -26,8 +26,15 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS}`}
-              target="_blank"
+              href={'/aeye'}
+            >
+              AEYE: Genesis
+            </Link>
+          </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href={'/burn'}
             >
               Burned Bits
             </Link>
@@ -35,8 +42,7 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS}`}
-              target="_blank"
+              href={'/punks'}
             >
               Punkalot
             </Link>

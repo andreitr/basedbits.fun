@@ -80,11 +80,11 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Community Rewards
+                  Community Reward
                   <Tooltip
                     content={
                       <div>
-                        50% of mint fees sent to minters of previous days
+                        50% of mint fee sent to minters
                       </div>
                     }
                   >
