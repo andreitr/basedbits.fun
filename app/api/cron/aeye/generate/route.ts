@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
     try {
       const pinataResult = await pinata.pinFileToIPFS(bufferStream, {
         pinataMetadata: {
-          name: `test-aeye-${latestAeye.id}.png`,
+          name: `aeye-${latestAeye.id}.png`,
         },
       });
 

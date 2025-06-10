@@ -1,5 +1,8 @@
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
+
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || "";
 const NEYNAR_API_URL = "https://api.neynar.com/v2/farcaster";
+const neynarClient = new NeynarAPIClient(new Configuration({ apiKey: NEYNAR_API_KEY }));
 
 type FarcasterUser = {
   username: string;
@@ -91,8 +94,21 @@ export async function getFarcasterUserByUsername(
 export async function postToFarcaster(
   message: string,
   url?: string,
+  imageUrl?: string,
 ): Promise<boolean> {
   try {
+    let embeds: { url: string }[] = [];
+
+    // Handle URL embed if provided
+    if (url) {
+      embeds.push({ url });
+    }
+
+    // Handle image embed if provided
+    if (imageUrl) {
+      embeds.push({ url: imageUrl });
+    }
+
     const response = await fetch(`${NEYNAR_API_URL}/cast`, {
       method: "POST",
       headers: {
@@ -101,18 +117,21 @@ export async function postToFarcaster(
         "x-api-key": NEYNAR_API_KEY,
       },
       body: JSON.stringify({
-        channel_id: "basedbits",
         signer_uuid: process.env.FARCASTER_BASEDBITS_UUID,
         text: message,
-        ...(url ? { embeds: [{ url: url }] } : {}),
+        channel_id: "basedbits",
+        embeds: embeds.length > 0 ? embeds : undefined,
+        idem: crypto.randomUUID(),
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to post to Farcaster: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to post to Farcaster: ${response.statusText}\nResponse: ${errorText}`);
     }
 
-    return true;
+    const data = await response.json();
+    return data.success === true;
   } catch (error) {
     console.error("Error posting to Farcaster:", error);
     return false;

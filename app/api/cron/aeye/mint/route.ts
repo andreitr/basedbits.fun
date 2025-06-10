@@ -1,6 +1,7 @@
 import { aeyeContract } from "@/app/lib/contracts/aeye";
 import { supabase } from "@/app/lib/supabase/client";
 import { DBAeye } from "@/app/lib/types/types";
+import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -108,8 +109,11 @@ export async function GET(req: NextRequest) {
       console.error("Error updating db token:", error);
     }
 
+    const message = `AEYE displatch from ${date} is now minting on https://www.basedbits.fun/aeye`;
+    await postToFarcaster(message, undefined, image);
+
     return new Response(
-      `Successfully minted Aeye token for word: ${headline}`,
+      'Success',
       {
         status: 200,
       },
