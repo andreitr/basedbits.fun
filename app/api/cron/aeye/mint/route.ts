@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
       console.error("Error updating db token:", error);
     }
 
-    const message = `AEYE displatch from ${date} is now minting on https://www.basedbits.fun/aeye`;
+    const message = `${date} AEYE displatch is now minting https://www.basedbits.fun/aeye`;
     await postToFarcaster(message, undefined, image);
 
     return new Response(

@@ -1,4 +1,3 @@
-import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { NextResponse } from "next/server";
 
 interface AEyeWebhookPayload {
@@ -54,32 +53,7 @@ interface AEyeWebhookPayload {
 const COMMUNITY_REWARDS_CLAIMED_EVENT = "CommunityRewardsClaimed(uint256,address,uint256)";
 
 
-export async function GET(request: Request) {
-  
-  try {
-    const message = "June 9th AEYE displatch is Minting on https://www.basedbits.fun/aeye";
-    const imageUrl = "https://basedbits.mypinata.cloud/ipfs/QmSdtNvHgDFeERkXuE6f9xp76TAEhZsEvBoFftW2vGEW4H";
-    
-    const success = await postToFarcaster(message, undefined, imageUrl);
-    
-    if (!success) {
-      return NextResponse.json(
-        { error: "Failed to post to Farcaster" },
-        { status: 500 }
-      );
-    }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error posting to Farcaster:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
-
-  return NextResponse.json({ message: "Hello, world!" });
-}
 export async function POST(request: Request) {
 
   try {
