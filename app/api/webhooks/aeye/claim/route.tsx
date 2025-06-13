@@ -56,6 +56,9 @@ const COMMUNITY_REWARDS_CLAIMED_EVENT = "CommunityRewardsClaimed(uint256,address
 
 export async function POST(request: Request) {
 
+
+console.log("AEye claim webhook received");
+
   try {
     const rawBody = await request.text();
     const payload = JSON.parse(rawBody) as AEyeWebhookPayload;
