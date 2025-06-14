@@ -50,7 +50,7 @@ interface AEyeWebhookPayload {
 }
 
 // Event signature for CommunityRewardsClaimed
-const COMMUNITY_REWARDS_CLAIMED_EVENT = "CommunityRewardsClaimed(uint256,address,uint256)";
+const COMMUNITY_REWARDS_CLAIMED_EVENT = "0x2f940c70b1a564c5b3a42a4b2b1132d6f5c3e110e60b959d4f5b3d7bcee3c0f"; // keccak256("CommunityRewardsClaimed(uint256,address,uint256)")
 
 export async function POST(request: Request) {
 
@@ -96,6 +96,12 @@ console.log("AEye claim webhook received");
 
     // Process each log
     for (const log of block.logs) {
+      console.log("Processing log:", {
+        topics: log.topics,
+        expectedEvent: COMMUNITY_REWARDS_CLAIMED_EVENT,
+        isMatch: log.topics[0] === COMMUNITY_REWARDS_CLAIMED_EVENT
+      });
+      
       // Check if this is a CommunityRewardsClaimed event
       if (log.topics[0] === COMMUNITY_REWARDS_CLAIMED_EVENT) {
         // Parse the event data
