@@ -52,8 +52,6 @@ interface AEyeWebhookPayload {
 // Event signature for CommunityRewardsClaimed
 const COMMUNITY_REWARDS_CLAIMED_EVENT = "CommunityRewardsClaimed(uint256,address,uint256)";
 
-
-
 export async function POST(request: Request) {
 
 
@@ -71,15 +69,33 @@ console.log("AEye claim webhook received");
       eventData: payload.event.data,
     });
 
-    if (!payload.event?.data?.block?.logs) {
+    // Validate block data
+    if (!payload.event?.data?.block) {
+      console.error("Missing block data in webhook payload");
       return NextResponse.json(
-        { error: "Invalid webhook payload structure" },
+        { error: "Missing block data in webhook payload" },
+        { status: 400 },
+      );
+    }
+
+    const { block } = payload.event.data;
+    console.log("Block details:", {
+      hash: block.hash,
+      number: block.number,
+      timestamp: new Date(block.timestamp * 1000).toISOString(),
+      logsCount: block.logs?.length || 0,
+    });
+
+    if (!block.logs || !Array.isArray(block.logs)) {
+      console.error("Invalid logs array in block data");
+      return NextResponse.json(
+        { error: "Invalid logs array in block data" },
         { status: 400 },
       );
     }
 
     // Process each log
-    for (const log of payload.event.data.block.logs) {
+    for (const log of block.logs) {
       // Check if this is a CommunityRewardsClaimed event
       if (log.topics[0] === COMMUNITY_REWARDS_CLAIMED_EVENT) {
         // Parse the event data
@@ -92,9 +108,20 @@ console.log("AEye claim webhook received");
           tokenId: tokenId.toString(),
           user,
           amount: amount.toString(),
+          amountInEth: (Number(amount) / 1e18).toFixed(4) + " ETH",
           transactionHash: log.transaction.hash,
-          blockNumber: payload.event.data.block.number,
-          timestamp: new Date(payload.event.data.block.timestamp * 1000).toISOString(),
+          blockNumber: block.number,
+          timestamp: new Date(block.timestamp * 1000).toISOString(),
+          claimer: {
+            address: user,
+            transaction: {
+              hash: log.transaction.hash,
+              from: log.transaction.from.address,
+              to: log.transaction.to.address,
+              gasUsed: log.transaction.gasUsed,
+              effectiveGasPrice: log.transaction.effectiveGasPrice,
+            }
+          }
         });
       }
     }
