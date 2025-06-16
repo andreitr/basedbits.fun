@@ -50,7 +50,7 @@ interface AEyeWebhookPayload {
 }
 
 // Event signature for CommunityRewardsClaimed
-const COMMUNITY_REWARDS_CLAIMED_EVENT = "0x2f940c70b1a564c5b3a42a4b2b1132d6f5c3e110e60b959d4f5b3d7bcee3c0f"; // keccak256("CommunityRewardsClaimed(uint256,address,uint256)")
+const COMMUNITY_REWARDS_CLAIMED_EVENT = "0xc89f24ff8af936fe4d715ca7b72cb261116b57a89913be3824d859c51fbcab13"; // keccak256("CommunityRewardsClaimed(uint256,address,uint256)")
 
 export async function POST(request: Request) {
 
@@ -96,10 +96,21 @@ console.log("AEye claim webhook received");
 
     // Process each log
     for (const log of block.logs) {
-      console.log("Processing log:", {
+      // Extract and log all relevant data from the log
+      const tokenId = log.topics[1] ? BigInt(log.topics[1]).toString() : 'N/A';
+      const userAddress = log.topics[2] ? log.topics[2].toLowerCase() : 'N/A';
+      const amount = log.data ? BigInt(log.data).toString() : 'N/A';
+      const amountInEth = log.data ? (Number(BigInt(log.data)) / 1e18).toFixed(4) + " ETH" : 'N/A';
+
+      console.log("Processing log details:", {
         topics: log.topics,
         expectedEvent: COMMUNITY_REWARDS_CLAIMED_EVENT,
-        isMatch: log.topics[0] === COMMUNITY_REWARDS_CLAIMED_EVENT
+        isMatch: log.topics[0] === COMMUNITY_REWARDS_CLAIMED_EVENT,
+        tokenId,
+        userAddress,
+        amount,
+        amountInEth,
+        data: log.data
       });
       
       // Check if this is a CommunityRewardsClaimed event
