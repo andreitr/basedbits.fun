@@ -66,8 +66,6 @@ export async function POST(request: Request) {
     // Process each log
     for (const log of payload.event.data.block.logs) {
       const senderAddress = log.transaction.from.address.toLowerCase();
-
-      // Get or create user
       const user = await getOrCreateUser(senderAddress);
 
       if (user && user.farcaster_name) {

@@ -30,6 +30,12 @@ interface AEyeWebhookPayload {
 // Event signature for CommunityRewardsClaimed
 const COMMUNITY_REWARDS_CLAIMED_EVENT = "0xc89f24ff8af936fe4d715ca7b72cb261116b57a89913be3824d859c51fbcab13"; // keccak256("CommunityRewardsClaimed(uint256,address,uint256)")
 
+// Helper function to extract 20-byte address from 32-byte topic
+function extractAddress(topic: string): string {
+  // Remove '0x' prefix and take last 40 characters (20 bytes)
+  return '0x' + topic.slice(-40).toLowerCase();
+}
+
 export async function POST(request: Request) {
   try {
     const payload = JSON.parse(await request.text()) as AEyeWebhookPayload;
@@ -42,7 +48,7 @@ export async function POST(request: Request) {
     for (const log of block.logs) {
       if (log.topics[0] !== COMMUNITY_REWARDS_CLAIMED_EVENT) continue;
 
-      const user = log.topics[2].toLowerCase();
+      const user = log.transaction.from.address.toLowerCase();
       const amount = BigInt(log.data);
       const dbUser = await getOrCreateUser(user);
       
