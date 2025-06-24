@@ -20,6 +20,12 @@ export enum AEYE_QKS {
   STREAK = "mintingStreak",
 }
 
+export enum POTRAIDER_QKS {
+  MINTS = "mintsPerToken",
+  TOTAL_MINTS = "totalMints",
+  STREAK = "mintingStreak",
+}
+
 export const emptyDBUser: DBUser = {
   id: 0,
   created_at: "",
