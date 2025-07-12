@@ -27,10 +27,12 @@ export async function GET(req: NextRequest) {
 
     const signer = new Wallet(process.env.BURNER_BOT_PK as string, provider);
     const burnAmount = parseUnits("0.0004", 18);
+    const minAmount = parseUnits("0.00045", 18);
 
     // Check wallet balance before proceeding
     const ethBalance = await provider.getBalance(signer.address);
-    if (ethBalance < burnAmount) {
+
+    if (ethBalance < minAmount) {
       // Check if we have any BPR to cash out
       const bprContract = getBasePaintRewardsContract();
       const bprBalance = await bprContract.balanceOf(signer.address);
@@ -53,11 +55,11 @@ export async function GET(req: NextRequest) {
         BBitsBurnerAbi,
         signer,
       );
-
+      
       const tx = await contract.burn(burnAmount, {
         value: burnAmount,
       });
-
+      
       const receipt = await tx.wait();
       const formattedAmount = formatEther(burnAmount);
       const txLink = `https://basescan.org/tx/${receipt.hash}`;
