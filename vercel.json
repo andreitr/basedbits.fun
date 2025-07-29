@@ -51,6 +51,18 @@
     {
       "path": "/api/cron/aeye/mint",
       "schedule": "2 18 * * *"
+    },
+    {
+      "path": "/api/cron/potraider",
+      "schedule": "30 19 * * *"
+    },
+    {
+      "path": "/api/cron/potraider",
+      "schedule": "30 20 * * *"
+    },
+    {
+      "path": "/api/cron/potraider",
+      "schedule": "30 21 * * *"
     }
   ]
 }
