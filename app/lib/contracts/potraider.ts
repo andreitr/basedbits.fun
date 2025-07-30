@@ -1,4 +1,4 @@
-import { baseTestnetRpcUrl } from "@/app/lib/Web3Configs";
+import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Contract, JsonRpcProvider, Wallet } from "ethers";
 
@@ -6,7 +6,7 @@ let provider: JsonRpcProvider | null = null;
 
 const getProvider = (): JsonRpcProvider => {
   if (!provider) {
-    provider = new JsonRpcProvider(baseTestnetRpcUrl);
+    provider = new JsonRpcProvider(baseRpcUrl);
   }
   return provider;
 };
