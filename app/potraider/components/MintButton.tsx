@@ -8,14 +8,14 @@ import { useModal } from "connectkit";
 import { formatUnits } from "ethers";
 import { useEffect } from "react";
 import {
-    useAccount,
-    useChainId,
-    useReadContract,
-    useSwitchChain,
-    useWaitForTransactionReceipt,
-    useWriteContract,
+  useAccount,
+  useChainId,
+  useReadContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 
 export const MintButton = () => {
   const { setOpen } = useModal();
@@ -79,15 +79,15 @@ export const MintButton = () => {
     );
   }
 
-  if (chainId !== baseSepolia.id) {
+  if (chainId !== base.id) {
     return (
       <Button
         className={
           "bg-[#52cba1]/10 text-white/60 font-regular w-full sm:w-auto"
         }
-        onClick={() => switchChain({ chainId: baseSepolia.id })}
+        onClick={() => switchChain({ chainId: base.id })}
       >
-        Switch to Base Sepolia
+        Switch to Base
       </Button>
     );
   }
