@@ -58,10 +58,6 @@
     },
     {
       "path": "/api/cron/potraider",
-      "schedule": "30 19 * * *"
-    },
-    {
-      "path": "/api/cron/potraider",
       "schedule": "30 20 * * *"
     },
     {
