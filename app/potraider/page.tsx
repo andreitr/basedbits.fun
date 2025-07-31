@@ -1,10 +1,10 @@
 "use server";
 
-import { MintComponent } from "@/app/potraider/components/MintComponent";
-import NFTList from "@/app/potraider/components/NFTList";
-import { UserComponent } from "@/app/potraider/components/UserComponent";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+import { potraiderContract } from "@/app/lib/contracts/potraider";
+import { MintComponent } from "@/app/potraider/components/MintComponent";
+import NFTList from "@/app/potraider/components/NFTList";
 
 export async function generateMetadata() {
   
@@ -40,24 +40,33 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  // For now, we'll create a simple structure without the database integration
-  // This can be enhanced later with actual PotRaider data
+  
+  const contract = potraiderContract();
+  const [circulatingSupply, totalSupply, jackpot, lastJackpotEndTime] = await Promise.all([
+    contract.circulatingSupply(),
+    contract.totalSupply(), 
+    contract.getLotteryJackpot(),
+    contract.getLotterylastJackpotEndTime(),
+
+  ]);
+
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
+      
           <Header />
 
+          {lastJackpotEndTime.toString()}
+
           <div className="flex flex-col gap-4">
-            <MintComponent />
+            <MintComponent count={circulatingSupply} lastJackpotEndTime={lastJackpotEndTime} />
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
               <div className="order-2 sm:order-1 font-bold uppercase">
-                Minted PotRaiders
+                Your PotRaiders
               </div>
-              <div className="order-1 sm:order-2">
-                <UserComponent />
-              </div>
+              
             </div>
             <div className="mb-12">
               <NFTList />

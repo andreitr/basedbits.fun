@@ -1,39 +1,52 @@
 "use client";
 
-import { CountDown } from "@/app/lib/components/client/CountDown";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { Tooltip } from "@/app/lib/components/client/Tooltip";
+import { useLotteryJackpot } from "@/app/lib/hooks/potraider/useLotteryJackpot";
 import { InfoOutline } from "@/app/lib/icons/remix";
 import { MintButton } from "@/app/potraider/components/MintButton";
+import NumberFlow from "@number-flow/react";
+import { formatUnits } from "ethers";
 import { useEffect, useState } from "react";
 
-export const MintComponent = () => {
-  const [isMintEnded, setIsMintEnded] = useState(false);
-  const [initialLoadTime] = useState(() => new Date().getUTCHours());
+interface Props {
+  count: number;
+  lastJackpotEndTime: number;
+}
+
+export const MintComponent = ({ count, lastJackpotEndTime }: Props) => {
+
+  
+
+  const { data: loadedJackpot } = useLotteryJackpot({ enabled: true });
+
+  const [jackpot, setJackpot] = useState(0);
 
   useEffect(() => {
-    const checkMintEnd = () => {
-      const currentHour = new Date().getUTCHours();
-      if (initialLoadTime < 20 && currentHour >= 20) {
-        setIsMintEnded(true);
-      }
-    };
-    checkMintEnd();
-    const interval = setInterval(checkMintEnd, 10000);
-    return () => clearInterval(interval);
-  }, [initialLoadTime]);
+    if (loadedJackpot) {
+      setJackpot(Math.round(Number(formatUnits(loadedJackpot, 6))));
+    }
+  }, [loadedJackpot]);
+
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
-        <div className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px] bg-gray-800 flex items-center justify-center">
-          <div className="text-4xl">🏴‍☠️</div>
-        </div>
+        
         <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
           <div>
-            <div className="flex flex-col gap-2 hidden sm:flex">
-              <div className="text-2xl">POTRAIDER: GENESIS</div>
+            <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center">
+              <div className="text-6xl">
+                <NumberFlow 
+                  value={jackpot} 
+                  prefix="$"
+                  format={{ useGrouping: true }}
+                  trend={1}
+                  digits={{ 1: { max: 5 } }}
+                />
+              </div>
               <div className="text-sm text-gray-400">
-                Daily PotRaider NFTs. Mint your PotRaider now on BASE.
+                Every day {count} PotRaiders raid the megapot treasury in hopes of a big win.
               </div>
             </div>
 
@@ -41,9 +54,9 @@ export const MintComponent = () => {
 
             <div className="flex flex-wrap gap-4 sm:gap-8">
               <div className="flex flex-col gap-1">
-                <div className="uppercase text-xs text-gray-400">Mint Ends</div>
+                <div className="uppercase text-xs text-gray-400">Next Raid</div>
                 <div className="text-3xl text-[#52cba1]">
-                  {isMintEnded ? "Mint Ended" : <CountDown hour={18} />}
+                  {<CountDownToDate targetDate={Number(lastJackpotEndTime) + 86400} message="Raid Started" />}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
@@ -65,6 +78,14 @@ export const MintComponent = () => {
                 </div>
                 <div className="text-3xl text-[#52cba1]">
                   Dynamic
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
+                  Daily Spent
+                </div>
+                <div className="text-3xl text-[#52cba1]">
+                  XXX ETH
                 </div>
               </div>
             </div>

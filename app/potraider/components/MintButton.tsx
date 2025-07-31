@@ -15,7 +15,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 
 export const MintButton = () => {
   const { setOpen } = useModal();
@@ -34,7 +34,7 @@ export const MintButton = () => {
     abi: PotRaiderABI,
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
     functionName: "mintPrice",
-    chainId: baseSepolia.id,
+    chainId: base.id,
   });
 
   const { show } = useSocialDisplay({
@@ -51,7 +51,7 @@ export const MintButton = () => {
         functionName: "mint",
         args: [BigInt(1)],
         value: mintPrice,
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
     }
   };
