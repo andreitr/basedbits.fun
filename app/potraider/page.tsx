@@ -5,6 +5,7 @@ import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { MintComponent } from "@/app/potraider/components/MintComponent";
 import NFTList from "@/app/potraider/components/NFTList";
+import { formatUnits } from "viem";
 
 export async function generateMetadata() {
   
@@ -42,26 +43,26 @@ export async function generateMetadata() {
 export default async function Page() {
   
   const contract = potraiderContract();
-  const [circulatingSupply, totalSupply, jackpot, lastJackpotEndTime] = await Promise.all([
+  const [circulatingSupply, totalSupply, jackpot, lastJackpotEndTime, dailySpent] = await Promise.all([
     contract.circulatingSupply(),
     contract.totalSupply(), 
     contract.getLotteryJackpot(),
     contract.getLotterylastJackpotEndTime(),
-
+    contract.getDailyPurchaseAmount(),
   ]);
 
 
   return (
-    <div className="flex flex-col justify-center items-center w-full">
+    <div className="flex flex-col justify-center items-ce ter w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
       
+      {formatUnits(dailySpent, 18)}
+
           <Header />
 
-          {lastJackpotEndTime.toString()}
-
           <div className="flex flex-col gap-4">
-            <MintComponent count={circulatingSupply} lastJackpotEndTime={lastJackpotEndTime} />
+            <MintComponent count={circulatingSupply} lastJackpotEndTime={lastJackpotEndTime} dailySpent={dailySpent}/>
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
               <div className="order-2 sm:order-1 font-bold uppercase">
                 Your PotRaiders

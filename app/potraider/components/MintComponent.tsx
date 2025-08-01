@@ -1,9 +1,7 @@
 "use client";
 
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { useLotteryJackpot } from "@/app/lib/hooks/potraider/useLotteryJackpot";
-import { InfoOutline } from "@/app/lib/icons/remix";
 import { MintButton } from "@/app/potraider/components/MintButton";
 import NumberFlow from "@number-flow/react";
 import { formatUnits } from "ethers";
@@ -12,9 +10,10 @@ import { useEffect, useState } from "react";
 interface Props {
   count: number;
   lastJackpotEndTime: number;
+  dailySpent: number;
 }
 
-export const MintComponent = ({ count, lastJackpotEndTime }: Props) => {
+export const MintComponent = ({ count, lastJackpotEndTime, dailySpent }: Props) => {
 
   
 
@@ -46,7 +45,7 @@ export const MintComponent = ({ count, lastJackpotEndTime }: Props) => {
                 />
               </div>
               <div className="text-sm text-gray-400">
-                Every day {count} PotRaiders raid the megapot treasury in hopes of a big win.
+                Every day {count} PotRaiders purchase Megapot tickets in hopes of a big win. Proceeds split beteen raiders.
               </div>
             </div>
 
@@ -54,41 +53,29 @@ export const MintComponent = ({ count, lastJackpotEndTime }: Props) => {
 
             <div className="flex flex-wrap gap-4 sm:gap-8">
               <div className="flex flex-col gap-1">
-                <div className="uppercase text-xs text-gray-400">Next Raid</div>
+                <div className="uppercase text-xs text-gray-400">Next Drawing</div>
                 <div className="text-3xl text-[#52cba1]">
                   {<CountDownToDate targetDate={Number(lastJackpotEndTime) + 86400} message="Raid Started" />}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Mint Price
-                  <Tooltip
-                    content={
-                      <div>
-                        Current mint price for PotRaider NFTs
-                      </div>
-                    }
-                  >
-                    <InfoOutline
-                      fill="#CCCCCC"
-                      className="inline-block w-4 h-4 fill-gray-400 hover:fill-white cursor-pointer"
-                      aria-label="Mint price"
-                    />
-                  </Tooltip>
+                  Daily Pool
                 </div>
-                <div className="text-3xl text-[#52cba1]">
-                  Dynamic
-                </div>
+                                 <div className="text-3xl text-[#52cba1]">
+                   {Number(formatUnits(dailySpent, 18)).toFixed(5)}Ξ
+                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Daily Spent
+                  Duration / Days
                 </div>
-                <div className="text-3xl text-[#52cba1]">
-                  XXX ETH
-                </div>
+                  <div className="text-3xl text-[#52cba1]">
+                   2/365
+                 </div>
               </div>
             </div>
+            
           </div>
           {<MintButton />}
         </div>
