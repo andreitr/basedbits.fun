@@ -21,4 +21,4 @@ export const UserComponent = () => {
       <div>Ready to raid!</div>
     </div>
   );
-}; 
+};

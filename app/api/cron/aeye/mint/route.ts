@@ -112,12 +112,9 @@ export async function GET(req: NextRequest) {
     const message = `${date} AEYE dispatch is now minting https://www.basedbits.fun/aeye`;
     await postToFarcaster(message, undefined, image);
 
-    return new Response(
-      'Success',
-      {
-        status: 200,
-      },
-    );
+    return new Response("Success", {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error minting aeye token:", error);
     return new Response(`Error: Failed to mint token: ${error}`, {

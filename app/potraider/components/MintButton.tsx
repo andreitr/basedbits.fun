@@ -56,7 +56,7 @@ export const MintButton = () => {
     }
   };
 
-  const label = mintPrice 
+  const label = mintPrice
     ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
     : "Loading...";
 
@@ -103,4 +103,4 @@ export const MintButton = () => {
       {isFetching ? "Minting..." : label}
     </Button>
   );
-}; 
+};

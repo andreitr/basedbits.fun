@@ -10,17 +10,15 @@ import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 
 export async function generateMetadata() {
-  
   const title = "AEYE: Genesis";
-  const description =
-    "Daily Dispatches from AEYE Agent. Minting now on BASE";
+  const description = "Daily Dispatches from AEYE Agent. Minting now on BASE";
 
   return {
     title: title,
     description: description,
     other: {
       ["fc:frame"]: "vNext",
-      ["fc:frame:image"]: 'images/aeye_preview.png',
+      ["fc:frame:image"]: "images/aeye_preview.png",
       ["fc:frame:button:1"]: "View",
       ["fc:frame:button:1:action"]: "link",
       ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/aeye`,
@@ -28,7 +26,7 @@ export async function generateMetadata() {
     openGraph: {
       images: [
         {
-          url: 'images/aeye_preview.png',
+          url: "images/aeye_preview.png",
           width: 630,
           height: 630,
         },

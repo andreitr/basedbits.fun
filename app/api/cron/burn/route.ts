@@ -55,11 +55,11 @@ export async function GET(req: NextRequest) {
         BBitsBurnerAbi,
         signer,
       );
-      
+
       const tx = await contract.burn(burnAmount, {
         value: burnAmount,
       });
-      
+
       const receipt = await tx.wait();
       const formattedAmount = formatEther(burnAmount);
       const txLink = `https://basescan.org/tx/${receipt.hash}`;

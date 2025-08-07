@@ -2,7 +2,9 @@ import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || "";
 const NEYNAR_API_URL = "https://api.neynar.com/v2/farcaster";
-const neynarClient = new NeynarAPIClient(new Configuration({ apiKey: NEYNAR_API_KEY }));
+const neynarClient = new NeynarAPIClient(
+  new Configuration({ apiKey: NEYNAR_API_KEY }),
+);
 
 type FarcasterUser = {
   username: string;
@@ -127,7 +129,9 @@ export async function postToFarcaster(
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Failed to post to Farcaster: ${response.statusText}\nResponse: ${errorText}`);
+      throw new Error(
+        `Failed to post to Farcaster: ${response.statusText}\nResponse: ${errorText}`,
+      );
     }
 
     const data = await response.json();

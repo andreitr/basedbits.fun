@@ -32,8 +32,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error checking contract:", error);
-    return new Response(`Error: ${error instanceof Error ? error.message : "Unknown error"}`, {
-      status: 500,
-    });
+    return new Response(
+      `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      {
+        status: 500,
+      },
+    );
   }
-} 
+}

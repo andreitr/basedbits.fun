@@ -24,26 +24,17 @@ export const Footer = () => {
             </Link>
           </div>
           <div>
-            <Link
-              className="hover:underline text-sm"
-              href={'/aeye'}
-            >
+            <Link className="hover:underline text-sm" href={"/aeye"}>
               AEYE: Genesis
             </Link>
           </div>
           <div>
-            <Link
-              className="hover:underline text-sm"
-              href={'/burn'}
-            >
+            <Link className="hover:underline text-sm" href={"/burn"}>
               Burned Bits
             </Link>
           </div>
           <div>
-            <Link
-              className="hover:underline text-sm"
-              href={'/punks'}
-            >
+            <Link className="hover:underline text-sm" href={"/punks"}>
               Punkalot
             </Link>
           </div>

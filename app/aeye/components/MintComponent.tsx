@@ -81,13 +81,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Community Reward
-                  <Tooltip
-                    content={
-                      <div>
-                        50% of mint fee sent to minters
-                      </div>
-                    }
-                  >
+                  <Tooltip content={<div>50% of mint fee sent to minters</div>}>
                     <InfoOutline
                       fill="#CCCCCC"
                       className="inline-block w-4 h-4 fill-gray-400 hover:fill-white cursor-pointer"
