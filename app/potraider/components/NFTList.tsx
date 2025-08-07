@@ -1,34 +1,74 @@
-import { DateTime } from "luxon";
-import Image from "next/image";
+"use client";
+
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 
 export default function NFTList() {
-  // For now, we'll show a placeholder since we don't have PotRaider data yet
-  // This can be enhanced later with actual PotRaider NFT data
+  
+  const {address} = useAccount();
+
+  const {data, isLoading} = useGetOwnerNFTs({
+    address: address,
+    contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
+    size: 50,
+  });
+
+  console.log(data);
+  console.log(isLoading);
+  
+  if (isLoading) {
+    return <NFTListSkeleton />;
+  }
+
+  // if(!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
+  //   return <div>No NFTs found</div>;
+  // }
+   return <div>No NFTs found</div>;
 
   return (
-    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 md:grid-cols-3 grid-cols-2">
-      {Array.from({ length: 10 }, (_, index) => (
+    <div>
+      <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+        {list?.ownedNfts?.map((nft, index) => {
+          return (
+            <div
+              key={index}
+              className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center"
+            >
+              <div
+                className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
+                style={{ backgroundImage: `url(${nft.image.cachedUrl})` }}
+              ></div>
+              <div className="mt-2">
+                <Link
+                  href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
+                  target="_blank"
+                  className="hover:underline"
+                >
+                  {nft.name}
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+export const NFTListSkeleton = () => {
+  const placeholders = Array.from({ length: 5 });
+  return (
+    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+      {placeholders.map((_, index) => (
         <div
           key={index}
-          className="flex flex-col bg-black/90 p-2 rounded-md items-center justify-center text-sm"
+          className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center animate-pulse"
         >
-          <div className="w-full">
-            <div className="bg-gray-800 w-full h-auto aspect-square rounded-lg flex items-center justify-center">
-              <div className="text-2xl">🏴‍☠️</div>
-            </div>
-          </div>
-          <div className="mt-2 self-start text-gray-400 p-2">
-            <Link
-              href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}/${index + 1}`}
-              target="_blank"
-              className="hover:underline"
-            >
-              PotRaider #{index + 1}
-            </Link>
-          </div>
+          <div className="mb-8 lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg bg-black bg-opacity-20"></div>
         </div>
       ))}
     </div>
   );
-}
+};
