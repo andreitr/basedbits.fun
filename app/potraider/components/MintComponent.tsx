@@ -29,14 +29,15 @@ export const MintComponent = ({
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center">
               <div className="text-6xl">
-                ${Number(formatUnits(jackpot, 6)).toLocaleString('en-US', {
+                $
+                {Number(formatUnits(jackpot, 6)).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
+                  maximumFractionDigits: 2,
                 })}
               </div>
               <div className="text-sm text-gray-400">
-                Every day  raid the Megapot in hopes
-                of a big win. Proceeds split beteen raiders.
+                Every day raid the Megapot in hopes of a big win. Proceeds split
+                beteen raiders.
               </div>
             </div>
 

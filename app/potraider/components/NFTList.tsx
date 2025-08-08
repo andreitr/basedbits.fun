@@ -5,24 +5,21 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 
 export default function NFTList() {
-  
-  const {address} = useAccount();
+  const { address } = useAccount();
 
-  const {data:list, isLoading} = useGetOwnerNFTs({
+  const { data: list, isLoading } = useGetOwnerNFTs({
     address: address,
     contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
     size: 50,
   });
 
-  
   if (isLoading) {
     return <NFTListSkeleton />;
   }
 
-  if(!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
+  if (!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
     return <div>No NFTs found</div>;
   }
-
 
   return (
     <div>
@@ -53,7 +50,6 @@ export default function NFTList() {
     </div>
   );
 }
-
 
 export const NFTListSkeleton = () => {
   const placeholders = Array.from({ length: 5 });
