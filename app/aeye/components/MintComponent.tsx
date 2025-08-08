@@ -49,19 +49,23 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
-      <div className="flex flex-col sm:flex-row w-full gap-5">
-        <Image
-          className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
-          src={token.image || "/images/aeye.png"}
-          alt={token.headline || "AEYE Genesis NFT"}
-          width={300}
-          height={300}
-          priority
-        />
-        <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
-          <div>
-            <div className="flex flex-col gap-2 hidden sm:flex">
-              <div className="text-2xl">AEYE: GENESIS</div>
+      <div className="w-full flex flex-col gap-5">
+        <div className="bg-[#52cba1]/10 border border-[#52cba1] text-[#52cba1] text-center font-bold py-2 rounded">
+          Mint ends in three days — token 69 will be the last minted.
+        </div>
+        <div className="flex flex-col sm:flex-row w-full gap-5">
+          <Image
+            className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
+            src={token.image || "/images/aeye.png"}
+            alt={token.headline || "AEYE Genesis NFT"}
+            width={300}
+            height={300}
+            priority
+          />
+          <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
+            <div>
+              <div className="flex flex-col gap-2 hidden sm:flex">
+                <div className="text-2xl">AEYE: GENESIS</div>
               <div className="text-sm text-gray-400">
                 The AEYE agent watches the world each day, reflecting on the
                 most important story in the rise of artificial intelligence, and
@@ -97,9 +101,10 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
                 <div className="uppercase text-xs text-gray-400">Mints</div>
                 <div className="text-3xl text-[#62CDA7]">{mints || 0}</div>
               </div>
+              </div>
             </div>
+            {<MintButton token={token} />}
           </div>
-          {<MintButton token={token} />}
         </div>
       </div>
     </div>
