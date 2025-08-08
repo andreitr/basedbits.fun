@@ -8,23 +8,21 @@ export default function NFTList() {
   
   const {address} = useAccount();
 
-  const {data, isLoading} = useGetOwnerNFTs({
+  const {data:list, isLoading} = useGetOwnerNFTs({
     address: address,
     contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
     size: 50,
   });
 
-  console.log(data);
-  console.log(isLoading);
   
   if (isLoading) {
     return <NFTListSkeleton />;
   }
 
-  // if(!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
-  //   return <div>No NFTs found</div>;
-  // }
-   return <div>No NFTs found</div>;
+  if(!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
+    return <div>No NFTs found</div>;
+  }
+
 
   return (
     <div>
@@ -37,7 +35,7 @@ export default function NFTList() {
             >
               <div
                 className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                style={{ backgroundImage: `url(${nft.image.cachedUrl})` }}
+                style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
               ></div>
               <div className="mt-2">
                 <Link
