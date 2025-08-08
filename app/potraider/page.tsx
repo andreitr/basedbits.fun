@@ -46,12 +46,16 @@ export default async function Page() {
     jackpot,
     lastJackpotEndTime,
     dailySpent,
+    totalDays,
+    currentDay,
   ] = await Promise.all([
     contract.circulatingSupply(),
     contract.totalSupply(),
     contract.getLotteryJackpot(),
     contract.getLotterylastJackpotEndTime(),
     contract.getDailyPurchaseAmount(),
+    contract.lotteryParticipationDays(),
+    contract.currentLotteryDay(),
   ]);
 
   return (
@@ -66,6 +70,8 @@ export default async function Page() {
               lastJackpotEndTime={lastJackpotEndTime}
               dailySpent={dailySpent}
               jackpot={jackpot}
+              totalDays={totalDays}
+              currentDay={currentDay}
             />
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
               <div className="order-2 sm:order-1 font-bold uppercase">

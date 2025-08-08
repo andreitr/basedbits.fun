@@ -10,6 +10,8 @@ interface Props {
   lastJackpotEndTime: number;
   dailySpent: number;
   jackpot: number;
+  totalDays: number;
+  currentDay: number;
 }
 
 export const MintComponent = ({
@@ -17,6 +19,8 @@ export const MintComponent = ({
   lastJackpotEndTime,
   dailySpent,
   jackpot,
+  totalDays,
+  currentDay,
 }: Props) => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
@@ -25,16 +29,13 @@ export const MintComponent = ({
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center">
               <div className="text-6xl">
-                <NumberFlow
-                  value={jackpot}
-                  prefix="$"
-                  format={{ useGrouping: true }}
-                  trend={1}
-                  digits={{ 1: { max: 5 } }}
-                />
+                ${Number(formatUnits(jackpot, 6)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </div>
               <div className="text-sm text-gray-400">
-                Every day {count} PotRaiders purchase Megapot tickets in hopes
+                Every day  raid the Megapot in hopes
                 of a big win. Proceeds split beteen raiders.
               </div>
             </div>
@@ -67,7 +68,9 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Duration / Days
                 </div>
-                <div className="text-3xl text-[#52cba1]">2/365</div>
+                <div className="text-3xl text-[#52cba1]">
+                  {currentDay}/{totalDays}
+                </div>
               </div>
             </div>
           </div>

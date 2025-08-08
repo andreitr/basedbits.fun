@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
 
     const contract = potraiderContract();
 
-    // Mint token
     const tx = await contract.purchaseLotteryTicket();
     await tx.wait();
 
