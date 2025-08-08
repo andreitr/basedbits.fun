@@ -46,7 +46,7 @@ export default async function Home() {
               title="Pot Raiders"
               description="Minting soon"
               image={"/images/raider.svg"}
-              link="https://farcaster.xyz/andreitr.eth/0x0857a3b9"
+              link="https://farcaster.xyz/andreitr.eth/0x3128f0cd"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
