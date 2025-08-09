@@ -70,7 +70,7 @@ export const MintButton = () => {
     return (
       <Button
         className={
-          "bg-[#52cba1]/10 text-white/80 hover:text-white font-regular sm:w-auto"
+          "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular sm:w-auto"
         }
         onClick={() => setOpen(true)}
       >
@@ -83,7 +83,7 @@ export const MintButton = () => {
     return (
       <Button
         className={
-          "bg-[#52cba1]/10 text-white/60 font-regular w-full sm:w-auto"
+          "bg-[#FEC94F]/10 text-white/60 font-regular w-full sm:w-auto"
         }
         onClick={() => switchChain({ chainId: base.id })}
       >
@@ -94,7 +94,7 @@ export const MintButton = () => {
 
   return (
     <Button
-      className={"bg-[#52cba1]/10 font-regular w-full sm:w-auto"}
+      className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto"}
       onClick={() => {
         mint();
       }}
