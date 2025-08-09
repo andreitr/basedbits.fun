@@ -16,6 +16,12 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
   const tokenId = token.token;
   const [isMintEnded, setIsMintEnded] = useState(false);
   const [initialLoadTime] = useState(() => new Date().getUTCHours());
+  const finalTokenId = 69;
+  const daysLeft = Math.max(finalTokenId - tokenId, 0);
+  const mintMessage =
+    daysLeft > 0
+      ? `Mint ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — token ${finalTokenId} will be the last minted.`
+      : `Minting complete — token ${finalTokenId} was the last minted.`;
 
   const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
@@ -51,7 +57,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="w-full flex flex-col gap-5">
         <div className="bg-[#52cba1]/10 border border-[#52cba1] text-[#52cba1] text-center font-bold py-2 rounded">
-          Mint ends in three days — token 69 will be the last minted.
+          {mintMessage}
         </div>
         <div className="flex flex-col sm:flex-row w-full gap-5">
           <Image
