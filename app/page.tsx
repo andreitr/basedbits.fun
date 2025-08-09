@@ -8,10 +8,9 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import Link from "next/link";
 import { MintComponent } from "./aeye/components/MintComponent";
-import { getCurrentMint } from "./lib/api/aeye/getCurrentMint";
 import { getAeyeById } from "./lib/api/aeye/getAeyeById";
+import { getCurrentMint } from "./lib/api/aeye/getCurrentMint";
 
 export default async function Home() {
   const currentMint = await getCurrentMint();
