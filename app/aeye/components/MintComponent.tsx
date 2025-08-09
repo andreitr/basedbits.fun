@@ -16,6 +16,12 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
   const tokenId = token.token;
   const [isMintEnded, setIsMintEnded] = useState(false);
   const [initialLoadTime] = useState(() => new Date().getUTCHours());
+  const finalTokenId = 69;
+  const daysLeft = Math.max(finalTokenId - tokenId, 0);
+  const mintMessage =
+    daysLeft > 0
+      ? `Mint ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — token ${finalTokenId} will be the last minted.`
+      : `Minting complete — token ${finalTokenId} was the last minted.`;
 
   const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
@@ -49,19 +55,23 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
-      <div className="flex flex-col sm:flex-row w-full gap-5">
-        <Image
-          className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
-          src={token.image || "/images/aeye.png"}
-          alt={token.headline || "AEYE Genesis NFT"}
-          width={300}
-          height={300}
-          priority
-        />
-        <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
-          <div>
-            <div className="flex flex-col gap-2 hidden sm:flex">
-              <div className="text-2xl">AEYE: GENESIS</div>
+      <div className="w-full flex flex-col gap-5">
+        <div className="border border-[#52cba1] text-[#52cba1] text-center py-2 rounded text-sm">
+          {mintMessage}
+        </div>
+        <div className="flex flex-col sm:flex-row w-full gap-5">
+          <Image
+            className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
+            src={token.image || "/images/aeye.png"}
+            alt={token.headline || "AEYE Genesis NFT"}
+            width={300}
+            height={300}
+            priority
+          />
+          <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
+            <div>
+              <div className="flex flex-col gap-2 hidden sm:flex">
+                <div className="text-2xl">AEYE: GENESIS</div>
               <div className="text-sm text-gray-400">
                 The AEYE agent watches the world each day, reflecting on the
                 most important story in the rise of artificial intelligence, and
@@ -97,9 +107,10 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
                 <div className="uppercase text-xs text-gray-400">Mints</div>
                 <div className="text-3xl text-[#62CDA7]">{mints || 0}</div>
               </div>
+              </div>
             </div>
+            {<MintButton token={token} />}
           </div>
-          {<MintButton token={token} />}
         </div>
       </div>
     </div>
