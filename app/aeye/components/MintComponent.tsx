@@ -56,7 +56,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="w-full flex flex-col gap-5">
-        <div className="bg-[#52cba1]/10 border border-[#52cba1] text-[#52cba1] text-center font-bold py-2 rounded">
+        <div className="border border-[#52cba1] text-[#52cba1] text-center py-2 rounded text-sm">
           {mintMessage}
         </div>
         <div className="flex flex-col sm:flex-row w-full gap-5">
