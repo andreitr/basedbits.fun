@@ -21,7 +21,7 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
   const mintMessage =
     daysLeft > 0
       ? `Mint ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — token ${finalTokenId} will be the last minted.`
-      : `Minting complete — token ${finalTokenId} was the last minted.`;
+      : `This is the last token for this collection. No more dispatches after this one`;
 
   const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
