@@ -45,14 +45,6 @@
       "schedule": "55 17 * * *"
     },
     {
-      "path": "/api/cron/aeye/mint",
-      "schedule": "0 18 * * *"
-    },
-    {
-      "path": "/api/cron/aeye/mint",
-      "schedule": "2 18 * * *"
-    },
-    {
       "path": "/api/cron/potraider",
       "schedule": "30 19 * * *"
     },
