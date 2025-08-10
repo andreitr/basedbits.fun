@@ -41,13 +41,15 @@ export async function generateMetadata() {
 
 export default async function Page() {
   const contract = potraiderContract();
-  
+
   // Get contract ETH balance
   const provider = new JsonRpcProvider(
     `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
   );
-  const contractBalance = await provider.getBalance(process.env.NEXT_PUBLIC_RAIDER_ADDRESS as string);
-  
+  const contractBalance = await provider.getBalance(
+    process.env.NEXT_PUBLIC_RAIDER_ADDRESS as string,
+  );
+
   const [
     circulatingSupply,
     totalSupply,
@@ -70,6 +72,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col justify-center items-ce ter w-full">
+      {totalSupply}
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
@@ -91,7 +94,7 @@ export default async function Page() {
               </div>
             </div>
             <div className="mb-12">
-              <NFTList />
+              <NFTList redeemValue={redeemValue} />
             </div>
           </div>
         </div>

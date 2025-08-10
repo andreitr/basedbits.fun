@@ -2,7 +2,6 @@
 
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { MintButton } from "@/app/potraider/components/MintButton";
-import NumberFlow from "@number-flow/react";
 import { formatUnits } from "ethers";
 
 interface Props {
@@ -32,7 +31,7 @@ export const MintComponent = ({
         <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center py-12">
-              <div className="text-6xl text-[#FEC94F]">
+              <div className="text-6xl text-[#FFE29E]">
                 $
                 {Number(formatUnits(jackpot, 6)).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -65,7 +64,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Daily Pool
                 </div>
-                <div className="text-3xl text-[#FEC94F]">
+                <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(dailySpent, 18)).toFixed(5)}Ξ
                 </div>
               </div>
@@ -73,7 +72,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Duration / Days
                 </div>
-                <div className="text-3xl text-[#FEC94F]">
+                <div className="text-2xl text-[#FEC94F]">
                   {currentDay}/{totalDays}
                 </div>
               </div>
@@ -81,7 +80,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Total Treasury
                 </div>
-                <div className="text-3xl text-[#FEC94F]">
+                <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
                 </div>
               </div>
@@ -89,7 +88,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   NFT Redeem Value
                 </div>
-                <div className="text-3xl text-[#FEC94F]">
+                <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
                 </div>
               </div>

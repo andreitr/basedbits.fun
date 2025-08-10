@@ -1,11 +1,18 @@
 "use client";
 
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
+import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { formatUnits } from "viem";
 
-export default function NFTList() {
+interface Props {
+  redeemValue?: [bigint, bigint]; // [ethShare, usdcShare]
+}
+
+export default function NFTList({ redeemValue }: Props) {
   const { address } = useAccount();
+  const { call: redeem } = useRedeem();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
     address: address,
@@ -42,6 +49,19 @@ export default function NFTList() {
                 >
                   {nft.name}
                 </Link>
+                {redeemValue && (
+                  <div className="mt-1">
+                    <button
+                      onClick={() => redeem(Number(nft.tokenId))}
+                      className="text-sm hover:underline cursor-pointer text-blue-600"
+                    >
+                      Redeem for{" "}
+                      {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
+                      {Number(redeemValue[1]) > 0 &&
+                        ` + $${Number(formatUnits(redeemValue[1], 6)).toFixed(2)}`}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );
