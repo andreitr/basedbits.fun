@@ -78,18 +78,10 @@ export const MintComponent = ({
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Total Treasury
+                  Treasury
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  NFT Redeem Value
-                </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
                 </div>
               </div>
             </div>

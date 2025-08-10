@@ -8,10 +8,11 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 interface Props {
+  circulatingSupply: number;
   redeemValue?: [bigint, bigint]; // [ethShare, usdcShare]
 }
 
-export default function NFTList({ redeemValue }: Props) {
+export const NFTList = ({ circulatingSupply, redeemValue }: Props) => {
   const { isConnected, address } = useAccount();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
@@ -40,7 +41,7 @@ export default function NFTList({ redeemValue }: Props) {
       </div>
     </div>
   );
-}
+};
 
 export const NFTCard = ({
   nft,

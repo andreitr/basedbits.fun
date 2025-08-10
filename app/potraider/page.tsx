@@ -4,7 +4,8 @@ import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { MintComponent } from "@/app/potraider/components/MintComponent";
-import NFTList from "@/app/potraider/components/NFTList";
+import { NFTList } from "@/app/potraider/components/NFTList";
+import { UserComponent } from "@/app/potraider/components/UserComponent";
 import { JsonRpcProvider } from "ethers";
 
 export async function generateMetadata() {
@@ -86,10 +87,16 @@ export default async function Page() {
               contractBalance={contractBalance}
               redeemValue={redeemValue}
             />
-        
 
-            <div className="mb-12">
-              <NFTList redeemValue={redeemValue} />
+            <div className="mb-12 flex flex-col gap-4">
+              <UserComponent
+                circulatingSupply={circulatingSupply}
+                redeemValue={redeemValue}
+              />
+              <NFTList
+                circulatingSupply={circulatingSupply}
+                redeemValue={redeemValue}
+              />
             </div>
           </div>
         </div>
