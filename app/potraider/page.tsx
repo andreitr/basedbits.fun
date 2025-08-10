@@ -72,8 +72,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col justify-center items-ce ter w-full">
-      {totalSupply}
-      <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
+            <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
           <Header />
 
