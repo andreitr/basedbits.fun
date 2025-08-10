@@ -1,10 +1,11 @@
 "use client";
 
-import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
+import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
+import { AlchemyToken } from "@/app/lib/types/alchemy";
 import Link from "next/link";
-import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 
 interface Props {
   redeemValue?: [bigint, bigint]; // [ethShare, usdcShare]
@@ -12,7 +13,6 @@ interface Props {
 
 export default function NFTList({ redeemValue }: Props) {
   const { address } = useAccount();
-  const { call: redeem } = useRedeem();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
     address: address,
@@ -32,44 +32,58 @@ export default function NFTList({ redeemValue }: Props) {
     <div>
       <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
         {list?.ownedNfts?.map((nft, index) => {
-          return (
-            <div
-              key={index}
-              className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center"
-            >
-              <div
-                className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
-              ></div>
-              <div className="mt-2">
-                <Link
-                  href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
-                  target="_blank"
-                  className="hover:underline"
-                >
-                  {nft.name}
-                </Link>
-                {redeemValue && (
-                  <div className="mt-1">
-                    <button
-                      onClick={() => redeem(Number(nft.tokenId))}
-                      className="text-sm hover:underline cursor-pointer text-blue-600"
-                    >
-                      Redeem for{" "}
-                      {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
-                      {Number(redeemValue[1]) > 0 &&
-                        ` + $${Number(formatUnits(redeemValue[1], 6)).toFixed(2)}`}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
+          return <NFTCard key={index} nft={nft} redeemValue={redeemValue} />;
         })}
       </div>
     </div>
   );
 }
+
+export const NFTCard = ({
+  nft,
+  redeemValue,
+}: {
+  nft: AlchemyToken;
+  redeemValue?: [bigint, bigint];
+}) => {
+  const { call: redeem, isFetching, isSuccess } = useRedeem();
+
+  return (
+    <div className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center">
+      <div
+        className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
+        style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
+      ></div>
+      <div className="mt-2 w-full">
+        <Link
+          href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
+          target="_blank"
+          className="hover:underline "
+        >
+          {nft.name}
+        </Link>
+        {redeemValue && (
+          <div className="mt-1 border border-black border-gray-500 text-gray-700 rounded-md p-2 w-full text-sm bg:none hover:text-black hover:bg-black/10">
+            <button
+              className="cursor-pointer w-full"
+              onClick={() => redeem(Number(nft.tokenId))}
+            >
+              <div>Redeem for</div>
+              <div className="flex flex-row gap-2 pt-1 flex-wrap justify-center">
+                <div>{Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ</div>
+                {Number(redeemValue[1]) > 0 && (
+                  <div>
+                    + {Number(formatUnits(redeemValue[1], 6)).toFixed(2)} USDC
+                  </div>
+                )}
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const NFTListSkeleton = () => {
   const placeholders = Array.from({ length: 5 });
