@@ -4,8 +4,7 @@ import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { MintComponent } from "@/app/potraider/components/MintComponent";
-import NFTList, { NFTCard } from "@/app/potraider/components/NFTList";
-import { formatUnits } from "viem";
+import NFTList from "@/app/potraider/components/NFTList";
 import { JsonRpcProvider } from "ethers";
 
 export async function generateMetadata() {
@@ -87,11 +86,7 @@ export default async function Page() {
               contractBalance={contractBalance}
               redeemValue={redeemValue}
             />
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-              <div className="order-2 sm:order-1 font-bold uppercase">
-                Your PotRaiders
-              </div>
-            </div>
+        
 
             <div className="mb-12">
               <NFTList redeemValue={redeemValue} />

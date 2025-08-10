@@ -12,13 +12,16 @@ interface Props {
 }
 
 export default function NFTList({ redeemValue }: Props) {
-  const { address } = useAccount();
+  const { isConnected, address } = useAccount();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
     address: address,
     contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
-    size: 50,
   });
+
+  if (!isConnected) {
+    return <div>Connect your wallet to view your PotRaiders</div>;
+  }
 
   if (isLoading) {
     return <NFTListSkeleton />;
@@ -63,7 +66,7 @@ export const NFTCard = ({
           {nft.name}
         </Link>
         {redeemValue && (
-          <div className="mt-1 border border-black border-gray-500 text-gray-700 rounded-md p-2 w-full text-sm bg:none hover:text-black hover:bg-black/10">
+          <div className="mt-2 text-gray-700 rounded-md p-2 w-full text-sm hover:text-black bg-black/10">
             <button
               className="cursor-pointer w-full"
               onClick={() => redeem(Number(nft.tokenId))}
