@@ -29,18 +29,11 @@ export default async function Home() {
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
-              title="AEYE: Genesis"
-              description="Minting now"
-              image={"/images/aeye.png"}
-              style={"bg-[#0052FF] w-[80px] h-[80px] rounded-lg"}
-              link="/aeye"
-            />
-            {/* <FeatureCard
               title="Burned Bits"
               description="Minting now"
               image={"/images/burnedbit.svg"}
               link="/burn"
-            /> */}
+            />
             <FeatureCard
               title="Pot Raiders"
               description="Minting soon"

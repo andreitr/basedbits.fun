@@ -1,29 +1,15 @@
 "use client";
 
-import { MintButton } from "@/app/aeye/components/MintButton";
-import { CountDown } from "@/app/lib/components/client/CountDown";
 import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { useCommunityRewards } from "@/app/lib/hooks/aeye/useCommunityRewards";
-import { useCurrentMint } from "@/app/lib/hooks/aeye/useCurrentMint";
 import { useMintsPerToken } from "@/app/lib/hooks/aeye/useMintsPerToken";
 import { InfoOutline } from "@/app/lib/icons/remix";
 import { DBAeye } from "@/app/lib/types/types";
 import { formatUnits } from "ethers";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 export const MintComponent = ({ token }: { token: DBAeye }) => {
   const tokenId = token.token;
-  const [isMintEnded, setIsMintEnded] = useState(false);
-  const [initialLoadTime] = useState(() => new Date().getUTCHours());
-  const finalTokenId = 69;
-  const daysLeft = Math.max(finalTokenId - tokenId, 0);
-  const mintMessage =
-    daysLeft > 0
-      ? `Mint ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — token ${finalTokenId} will be the last minted.`
-      : `This is the last token for this collection. No more dispatches after this one`;
-
-  const { data: currentMint } = useCurrentMint({ enabled: isMintEnded });
 
   const { data: rewards } = useCommunityRewards({
     tokenId: tokenId,
@@ -35,30 +21,9 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
     enabled: true,
   });
 
-  useEffect(() => {
-    if (currentMint && currentMint > token.id) {
-      window.location.reload();
-    }
-  }, [currentMint, tokenId]);
-
-  useEffect(() => {
-    const checkMintEnd = () => {
-      const currentHour = new Date().getUTCHours();
-      if (initialLoadTime < 20 && currentHour >= 20) {
-        setIsMintEnded(true);
-      }
-    };
-    checkMintEnd();
-    const interval = setInterval(checkMintEnd, 10000);
-    return () => clearInterval(interval);
-  }, [initialLoadTime]);
-
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="w-full flex flex-col gap-5">
-        <div className="border border-[#52cba1] text-[#52cba1] text-center py-2 rounded text-sm">
-          {mintMessage}
-        </div>
         <div className="flex flex-col sm:flex-row w-full gap-5">
           <Image
             className="rounded-lg w-full sm:w-[300px] h-auto sm:h-[300px]"
@@ -84,11 +49,9 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
               <div className="flex flex-wrap gap-4 sm:gap-8">
                 <div className="flex flex-col gap-1">
                   <div className="uppercase text-xs text-gray-400">
-                    Mint Ends
+                    Mint Ended
                   </div>
-                  <div className="text-3xl text-[#52cba1]">
-                    {isMintEnded ? "Mint Ended" : <CountDown hour={18} />}
-                  </div>
+                  <div className="text-3xl text-[#52cba1]">Mint Ended</div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
@@ -113,7 +76,6 @@ export const MintComponent = ({ token }: { token: DBAeye }) => {
                 </div>
               </div>
             </div>
-            {<MintButton token={token} />}
           </div>
         </div>
       </div>
