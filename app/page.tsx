@@ -1,4 +1,3 @@
-"use server";
 
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
@@ -8,13 +7,8 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { MintComponent } from "./aeye/components/MintComponent";
-import { getAeyeById } from "./lib/api/aeye/getAeyeById";
-import { getCurrentMint } from "./lib/api/aeye/getCurrentMint";
 
 export default async function Home() {
-  const currentMint = await getCurrentMint();
-  const aeye = await getAeyeById(currentMint);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -56,13 +50,11 @@ export default async function Home() {
         </div>
       </div>
 
-      {aeye && (
+      
         <div className="flex justify-center items-center w-full pt-10 pb-8 mt-10 md:mt-0">
-          <div className="container max-w-screen-lg mb-8">
-            <MintComponent token={aeye} />
-          </div>
+          
         </div>
-      )}
+
 
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
