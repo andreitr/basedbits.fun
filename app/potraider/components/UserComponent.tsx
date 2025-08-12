@@ -37,7 +37,7 @@ export const UserComponent = ({ redeemValue, circulatingSupply }: Props) => {
       {balance && (
         <div className="flex flex-col gap-2">
           <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-            Redeem Value
+            Total Value
           </div>
           <div className="text-2xl ">
             {Number(formatUnits(redeemValue[0] * BigInt(balance), 18)).toFixed(
@@ -60,7 +60,7 @@ export const UserComponent = ({ redeemValue, circulatingSupply }: Props) => {
       {balance && (
         <div className="flex flex-col gap-2">
           <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-            Treasury Percentage
+            Treasury Share
           </div>
           <div className="text-2xl ">
             {(Number(balance) / Number(circulatingSupply)) * 100}%
