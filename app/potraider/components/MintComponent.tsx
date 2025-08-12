@@ -62,7 +62,7 @@ export const MintComponent = ({
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Daily Pool
+                  Daily Spend
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(dailySpent, 18)).toFixed(5)}Ξ
@@ -70,7 +70,7 @@ export const MintComponent = ({
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Duration / Days
+                  Days
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
                   {currentDay}/{totalDays}

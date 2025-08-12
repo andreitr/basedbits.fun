@@ -1,4 +1,3 @@
-
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { Header } from "@/app/lib/components/client/Header";
@@ -9,7 +8,6 @@ import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
 
 export default async function Home() {
-
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
@@ -50,13 +48,13 @@ export default async function Home() {
         </div>
       </div>
 
-      
+      {/*
         <div className="flex justify-center items-center w-full pt-10 pb-8 mt-10 md:mt-0">
           <div className="container max-w-screen-lg mb-8">
-            {/* Mint component here */}
+             Mint component here 
           </div>
         </div>
-      
+        */}
 
       <div className="flex justify-center items-center w-full bg-[#859985] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg mb-10 mt-10">
