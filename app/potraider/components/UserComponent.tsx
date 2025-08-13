@@ -22,6 +22,11 @@ export const UserComponent = ({ redeemValue, circulatingSupply }: Props) => {
     return null;
   }
 
+  // Calculate USDC value once to avoid recalculation
+  const usdcValue = balance
+    ? Number(formatUnits(redeemValue[1] * BigInt(balance), 6))
+    : 0;
+
   return (
     <div className="flex flex-row gap-6">
       {balance && (
