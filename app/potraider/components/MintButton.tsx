@@ -3,10 +3,9 @@
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Button } from "@/app/lib/components/Button";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
-import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "connectkit";
 import { formatUnits } from "ethers";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useAccount,
   useChainId,
@@ -19,7 +18,8 @@ import { base } from "wagmi/chains";
 
 export const MintButton = () => {
   const { setOpen } = useModal();
-  const queryClient = useQueryClient();
+
+  const [quantity, setQuantity] = useState(1);
 
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -49,15 +49,15 @@ export const MintButton = () => {
         abi: PotRaiderABI,
         address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
         functionName: "mint",
-        args: [BigInt(1)],
-        value: mintPrice,
+        args: [BigInt(quantity)],
+        value: mintPrice * BigInt(quantity),
         chainId: base.id,
       });
     }
   };
 
   const label = mintPrice
-    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
+    ? `Mint for ${formatUnits(mintPrice * BigInt(quantity), 18).slice(0, 7)}Ξ`
     : "Loading...";
 
   useEffect(() => {
@@ -92,15 +92,42 @@ export const MintButton = () => {
     );
   }
 
+  const increment = () => {
+    setQuantity((q) => Math.min(50, q + 1));
+  };
+
+  const decrement = () => {
+    setQuantity((q) => Math.max(1, q - 1));
+  };
+
   return (
-    <Button
-      className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto"}
-      onClick={() => {
-        mint();
-      }}
-      loading={!mintPrice || isFetching}
-    >
-      {isFetching ? "Minting..." : label}
-    </Button>
+    <div className="flex items-center gap-4 w-full sm:w-auto">
+      <div className="flex items-center border border-[#FEC94F]/30 rounded-lg">
+        <button
+          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
+          onClick={decrement}
+          disabled={quantity <= 1}
+        >
+          -
+        </button>
+        <div className="px-2 w-8 text-center text-white">{quantity}</div>
+        <button
+          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
+          onClick={increment}
+          disabled={quantity >= 50}
+        >
+          +
+        </button>
+      </div>
+      <Button
+        className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto"}
+        onClick={() => {
+          mint();
+        }}
+        loading={!mintPrice || isFetching}
+      >
+        {isFetching ? "Minting..." : label}
+      </Button>
+    </div>
   );
 };
