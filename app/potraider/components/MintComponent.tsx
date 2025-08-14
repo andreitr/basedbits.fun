@@ -28,7 +28,7 @@ export const MintComponent = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
-        <div className="flex flex-col-reverse sm:flex-col lg:gap-7 justify-between w-full">
+        <div className="flex flex-col lg:gap-7 justify-between w-full">
           <div>
             <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center py-12">
               <div className="text-6xl text-[#FFE29E]">
@@ -86,7 +86,7 @@ export const MintComponent = ({
               </div>
             </div>
           </div>
-          {<MintButton />}
+          <MintButton />
         </div>
       </div>
     </div>
