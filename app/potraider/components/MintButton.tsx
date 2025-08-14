@@ -74,7 +74,6 @@ export const MintButton = () => {
     setQuantity((q) => Math.max(1, q - 1));
   };
 
-
   if (!isConnected) {
     return (
       <Button
@@ -100,7 +99,6 @@ export const MintButton = () => {
       </Button>
     );
   }
-
 
   return (
     <div className="flex flex-row gap-4 items-center w-full ">

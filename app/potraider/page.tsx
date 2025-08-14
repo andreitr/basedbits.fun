@@ -9,24 +9,19 @@ import { UserComponent } from "@/app/potraider/components/UserComponent";
 import { JsonRpcProvider } from "ethers";
 
 export async function generateMetadata() {
-  const title = "PotRaider: Genesis";
+  const title = "Pot Raiders";
   const description = "Daily PotRaider NFTs. Minting now on BASE";
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/raiders`;
 
   return {
     title: title,
     description: description,
-    other: {
-      ["fc:frame"]: "vNext",
-      ["fc:frame:image"]: "images/punkalot.png",
-      ["fc:frame:button:1"]: "View",
-      ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/potraider`,
-    },
+
     openGraph: {
       images: [
         {
-          url: "images/punkalot.png",
-          width: 630,
+          url: ogPreviewPath,
+          width: 1200,
           height: 630,
         },
       ],
