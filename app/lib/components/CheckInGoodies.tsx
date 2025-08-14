@@ -45,7 +45,10 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
           </Link>
         </div>
         <div>{"• Receive daily BBITS airdrop"}</div>
-        {user?.farcaster_name && streak > 7 && (
+        {streak >= 7 && (
+          <div>{"• Receive Pot Raider NFT 💀 on August 19"}</div>
+        )}
+        {user?.farcaster_name && streak >= 7 && (
           <div>{"• Receive weekly Farcaster airdrop"}</div>
         )}
       </div>
