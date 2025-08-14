@@ -66,6 +66,15 @@ export const MintButton = () => {
     }
   }, [isSuccess, show]);
 
+  const increment = () => {
+    setQuantity((q) => Math.min(50, q + 1));
+  };
+
+  const decrement = () => {
+    setQuantity((q) => Math.max(1, q - 1));
+  };
+
+
   if (!isConnected) {
     return (
       <Button
@@ -92,17 +101,10 @@ export const MintButton = () => {
     );
   }
 
-  const increment = () => {
-    setQuantity((q) => Math.min(50, q + 1));
-  };
-
-  const decrement = () => {
-    setQuantity((q) => Math.max(1, q - 1));
-  };
 
   return (
-    <div className="flex items-center gap-4 w-full sm:w-auto">
-      <div className="flex items-center border border-[#FEC94F]/30 rounded-lg">
+    <div className="flex flex-row gap-4 items-center w-full ">
+      <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px]">
         <button
           className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
           onClick={decrement}
@@ -120,7 +122,7 @@ export const MintButton = () => {
         </button>
       </div>
       <Button
-        className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto"}
+        className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto flex-1"}
         onClick={() => {
           mint();
         }}
