@@ -12,7 +12,6 @@ interface Props {
   totalDays: number;
   currentDay: number;
   contractBalance: bigint;
-  redeemValue: [bigint, bigint]; // [ethShare, usdcShare]
 }
 
 export const MintComponent = ({
@@ -23,10 +22,8 @@ export const MintComponent = ({
   totalDays,
   currentDay,
   contractBalance,
-  redeemValue,
 }: Props) => {
   const mintProgress = (Number(totalSupply) / 1000) * 100;
-  const isMintInProgress = mintProgress < 100;
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
@@ -54,7 +51,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400">
                   Next Drawing
                 </div>
-                <div className="text-3xl text-[#FEC94F]">
+                <div className="text-2xl text-[#FEC94F]">
                   {
                     <CountDownToDate
                       targetDate={Number(lastJackpotEndTime) + 86400}
@@ -71,14 +68,7 @@ export const MintComponent = ({
                   {Number(formatUnits(dailySpent, 18)).toFixed(5)}Ξ
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Days
-                </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {currentDay}/{totalDays}
-                </div>
-              </div>
+
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Treasury
@@ -89,10 +79,10 @@ export const MintComponent = ({
               </div>
               <div className="flex flex-col gap-2">
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  {isMintInProgress ? "Mint In Progress" : "Minted"}
+                  Mint Progress
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
-                  {isMintInProgress ? `${mintProgress}%` : "Minted"}
+                  {mintProgress}%
                 </div>
               </div>
             </div>

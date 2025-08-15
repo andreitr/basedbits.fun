@@ -80,7 +80,7 @@ export default async function Page() {
               totalDays={totalDays}
               currentDay={currentDay}
               contractBalance={contractBalance}
-              redeemValue={redeemValue}
+              
             />
 
             <div className="mb-12 flex flex-col gap-4">
