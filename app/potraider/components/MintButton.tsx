@@ -59,7 +59,10 @@ export const MintButton = () => {
   };
 
   const label = mintPrice
-    ? `Mint for ${formatUnits(mintPrice * BigInt(quantity), 18).slice(0, 7)}Ξ`
+    ? `Mint ${quantity} for ${formatUnits(
+        mintPrice * BigInt(quantity),
+        18,
+      ).slice(0, 7)}Ξ`
     : "Loading...";
 
   useEffect(() => {
