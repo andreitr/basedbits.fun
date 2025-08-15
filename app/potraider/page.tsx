@@ -73,7 +73,7 @@ export default async function Page() {
 
           <div className="flex flex-col gap-4">
             <MintComponent
-              count={circulatingSupply}
+              totalSupply={totalSupply}
               lastJackpotEndTime={lastJackpotEndTime}
               dailySpent={dailySpent}
               jackpot={jackpot}

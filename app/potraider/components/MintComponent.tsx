@@ -5,7 +5,7 @@ import { MintButton } from "@/app/potraider/components/MintButton";
 import { formatUnits } from "ethers";
 
 interface Props {
-  count: number;
+  totalSupply: number;
   lastJackpotEndTime: number;
   dailySpent: number;
   jackpot: number;
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const MintComponent = ({
-  count,
+  totalSupply,
   lastJackpotEndTime,
   dailySpent,
   jackpot,
@@ -25,6 +25,9 @@ export const MintComponent = ({
   contractBalance,
   redeemValue,
 }: Props) => {
+  const mintProgress = (Number(totalSupply) / 1000) * 100;
+  const isMintInProgress = mintProgress < 100;
+
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
@@ -82,6 +85,14 @@ export const MintComponent = ({
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
                   {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
+                  {isMintInProgress ? "Mint In Progress" : "Minted"}
+                </div>
+                <div className="text-2xl text-[#FEC94F]">
+                  {isMintInProgress ? `${mintProgress}%` : "Minted"}
                 </div>
               </div>
             </div>

@@ -3,7 +3,6 @@
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Button } from "@/app/lib/components/Button";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
-import Link from "next/link";
 import { useModal } from "connectkit";
 import { formatUnits } from "ethers";
 import { useEffect, useState } from "react";
@@ -16,6 +15,8 @@ import {
   useWriteContract,
 } from "wagmi";
 import { base } from "wagmi/chains";
+
+const MAX_MINT_PER_TX = 50;
 
 export const MintButton = () => {
   const { setOpen } = useModal();
@@ -37,15 +38,6 @@ export const MintButton = () => {
     functionName: "mintPrice",
     chainId: base.id,
   });
-
-  const { data: totalSupply } = useReadContract({
-    abi: PotRaiderABI,
-    address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
-    functionName: "totalSupply",
-    chainId: base.id,
-  });
-
-  const mintedCount = totalSupply ? Number(totalSupply) : 0;
 
   const { show } = useSocialDisplay({
     message: `I just minted a PotRaider NFT on @basedbits!`,
@@ -77,37 +69,16 @@ export const MintButton = () => {
   }, [isSuccess, show]);
 
   const increment = () => {
-    setQuantity((q) => Math.min(50, q + 1));
+    setQuantity((q) => Math.min(MAX_MINT_PER_TX, q + 1));
   };
 
   const decrement = () => {
     setQuantity((q) => Math.max(1, q - 1));
   };
 
-  const mintedInfo = (
-    <div className="text-center text-white">{mintedCount} of 1000 minted</div>
-  );
-
-  if (mintedCount >= 1000) {
-    return (
-      <div className="text-center text-white">
-        Collection is minted out, buy{" "}
-        <Link
-          href="https://opensea.io/collection/pot-raiders"
-          target="_blank"
-          className="underline"
-        >
-          secondary
-        </Link>
-        .
-      </div>
-    );
-  }
-
   if (!isConnected) {
     return (
       <div className="flex flex-col items-center w-full gap-2">
-        {mintedInfo}
         <Button
           className={
             "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular sm:w-auto"
@@ -123,7 +94,6 @@ export const MintButton = () => {
   if (chainId !== base.id) {
     return (
       <div className="flex flex-col items-center w-full gap-2">
-        {mintedInfo}
         <Button
           className={
             "bg-[#FEC94F]/10 text-white/60 font-regular w-full sm:w-auto"
@@ -138,9 +108,8 @@ export const MintButton = () => {
 
   return (
     <div className="flex flex-col items-center w-full gap-2">
-      {mintedInfo}
-      <div className="flex flex-row gap-4 items-center w-full ">
-        <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px]">
+      <div className="flex sm:flex-row flex-col gap-4 items-center w-full ">
+        <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px] w-full sm:w-auto justify-center">
           <button
             className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
             onClick={decrement}
@@ -152,7 +121,7 @@ export const MintButton = () => {
           <button
             className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
             onClick={increment}
-            disabled={quantity >= 50}
+            disabled={quantity >= MAX_MINT_PER_TX}
           >
             +
           </button>
