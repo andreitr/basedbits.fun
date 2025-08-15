@@ -16,6 +16,8 @@ import {
 } from "wagmi";
 import { base } from "wagmi/chains";
 
+const MAX_MINT_PER_TX = 50;
+
 export const MintButton = () => {
   const { setOpen } = useModal();
 
@@ -67,7 +69,7 @@ export const MintButton = () => {
   }, [isSuccess, show]);
 
   const increment = () => {
-    setQuantity((q) => Math.min(50, q + 1));
+    setQuantity((q) => Math.min(MAX_MINT_PER_TX, q + 1));
   };
 
   const decrement = () => {
@@ -76,58 +78,64 @@ export const MintButton = () => {
 
   if (!isConnected) {
     return (
-      <Button
-        className={
-          "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular sm:w-auto"
-        }
-        onClick={() => setOpen(true)}
-      >
-        Connect to Mint
-      </Button>
+      <div className="flex flex-col items-center w-full gap-2">
+        <Button
+          className={
+            "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular sm:w-auto"
+          }
+          onClick={() => setOpen(true)}
+        >
+          Connect to Mint
+        </Button>
+      </div>
     );
   }
 
   if (chainId !== base.id) {
     return (
-      <Button
-        className={
-          "bg-[#FEC94F]/10 text-white/60 font-regular w-full sm:w-auto"
-        }
-        onClick={() => switchChain({ chainId: base.id })}
-      >
-        Switch to Base
-      </Button>
+      <div className="flex flex-col items-center w-full gap-2">
+        <Button
+          className={
+            "bg-[#FEC94F]/10 text-white/60 font-regular w-full sm:w-auto"
+          }
+          onClick={() => switchChain({ chainId: base.id })}
+        >
+          Switch to Base
+        </Button>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-row gap-4 items-center w-full ">
-      <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px]">
-        <button
-          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
-          onClick={decrement}
-          disabled={quantity <= 1}
+    <div className="flex flex-col items-center w-full gap-2">
+      <div className="flex sm:flex-row flex-col gap-4 items-center w-full ">
+        <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px] w-full sm:w-auto justify-center">
+          <button
+            className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
+            onClick={decrement}
+            disabled={quantity <= 1}
+          >
+            -
+          </button>
+          <div className="px-2 w-8 text-center text-white">{quantity}</div>
+          <button
+            className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
+            onClick={increment}
+            disabled={quantity >= MAX_MINT_PER_TX}
+          >
+            +
+          </button>
+        </div>
+        <Button
+          className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto flex-1"}
+          onClick={() => {
+            mint();
+          }}
+          loading={!mintPrice || isFetching}
         >
-          -
-        </button>
-        <div className="px-2 w-8 text-center text-white">{quantity}</div>
-        <button
-          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
-          onClick={increment}
-          disabled={quantity >= 50}
-        >
-          +
-        </button>
+          {isFetching ? "Minting..." : label}
+        </Button>
       </div>
-      <Button
-        className={"bg-[#FEC94F]/10 font-regular w-full sm:w-auto flex-1"}
-        onClick={() => {
-          mint();
-        }}
-        loading={!mintPrice || isFetching}
-      >
-        {isFetching ? "Minting..." : label}
-      </Button>
     </div>
   );
 };
