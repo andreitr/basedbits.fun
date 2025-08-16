@@ -1,29 +1,30 @@
 "use client";
 
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
+import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/potraider/components/MintButton";
 import { formatUnits } from "ethers";
 
 interface Props {
-  totalSupply: number;
   lastJackpotEndTime: number;
-  dailySpent: number;
   jackpot: number;
   totalDays: number;
   currentDay: number;
-  contractBalance: bigint;
 }
 
 export const MintComponent = ({
-  totalSupply,
   lastJackpotEndTime,
-  dailySpent,
   jackpot,
   totalDays,
   currentDay,
-  contractBalance,
 }: Props) => {
-  const mintProgress = (Number(totalSupply) / 1000) * 100;
+  const { data: contractBalance } = useContractBalance({
+    address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
+  });
+
+  const { data: totalSupply } = useTotalSupply({ enabled: true });
+  const mintProgress = totalSupply ? (Number(totalSupply) / 1000) * 100 : 0;
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
@@ -60,29 +61,25 @@ export const MintComponent = ({
                   }
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Daily Spend
-                </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {Number(formatUnits(dailySpent, 18)).toFixed(5)}Ξ
-                </div>
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Treasury
+              {contractBalance && (
+                <div className="flex flex-col gap-2">
+                  <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
+                    Treasury
+                  </div>
+                  <div className="text-2xl text-[#FEC94F]">
+                    {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
+                  </div>
                 </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
+              )}
+              {totalSupply && (
+                <div className="flex flex-col gap-2">
+                  <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
+                    Mint Progress
+                  </div>
+                  <div className="text-2xl text-[#FEC94F]">{mintProgress}%</div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                  Mint Progress
-                </div>
-                <div className="text-2xl text-[#FEC94F]">{mintProgress}%</div>
-              </div>
+              )}
             </div>
           </div>
           <MintButton />

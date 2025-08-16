@@ -4,6 +4,7 @@ import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Button } from "@/app/lib/components/Button";
 import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
 import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
+import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,14 +30,18 @@ export const MintButton = () => {
 
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
 
   const { invalidate: invalidateRedeemValue } = useRedeemValue();
   const { invalidate: invalidateCirculatingSupply } = useCirculatingSupply({
     enabled: false,
   });
-  const { invalidate: invalidateBalanceOf } = useBalanceOf({
+  const { invalidate: invalidateContractBalance } = useContractBalance({
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
+    enabled: false,
+  });
+  const { invalidate: invalidateBalanceOf } = useBalanceOf({
+    address: address,
     enabled: false,
   });
 
@@ -89,6 +94,7 @@ export const MintButton = () => {
           invalidateRedeemValue();
           invalidateCirculatingSupply();
           invalidateBalanceOf();
+          invalidateContractBalance();
         })
         .finally(() => {
           show();

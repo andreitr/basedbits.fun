@@ -2,6 +2,7 @@
 
 import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
 import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
+import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
@@ -52,6 +53,7 @@ export const NFTCard = ({
   nft: AlchemyToken;
   redeemValue?: [bigint, bigint];
 }) => {
+  const { address } = useAccount();
   const { call: redeem, isFetching, isSuccess } = useRedeem();
   const { invalidate: invalidateRedeemValue } = useRedeemValue({
     enabled: false,
@@ -60,6 +62,10 @@ export const NFTCard = ({
     enabled: false,
   });
   const { invalidate: invalidateBalanceOf } = useBalanceOf({
+    address: address,
+    enabled: false,
+  });
+  const { invalidate: invalidateContractBalance } = useContractBalance({
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
     enabled: false,
   });
@@ -75,6 +81,7 @@ export const NFTCard = ({
           invalidateRedeemValue();
           invalidateCirculatingSupply();
           invalidateBalanceOf();
+          invalidateContractBalance();
         })
         .finally(() => {
           console.log("invalidated");

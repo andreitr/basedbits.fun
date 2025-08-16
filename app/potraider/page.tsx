@@ -37,30 +37,13 @@ export async function generateMetadata() {
 export default async function Page() {
   const contract = potraiderContract();
 
-  // Get contract ETH balance
-  const provider = new JsonRpcProvider(
-    `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`,
-  );
-  const contractBalance = await provider.getBalance(
-    process.env.NEXT_PUBLIC_RAIDER_ADDRESS as string,
-  );
-
-  const [
-    totalSupply,
-    jackpot,
-    lastJackpotEndTime,
-    dailySpent,
-    totalDays,
-    currentDay,
-    ,
-  ] = await Promise.all([
-    contract.totalSupply(),
-    contract.getLotteryJackpot(),
-    contract.getLotterylastJackpotEndTime(),
-    contract.getDailyPurchaseAmount(),
-    contract.lotteryParticipationDays(),
-    contract.currentLotteryDay(),
-  ]);
+  const [jackpot, lastJackpotEndTime, totalDays, currentDay] =
+    await Promise.all([
+      contract.getLotteryJackpot(),
+      contract.getLotterylastJackpotEndTime(),
+      contract.lotteryParticipationDays(),
+      contract.currentLotteryDay(),
+    ]);
 
   return (
     <div className="flex flex-col justify-center items-ce ter w-full">
@@ -70,13 +53,10 @@ export default async function Page() {
 
           <div className="flex flex-col gap-4">
             <MintComponent
-              totalSupply={totalSupply}
               lastJackpotEndTime={lastJackpotEndTime}
-              dailySpent={dailySpent}
               jackpot={jackpot}
               totalDays={totalDays}
               currentDay={currentDay}
-              contractBalance={contractBalance}
             />
 
             <div className="mb-12 flex flex-col gap-4">
