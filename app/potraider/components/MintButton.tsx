@@ -112,10 +112,10 @@ export const MintButton = () => {
 
   if (!isConnected) {
     return (
-      <div className="flex flex-col items-center w-full gap-2">
+      <div className="w-full">
         <Button
           className={
-            "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular sm:w-auto"
+            "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular w-full"
           }
           onClick={() => setOpen(true)}
         >
@@ -127,10 +127,10 @@ export const MintButton = () => {
 
   if (chainId !== base.id) {
     return (
-      <div className="flex flex-col items-center w-full gap-2">
+      <div className="w-full">
         <Button
           className={
-            "bg-[#FEC94F]/10 text-white/60 font-regular w-full sm:w-auto"
+            "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular w-full"
           }
           onClick={() => switchChain({ chainId: base.id })}
         >

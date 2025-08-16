@@ -5,34 +5,58 @@ import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSu
 import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
+import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { truncateAddress } from "@/app/lib/utils/addressUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 export const NFTList = () => {
   const { isConnected, address } = useAccount();
-
   const { data: redeemValue } = useRedeemValue();
-
+  const { data: totalSupply } = useTotalSupply({ enabled: true });
   const { data: list, isLoading } = useGetOwnerNFTs({
     address,
     contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
   });
 
-  if (!isConnected) {
-    return <div>Connect your wallet to view your PotRaiders</div>;
-  }
+  const [callToAction, setCallToAction] = useState<React.ReactNode>(
+    "Mint while you can!",
+  );
 
-  if (isLoading) {
-    return <NFTListSkeleton />;
+  useEffect(() => {
+    if (totalSupply) {
+      if (Number(totalSupply) >= 1) {
+        setCallToAction(
+          <>
+            Buy Pot Raiders on{" "}
+            <Link
+              href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+              className="underline"
+              target="_blank"
+            >
+              OpenSea
+            </Link>
+          </>,
+        );
+      }
+    }
+  }, [totalSupply]);
+
+  if (!isConnected || !address) {
+    return <div>Connect wallet to view your Pot Raiders 💰💀</div>;
   }
 
   if (!isLoading && (!list || !list.ownedNfts || list.ownedNfts.length === 0)) {
-    return <div>No NFTs found</div>;
+    return (
+      <div>
+        No Pot Raiders found in {truncateAddress(address)}. {callToAction}
+      </div>
+    );
   }
 
   return (
@@ -133,22 +157,6 @@ export const NFTCard = ({
           </div>
         )}
       </div>
-    </div>
-  );
-};
-
-export const NFTListSkeleton = () => {
-  const placeholders = Array.from({ length: 5 });
-  return (
-    <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
-      {placeholders.map((_, index) => (
-        <div
-          key={index}
-          className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center animate-pulse"
-        >
-          <div className="mb-8 lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg bg-black bg-opacity-20"></div>
-        </div>
-      ))}
     </div>
   );
 };

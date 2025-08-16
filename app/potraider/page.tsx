@@ -37,13 +37,13 @@ export async function generateMetadata() {
 export default async function Page() {
   const contract = potraiderContract();
 
-  const [jackpot, lastJackpotEndTime, totalDays, currentDay] =
-    await Promise.all([
-      contract.getLotteryJackpot(),
-      contract.getLotterylastJackpotEndTime(),
-      contract.lotteryParticipationDays(),
-      contract.currentLotteryDay(),
-    ]);
+  const [jackpot, lastJackpotEndTime, currentDay] = await Promise.all([
+    contract.getLotteryJackpot(),
+    contract.getLotterylastJackpotEndTime(),
+    contract.currentLotteryDay(),
+  ]);
+
+  const history = await contract.lotteryPurchaseHistory(Number(currentDay) - 1);
 
   return (
     <div className="flex flex-col justify-center items-ce ter w-full">
@@ -55,11 +55,10 @@ export default async function Page() {
             <MintComponent
               lastJackpotEndTime={lastJackpotEndTime}
               jackpot={jackpot}
-              totalDays={totalDays}
-              currentDay={currentDay}
+              history={history}
             />
 
-            <div className="mb-12 flex flex-col gap-4">
+            <div className="mt-4 mb-12 flex flex-col gap-4">
               <UserComponent />
               <NFTList />
             </div>

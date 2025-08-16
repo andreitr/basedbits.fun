@@ -6,35 +6,34 @@ import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/potraider/components/MintButton";
 import { formatUnits } from "ethers";
 import { useState, useEffect } from "react";
+import { base } from "viem/chains";
 
 interface Props {
   lastJackpotEndTime: number;
   jackpot: number;
-  totalDays: number;
-  currentDay: number;
+  history: [bigint, number];
 }
 
 export const MintComponent = ({
   lastJackpotEndTime,
   jackpot,
-  totalDays,
-  currentDay,
+  history,
 }: Props) => {
   const { data: contractBalance } = useContractBalance({
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
+    enabled: true,
+    chainId: base.id,
   });
 
   const { data: totalSupply } = useTotalSupply({ enabled: true });
-  
-  const [mintProgress, setMintProgress] = useState(0);
 
+  const [mintProgress, setMintProgress] = useState(0);
 
   useEffect(() => {
     if (totalSupply) {
       setMintProgress(Math.round((Number(totalSupply) / 1000) * 100));
     }
   }, [totalSupply]);
-
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
@@ -60,7 +59,20 @@ export const MintComponent = ({
             <div className="flex flex-wrap gap-4 sm:gap-8 justify-center items-center w-full">
               <div className="flex flex-col gap-1">
                 <div className="uppercase text-xs text-gray-400">
-                  Next Drawing
+                  last entry on{" "}
+                  {new Date(Number(history[1]) * 1000).toLocaleDateString(
+                    "en-US",
+                    { month: "short", day: "numeric" },
+                  )}
+                </div>
+                <div className="text-2xl text-[#FEC94F]">
+                  {history[0].toString()} Tickets
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="uppercase text-xs text-gray-400">
+                  next purchase
                 </div>
                 <div className="text-2xl text-[#FEC94F]">
                   {
@@ -75,13 +87,14 @@ export const MintComponent = ({
               {contractBalance && (
                 <div className="flex flex-col gap-2">
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                    Treasury
+                    Total Treasury
                   </div>
                   <div className="text-2xl text-[#FEC94F]">
                     {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
                   </div>
                 </div>
               )}
+
               {totalSupply && (
                 <div className="flex flex-col gap-2">
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
