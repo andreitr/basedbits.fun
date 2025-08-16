@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
-
 export const NFTList = () => {
   const { isConnected, address } = useAccount();
 
@@ -52,7 +51,9 @@ export const NFTCard = ({
   redeemValue?: [bigint, bigint];
 }) => {
   const { call: redeem, isFetching, isSuccess } = useRedeem();
-  const { invalidate: invalidateRedeemValue } = useRedeemValue({enabled: false});
+  const { invalidate: invalidateRedeemValue } = useRedeemValue({
+    enabled: false,
+  });
 
   const queryClient = useQueryClient();
 

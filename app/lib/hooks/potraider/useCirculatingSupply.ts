@@ -6,7 +6,9 @@ interface UseCirculatingSupplyOptions {
   enabled?: boolean;
 }
 
-export const useCirculatingSupply = (options: UseCirculatingSupplyOptions = {}) => {
+export const useCirculatingSupply = (
+  options: UseCirculatingSupplyOptions = {},
+) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 

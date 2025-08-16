@@ -72,15 +72,16 @@ export const MintButton = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      queryClient.invalidateQueries({
-        queryKey: ["getNFTsForOwner", process.env.NEXT_PUBLIC_RAIDER_ADDRESS],
-      }).then(() => {
-        invalidateRedeemValue();
-      }).finally(() => {
-        
-        show();
-      });
-
+      queryClient
+        .invalidateQueries({
+          queryKey: ["getNFTsForOwner", process.env.NEXT_PUBLIC_RAIDER_ADDRESS],
+        })
+        .then(() => {
+          invalidateRedeemValue();
+        })
+        .finally(() => {
+          show();
+        });
     }
   }, [isSuccess, show]);
 

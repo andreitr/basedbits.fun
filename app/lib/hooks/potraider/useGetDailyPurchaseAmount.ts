@@ -6,7 +6,9 @@ interface UseGetDailyPurchaseAmountOptions {
   enabled?: boolean;
 }
 
-export const useGetDailyPurchaseAmount = (options: UseGetDailyPurchaseAmountOptions = {}) => {
+export const useGetDailyPurchaseAmount = (
+  options: UseGetDailyPurchaseAmountOptions = {},
+) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 
