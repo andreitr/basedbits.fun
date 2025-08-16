@@ -9,14 +9,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import { Spinner } from "@/app/lib/components/Spinner";
 
-interface Props {
-  redeemValue?: [bigint, bigint]; // [ethShare, usdcShare]
-}
 
-export const NFTList = ({ redeemValue }: Props) => {
+export const NFTList = () => {
   const { isConnected, address } = useAccount();
+
+  const { data: redeemValue } = useRedeemValue();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
     address,
@@ -54,7 +52,7 @@ export const NFTCard = ({
   redeemValue?: [bigint, bigint];
 }) => {
   const { call: redeem, isFetching, isSuccess } = useRedeem();
-  const { invalidate: invalidateRedeemValue } = useRedeemValue();
+  const { invalidate: invalidateRedeemValue } = useRedeemValue({enabled: false});
 
   const queryClient = useQueryClient();
 

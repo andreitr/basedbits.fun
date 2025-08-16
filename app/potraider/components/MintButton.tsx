@@ -2,7 +2,9 @@
 
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Button } from "@/app/lib/components/Button";
+import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
+import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "connectkit";
 import { formatUnits } from "ethers";
 import { useEffect, useState } from "react";
@@ -20,16 +22,19 @@ const MAX_MINT_PER_TX = 50;
 
 export const MintButton = () => {
   const { setOpen } = useModal();
-
+  const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
 
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { isConnected } = useAccount();
-  const { data, writeContract } = useWriteContract();
 
+  const { invalidate: invalidateRedeemValue } = useRedeemValue();
+
+  const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
     hash: data,
+    confirmations: 3,
   });
 
   const { data: mintPrice } = useReadContract({
@@ -67,7 +72,15 @@ export const MintButton = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      show();
+      queryClient.invalidateQueries({
+        queryKey: ["getNFTsForOwner", process.env.NEXT_PUBLIC_RAIDER_ADDRESS],
+      }).then(() => {
+        invalidateRedeemValue();
+      }).finally(() => {
+        
+        show();
+      });
+
     }
   }, [isSuccess, show]);
 

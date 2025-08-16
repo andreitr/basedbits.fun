@@ -53,7 +53,7 @@ export default async function Page() {
     dailySpent,
     totalDays,
     currentDay,
-    redeemValue,
+,
   ] = await Promise.all([
     contract.circulatingSupply(),
     contract.totalSupply(),
@@ -62,7 +62,7 @@ export default async function Page() {
     contract.getDailyPurchaseAmount(),
     contract.lotteryParticipationDays(),
     contract.currentLotteryDay(),
-    contract.getRedeemValue(),
+
   ]);
 
   return (
@@ -84,7 +84,7 @@ export default async function Page() {
 
             <div className="mb-12 flex flex-col gap-4">
               <UserComponent circulatingSupply={circulatingSupply} />
-              <NFTList redeemValue={redeemValue} />
+              <NFTList  />
             </div>
           </div>
         </div>

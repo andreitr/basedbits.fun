@@ -2,18 +2,18 @@ import { useReadContract } from "wagmi";
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { useQueryClient } from "@tanstack/react-query";
 
-interface UseRedeemValueOptions {
+interface UseCirculatingSupplyOptions {
   enabled?: boolean;
 }
 
-export const useRedeemValue = (options: UseRedeemValueOptions = {}) => {
+export const useCirculatingSupply = (options: UseCirculatingSupplyOptions = {}) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 
   const { data, isFetched, isError, isLoading, queryKey } = useReadContract({
     abi: PotRaiderABI,
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
-    functionName: "getRedeemValue",
+    functionName: "circulatingSupply",
     query: {
       staleTime: 3600000, // 1 hour
       enabled, // Use enabled directly
@@ -25,7 +25,7 @@ export const useRedeemValue = (options: UseRedeemValueOptions = {}) => {
   };
 
   return {
-    data: data as [bigint, bigint],
+    data: data as bigint,
     isFetched,
     isError,
     isLoading,
