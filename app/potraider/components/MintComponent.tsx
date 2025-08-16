@@ -5,6 +5,7 @@ import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance
 import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/potraider/components/MintButton";
 import { formatUnits } from "ethers";
+import { useState, useEffect } from "react";
 
 interface Props {
   lastJackpotEndTime: number;
@@ -24,7 +25,16 @@ export const MintComponent = ({
   });
 
   const { data: totalSupply } = useTotalSupply({ enabled: true });
-  const mintProgress = totalSupply ? (Number(totalSupply) / 1000) * 100 : 0;
+  
+  const [mintProgress, setMintProgress] = useState(0);
+
+
+  useEffect(() => {
+    if (totalSupply) {
+      setMintProgress(Math.round((Number(totalSupply) / 1000) * 100));
+    }
+  }, [totalSupply]);
+
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">

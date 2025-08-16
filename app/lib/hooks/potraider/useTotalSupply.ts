@@ -20,7 +20,7 @@ export const useTotalSupply = (options: UseTotalSupplyOptions = {}) => {
     },
   });
 
-  const invalidate = () => {
+  const invalidate = (): void => {
     queryClient.invalidateQueries({ queryKey });
   };
 

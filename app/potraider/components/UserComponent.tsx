@@ -3,6 +3,7 @@
 import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
 import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
@@ -15,15 +16,20 @@ export const UserComponent = ({}: Props) => {
   const { data: redeemValue } = useRedeemValue();
   const { data: circulatingSupply } = useCirculatingSupply();
 
-  if (!isConnected) {
-    return null;
+const [etValue, setEtValue] = useState(0);
+const [usdcValue, setUsdcValue] = useState(0);
+
+
+useEffect(() => {
+  if (redeemValue && balance) {
+    setEtValue(Number(formatUnits(redeemValue[0] * BigInt(balance), 18)) || 0);
+    setUsdcValue(Number(formatUnits(redeemValue[1] * BigInt(balance), 6)) || 0);
   }
+}, [balance, redeemValue]);
 
-  // Calculate USDC value once to avoid recalculation
-  const usdcValue = balance
-    ? Number(formatUnits(redeemValue[1] * BigInt(balance), 6))
-    : 0;
-
+if (!isConnected) {
+  return null;
+}
   return (
     <div className="flex flex-row gap-6">
       {balance && (
@@ -42,20 +48,8 @@ export const UserComponent = ({}: Props) => {
             Total Value
           </div>
           <div className="text-2xl ">
-            {Number(formatUnits(redeemValue[0] * BigInt(balance), 18)).toFixed(
-              5,
-            )}
-            Ξ
-            {Number(formatUnits(redeemValue[1] * BigInt(balance), 6)) > 0 && (
-              <>
-                {" "}
-                +{" "}
-                {Number(
-                  formatUnits(redeemValue[1] * BigInt(balance), 6),
-                ).toFixed(2)}{" "}
-                USDC
-              </>
-            )}
+            {etValue.toFixed(5)}Ξ
+            {usdcValue > 0 && `${usdcValue.toFixed(2)}USDC`} 
           </div>
         </div>
       )}
