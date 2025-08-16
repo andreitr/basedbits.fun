@@ -81,9 +81,7 @@ export const MintComponent = ({
                 <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                   Mint Progress
                 </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {mintProgress}%
-                </div>
+                <div className="text-2xl text-[#FEC94F]">{mintProgress}%</div>
               </div>
             </div>
           </div>

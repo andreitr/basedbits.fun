@@ -6,6 +6,7 @@ export const useRedeem = () => {
 
   const { isFetching, isError, isSuccess } = useWaitForTransactionReceipt({
     hash,
+    confirmations: 3, // Wait for 3 block confirmations
   });
 
   const call = (id: number) => {

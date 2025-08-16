@@ -1,22 +1,25 @@
 "use client";
 
 import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
+import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useEffect } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
+import { Spinner } from "@/app/lib/components/Spinner";
 
 interface Props {
-  circulatingSupply: number;
   redeemValue?: [bigint, bigint]; // [ethShare, usdcShare]
 }
 
-export const NFTList = ({ circulatingSupply, redeemValue }: Props) => {
+export const NFTList = ({ redeemValue }: Props) => {
   const { isConnected, address } = useAccount();
 
   const { data: list, isLoading } = useGetOwnerNFTs({
-    address: address,
+    address,
     contract: process.env.NEXT_PUBLIC_RAIDER_ADDRESS!,
   });
 
@@ -51,6 +54,24 @@ export const NFTCard = ({
   redeemValue?: [bigint, bigint];
 }) => {
   const { call: redeem, isFetching, isSuccess } = useRedeem();
+  const { invalidate: invalidateRedeemValue } = useRedeemValue();
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (isSuccess && !isFetching) {
+      queryClient
+        .invalidateQueries({
+          queryKey: ["getNFTsForOwner", process.env.NEXT_PUBLIC_RAIDER_ADDRESS],
+        })
+        .then(() => {
+          invalidateRedeemValue();
+        })
+        .finally(() => {
+          console.log("invalidated");
+        });
+    }
+  }, [isSuccess, isFetching]);
 
   return (
     <div className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center">
@@ -62,25 +83,36 @@ export const NFTCard = ({
         <Link
           href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
           target="_blank"
-          className="hover:underline "
+          className="hover:underline"
         >
           {nft.name}
         </Link>
         {redeemValue && (
-          <div className="mt-2 text-gray-700 rounded-md p-2 w-full text-sm hover:text-black bg-black/10">
+          <div className="mt-2 text-black rounded-md p-2 w-full text-sm bg-black/10 hover:bg-black/20">
             <button
               className="cursor-pointer w-full"
               onClick={() => redeem(Number(nft.tokenId))}
+              disabled={isFetching}
             >
-              <div>Redeem for</div>
-              <div className="flex flex-row gap-2 pt-1 flex-wrap justify-center">
-                <div>{Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ</div>
-                {Number(redeemValue[1]) > 0 && (
+              <>
+                <div>
+                  {isSuccess
+                    ? "Redeemed!"
+                    : isFetching
+                      ? "Redeeming..."
+                      : "Redeem for"}
+                </div>
+                <div className="flex flex-row gap-2 pt-1 flex-wrap justify-center">
                   <div>
-                    + {Number(formatUnits(redeemValue[1], 6)).toFixed(2)} USDC
+                    {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
                   </div>
-                )}
-              </div>
+                  {Number(redeemValue[1]) > 0 && (
+                    <div>
+                      + {Number(formatUnits(redeemValue[1], 6)).toFixed(2)} USDC
+                    </div>
+                  )}
+                </div>
+              </>
             </button>
           </div>
         )}

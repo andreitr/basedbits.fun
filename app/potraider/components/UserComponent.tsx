@@ -1,22 +1,20 @@
 "use client";
 
 import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
-import { useUser } from "@/app/lib/hooks/useUser";
+import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 interface Props {
   circulatingSupply: number;
-  redeemValue: [bigint, bigint]; // [ethShare, usdcShare]
 }
 
-export const UserComponent = ({ redeemValue, circulatingSupply }: Props) => {
+export const UserComponent = ({ circulatingSupply }: Props) => {
   const { address, isConnected } = useAccount();
+
   const { data: balance } = useBalanceOf({ address: address });
-  const { data: user } = useUser({
-    address: address as `0x${string}`,
-    enabled: isConnected,
-  });
+  const { data: redeemValue, invalidate: invalidateRedeemValue } =
+    useRedeemValue();
 
   if (!isConnected) {
     return null;

@@ -19,7 +19,7 @@ export const useRedeemValue = () => {
   };
 
   return {
-    data,
+    data: data as [bigint, bigint],
     isFetched,
     isError,
     isLoading,

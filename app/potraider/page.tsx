@@ -80,18 +80,11 @@ export default async function Page() {
               totalDays={totalDays}
               currentDay={currentDay}
               contractBalance={contractBalance}
-              
             />
 
             <div className="mb-12 flex flex-col gap-4">
-              <UserComponent
-                circulatingSupply={circulatingSupply}
-                redeemValue={redeemValue}
-              />
-              <NFTList
-                circulatingSupply={circulatingSupply}
-                redeemValue={redeemValue}
-              />
+              <UserComponent circulatingSupply={circulatingSupply} />
+              <NFTList redeemValue={redeemValue} />
             </div>
           </div>
         </div>
