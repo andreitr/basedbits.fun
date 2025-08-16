@@ -46,7 +46,6 @@ export default async function Page() {
   );
 
   const [
-    circulatingSupply,
     totalSupply,
     jackpot,
     lastJackpotEndTime,
@@ -55,7 +54,6 @@ export default async function Page() {
     currentDay,
     ,
   ] = await Promise.all([
-    contract.circulatingSupply(),
     contract.totalSupply(),
     contract.getLotteryJackpot(),
     contract.getLotterylastJackpotEndTime(),
@@ -82,7 +80,7 @@ export default async function Page() {
             />
 
             <div className="mb-12 flex flex-col gap-4">
-              <UserComponent circulatingSupply={circulatingSupply} />
+              <UserComponent />
               <NFTList />
             </div>
           </div>

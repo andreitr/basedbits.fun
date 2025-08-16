@@ -1,5 +1,7 @@
 "use client";
 
+import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
+import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useRedeem } from "@/app/lib/hooks/potraider/useRedeem";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
@@ -54,7 +56,13 @@ export const NFTCard = ({
   const { invalidate: invalidateRedeemValue } = useRedeemValue({
     enabled: false,
   });
-
+  const { invalidate: invalidateCirculatingSupply } = useCirculatingSupply({
+    enabled: false,
+  });
+  const { invalidate: invalidateBalanceOf } = useBalanceOf({
+    address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
+    enabled: false,
+  });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -65,6 +73,8 @@ export const NFTCard = ({
         })
         .then(() => {
           invalidateRedeemValue();
+          invalidateCirculatingSupply();
+          invalidateBalanceOf();
         })
         .finally(() => {
           console.log("invalidated");

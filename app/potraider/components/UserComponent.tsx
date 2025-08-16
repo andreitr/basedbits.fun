@@ -1,20 +1,19 @@
 "use client";
 
 import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
+import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
-interface Props {
-  circulatingSupply: number;
-}
+interface Props {}
 
-export const UserComponent = ({ circulatingSupply }: Props) => {
+export const UserComponent = ({}: Props) => {
   const { address, isConnected } = useAccount();
 
   const { data: balance } = useBalanceOf({ address: address });
-  const { data: redeemValue, invalidate: invalidateRedeemValue } =
-    useRedeemValue();
+  const { data: redeemValue } = useRedeemValue();
+  const { data: circulatingSupply } = useCirculatingSupply();
 
   if (!isConnected) {
     return null;
@@ -60,7 +59,7 @@ export const UserComponent = ({ circulatingSupply }: Props) => {
           </div>
         </div>
       )}
-      {balance && (
+      {balance && circulatingSupply && (
         <div className="flex flex-col gap-2">
           <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
             Treasury Share

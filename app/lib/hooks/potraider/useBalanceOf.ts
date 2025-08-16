@@ -4,9 +4,10 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   address?: `0x${string}`;
+  enabled?: boolean;
 }
 
-export const useBalanceOf = ({ address }: Props) => {
+export const useBalanceOf = ({ address, enabled }: Props) => {
   const queryClient = useQueryClient();
 
   const { data, isFetched, isError, isLoading, queryKey } = useReadContract({
@@ -15,7 +16,7 @@ export const useBalanceOf = ({ address }: Props) => {
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address,
+      enabled: !!address && enabled,
       staleTime: 3600000, // 1 hour
     },
   });

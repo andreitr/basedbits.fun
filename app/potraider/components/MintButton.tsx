@@ -2,6 +2,8 @@
 
 import { PotRaiderABI } from "@/app/lib/abi/PotRaider.abi";
 import { Button } from "@/app/lib/components/Button";
+import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
+import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +32,13 @@ export const MintButton = () => {
   const { isConnected } = useAccount();
 
   const { invalidate: invalidateRedeemValue } = useRedeemValue();
+  const { invalidate: invalidateCirculatingSupply } = useCirculatingSupply({
+    enabled: false,
+  });
+  const { invalidate: invalidateBalanceOf } = useBalanceOf({
+    address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
+    enabled: false,
+  });
 
   const { data, writeContract } = useWriteContract();
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -78,6 +87,8 @@ export const MintButton = () => {
         })
         .then(() => {
           invalidateRedeemValue();
+          invalidateCirculatingSupply();
+          invalidateBalanceOf();
         })
         .finally(() => {
           show();
