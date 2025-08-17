@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
             throw new Error("Failed to create message record");
           }
 
-          const message = `Good job maintaining your streak—you’ve earned yourself a bonus ${messageCreated.bounty} BBITS! This claim link expires in 7 days, so don’t sleep on it https://www.basedbits.fun/users/${user.address}?message=${messageCreated.rand_hash}`;
+          const message = `Friendly reminder - the Pot Raiders collection is launching on tuesday, August 19. Don't miss it. Now go claim your ${messageCreated.bounty} BBITS airdrop. This claim link expires in 7 days, so don’t sleep on it https://www.basedbits.fun/users/${user.address}?message=${messageCreated.rand_hash}`;
           await sendFarcasterDM(user.farcaster_name!, message);
           return { success: true, user: user.farcaster_name };
         } catch (error) {
