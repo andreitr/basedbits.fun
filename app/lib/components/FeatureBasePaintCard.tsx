@@ -1,10 +1,9 @@
 "use client";
 
+import { BasePaintAbi } from "@/app/lib/abi/BasePaint.abi";
 import Image from "next/image";
 import Link from "next/link";
 import { useReadContract } from "wagmi";
-import { BasePaintAbi } from "@/app/lib/abi/BasePaint.abi";
-import { Tooltip } from "@/app/lib/components/client/Tooltip";
 
 interface Props {
   title: string;
