@@ -106,15 +106,12 @@ export const NFTCard = ({
           invalidateCirculatingSupply();
           invalidateBalanceOf();
           invalidateContractBalance();
-        })
-        .finally(() => {
-          console.log("invalidated");
         });
     }
   }, [isSuccess, isFetching]);
 
   return (
-    <div className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center w-full">
+    <div className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center w-full">
       <div
         className="bg-cover bg-center bg-no-repeat w-full aspect-square rounded-lg"
         style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
@@ -123,12 +120,12 @@ export const NFTCard = ({
         <Link
           href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
           target="_blank"
-          className="hover:underline text-sm sm:text-base"
+          className="hover:underline text-sm sm:text-base text-white"
         >
           {nft.name}
         </Link>
         {redeemValue && (
-          <div className="mt-2 text-black rounded-md p-2 w-full text-xs sm:text-sm bg-black/10 hover:bg-black/20">
+          <div className="mt-2 text-[#FFE29E] rounded-md p-2 w-full text-sm bg-white/10 hover:bg-white/20">
             <button
               className="cursor-pointer w-full"
               onClick={() => redeem(Number(nft.tokenId))}
