@@ -1,6 +1,7 @@
 "use client";
 
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/potraider/components/MintButton";
@@ -26,6 +27,7 @@ export const MintComponent = ({
   });
 
   const { data: totalSupply } = useTotalSupply({ enabled: true });
+  const { data: circulatingSupply } = useCirculatingSupply({ enabled: true });
 
   const [mintProgress, setMintProgress] = useState(0);
 
@@ -38,10 +40,10 @@ export const MintComponent = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
-        <div className="flex flex-col lg:gap-7 justify-between w-full">
+        <div className="flex flex-col gap-7 justify-between w-full">
           <div>
-            <div className="flex flex-col gap-2 hidden sm:flex justify-center items-center py-12">
-              <div className="text-6xl text-[#FFE29E]">
+            <div className="flex flex-col gap-2 justify-center items-center py-12">
+              <div className="sm:text-6xl text-4xl text-[#FEC94F]">
                 $
                 {Number(formatUnits(jackpot, 6)).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -49,8 +51,8 @@ export const MintComponent = ({
                 })}
               </div>
               <div className="text-sm text-gray-400">
-                Every day raid the Megapot in hopes of a big win. Proceeds split
-                beteen raiders.
+                Every day {circulatingSupply} raiders use their war chest to buy
+                Megapot tickets in hopes of a big win.
               </div>
             </div>
 
@@ -59,7 +61,7 @@ export const MintComponent = ({
             <div className="flex flex-wrap gap-4 sm:gap-8 justify-center items-center w-full">
               <div className="flex flex-col gap-1">
                 <div className="uppercase text-xs text-gray-400">
-                  last entry on{" "}
+                  last raid:{" "}
                   {new Date(Number(history[1]) * 1000).toLocaleDateString(
                     "en-US",
                     { month: "short", day: "numeric" },
@@ -71,9 +73,7 @@ export const MintComponent = ({
               </div>
 
               <div className="flex flex-col gap-1">
-                <div className="uppercase text-xs text-gray-400">
-                  next purchase
-                </div>
+                <div className="uppercase text-xs text-gray-400">next raid</div>
                 <div className="text-2xl text-[#FEC94F]">
                   {
                     <CountDownToDate
@@ -87,7 +87,7 @@ export const MintComponent = ({
               {contractBalance && (
                 <div className="flex flex-col gap-2">
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                    Total Treasury
+                    war chest
                   </div>
                   <div className="text-2xl text-[#FEC94F]">
                     {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
@@ -96,9 +96,9 @@ export const MintComponent = ({
               )}
 
               {totalSupply && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 hidden sm:flex">
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                    Mint Progress
+                    mint progress
                   </div>
                   <div className="text-2xl text-[#FEC94F]">{mintProgress}%</div>
                 </div>
