@@ -114,21 +114,21 @@ export const NFTCard = ({
   }, [isSuccess, isFetching]);
 
   return (
-    <div className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center">
+    <div className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center w-full">
       <div
-        className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
+        className="bg-cover bg-center bg-no-repeat w-full aspect-square rounded-lg"
         style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
       ></div>
       <div className="mt-2 w-full">
         <Link
           href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
           target="_blank"
-          className="hover:underline"
+          className="hover:underline text-sm sm:text-base"
         >
           {nft.name}
         </Link>
         {redeemValue && (
-          <div className="mt-2 text-black rounded-md p-2 w-full text-sm bg-black/10 hover:bg-black/20">
+          <div className="mt-2 text-black rounded-md p-2 w-full text-xs sm:text-sm bg-black/10 hover:bg-black/20">
             <button
               className="cursor-pointer w-full"
               onClick={() => redeem(Number(nft.tokenId))}
@@ -142,7 +142,7 @@ export const NFTCard = ({
                       ? "Redeeming..."
                       : "Redeem for"}
                 </div>
-                <div className="flex flex-row gap-2 pt-1 flex-wrap justify-center">
+                <div className="flex flex-row gap-1 sm:gap-2 pt-1 flex-wrap justify-center">
                   <div>
                     {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
                   </div>

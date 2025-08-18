@@ -36,7 +36,7 @@ export const MintComponent = ({
   }, [totalSupply]);
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 rounded-lg text-white p-5">
+    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
       <div className="flex flex-col sm:flex-row w-full gap-5">
         <div className="flex flex-col lg:gap-7 justify-between w-full">
           <div>

@@ -55,7 +55,7 @@ export const UserComponent = () => {
         </div>
       )}
       {balance && circulatingSupply && (
-        <div className="flex flex-col gap-2">
+        <div className="hidden sm:flex flex-col gap-2">
           <div className="uppercase text-xs text-gray-600 flex items-center gap-1">
             Treasury Share
           </div>

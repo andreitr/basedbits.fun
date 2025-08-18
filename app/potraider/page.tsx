@@ -6,7 +6,6 @@ import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { MintComponent } from "@/app/potraider/components/MintComponent";
 import { NFTList } from "@/app/potraider/components/NFTList";
 import { UserComponent } from "@/app/potraider/components/UserComponent";
-import { JsonRpcProvider } from "ethers";
 
 export async function generateMetadata() {
   const title = "Pot Raiders";
@@ -58,7 +57,7 @@ export default async function Page() {
               history={history}
             />
 
-            <div className="mt-4 mb-12 flex flex-col gap-4">
+            <div className="mt-2 mb-12 flex flex-col gap-4 px-4 sm:px-0">
               <UserComponent />
               <NFTList />
             </div>
