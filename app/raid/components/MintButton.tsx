@@ -61,7 +61,7 @@ export const MintButton = () => {
   const { show } = useSocialDisplay({
     message: `I just minted a PotRaider NFT on @basedbits!`,
     title: "Please spread the word - the raiders are coming!",
-    url: "https://basedbits.fun/potraider",
+    url: "https://basedbits.fun/raid",
   });
 
   const mint = () => {
