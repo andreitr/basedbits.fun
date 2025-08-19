@@ -6,6 +6,7 @@ import { useBalanceOf } from "@/app/lib/hooks/potraider/useBalanceOf";
 import { useCirculatingSupply } from "@/app/lib/hooks/potraider/useCirculatingSupply";
 import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useRedeemValue } from "@/app/lib/hooks/potraider/useRedeemValue";
+import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "connectkit";
@@ -34,6 +35,9 @@ export const MintButton = () => {
 
   const { invalidate: invalidateRedeemValue } = useRedeemValue();
   const { invalidate: invalidateCirculatingSupply } = useCirculatingSupply({
+    enabled: false,
+  });
+  const { invalidate: invalidateTotalSupply } = useTotalSupply({
     enabled: false,
   });
   const { invalidate: invalidateContractBalance } = useContractBalance({
@@ -95,6 +99,7 @@ export const MintButton = () => {
           invalidateCirculatingSupply();
           invalidateBalanceOf();
           invalidateContractBalance();
+          invalidateTotalSupply();
         })
         .finally(() => {
           show();

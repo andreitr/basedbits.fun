@@ -66,30 +66,45 @@ export const MintComponent = ({ jackpot, history }: Props) => {
             <div className="border-b border-gray-700 mb-6"></div>
 
             <div className="flex flex-wrap gap-4 sm:gap-8 items-center w-full">
-              <div className="flex flex-col gap-1">
-                <div className="uppercase text-xs text-gray-400">
-                  last raid:{" "}
-                  {new Date(Number(history[1]) * 1000).toLocaleDateString(
-                    "en-US",
-                    { month: "short", day: "numeric" },
-                  )}
+              {history[0] > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="uppercase text-xs text-gray-400">
+                    last raid:{" "}
+                    {new Date(Number(history[1]) * 1000).toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric" },
+                    )}
+                  </div>
+                  <div className="text-2xl text-[#FEC94F]">
+                    {history[0].toString()} Tickets
+                  </div>
                 </div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {history[0].toString()} Tickets
-                </div>
-              </div>
+              )}
 
-              <div className="flex flex-col gap-1">
-                <div className="uppercase text-xs text-gray-400">next raid</div>
-                <div className="text-2xl text-[#FEC94F]">
-                  {
-                    <CountDownToDate
-                      targetDate={Number(history[1]) + 86400}
-                      message="Raid Started"
-                    />
-                  }
+              {history[0] > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="uppercase text-xs text-gray-400">
+                    next raid
+                  </div>
+                  <div className="text-2xl text-[#FEC94F]">
+                    {
+                      <CountDownToDate
+                        targetDate={Number(history[1]) + 86400}
+                        message="Raid Started"
+                      />
+                    }
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {history[0] === BigInt(0) && (
+                <div className="flex flex-col gap-1">
+                  <div className="uppercase text-xs text-gray-400">
+                    next raid
+                  </div>
+                  <div className="text-2xl text-[#FEC94F]">Starts soon</div>
+                </div>
+              )}
 
               {contractBalance && (
                 <div className="flex flex-col gap-2">
