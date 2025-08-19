@@ -60,7 +60,7 @@ export const UserComponent = () => {
             Treasury Share
           </div>
           <div className="text-2xl ">
-            {(Number(balance) / Number(circulatingSupply)) * 100}%
+            {((Number(balance) / Number(circulatingSupply)) * 100).toFixed(2)}%
           </div>
         </div>
       )}
