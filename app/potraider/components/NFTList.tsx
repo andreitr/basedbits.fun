@@ -116,6 +116,7 @@ export const NFTCard = ({
         href={`https://opensea.io/assets/base/${nft.contract.address}/${nft.tokenId}`}
         target="_blank"
         className="block w-full hover:underline text-sm sm:text-base text-white"
+        title={`View ${nft.name} on OpenSea`}
       >
         <div
           className="bg-cover bg-center bg-no-repeat w-full aspect-square rounded-lg"

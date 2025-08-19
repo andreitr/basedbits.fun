@@ -6,7 +6,6 @@ import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance
 import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/potraider/components/MintButton";
 import { formatUnits } from "ethers";
-import { useState, useEffect } from "react";
 import { base } from "viem/chains";
 
 interface Props {
@@ -29,13 +28,7 @@ export const MintComponent = ({
   const { data: totalSupply } = useTotalSupply({ enabled: true });
   const { data: circulatingSupply } = useCirculatingSupply({ enabled: true });
 
-  const [mintProgress, setMintProgress] = useState(0);
-
-  useEffect(() => {
-    if (totalSupply) {
-      setMintProgress(Math.round((Number(totalSupply) / 1000) * 100));
-    }
-  }, [totalSupply]);
+  
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
@@ -44,8 +37,8 @@ export const MintComponent = ({
           <div>
             <div className="flex flex-col gap-2 justify-center items-center py-12">
               <div className="sm:text-6xl text-4xl text-[#FEC94F]">
-                $
-                {Number(formatUnits(jackpot, 6)).toLocaleString("en-US", {
+                
+              ${Number(formatUnits(jackpot, 6)).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -100,7 +93,7 @@ export const MintComponent = ({
                   <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
                     mint progress
                   </div>
-                  <div className="text-2xl text-[#FEC94F]">{mintProgress}%</div>
+                  <div className="text-2xl text-[#FEC94F]">{totalSupply}/1000</div>
                 </div>
               )}
             </div>
