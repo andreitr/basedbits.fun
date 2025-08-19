@@ -58,7 +58,7 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                 >
                   Megapot
                 </Link>{" "}
-                tickets. Today’s jackpot is{" "}
+                tickets. Current jackpot is{" "}
                 <span className="font-semibold">${jackpotFormatted}</span>. Join
                 the raid!
               </div>

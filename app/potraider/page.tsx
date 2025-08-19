@@ -6,10 +6,21 @@ import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { MintComponent } from "@/app/potraider/components/MintComponent";
 import { NFTList } from "@/app/potraider/components/NFTList";
 import { UserComponent } from "@/app/potraider/components/UserComponent";
+import { formatUnits } from "ethers";
 
 export async function generateMetadata() {
+  const contract = potraiderContract();
+  const jackpot = await contract.getLotteryJackpot();
+  const jackpotFormatted = Number(formatUnits(jackpot, 6)).toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    },
+  );
+
   const title = "Pot Raiders";
-  const description = "Daily PotRaider NFTs. Minting now on BASE";
+  const description = `For a full year, Pot Raiders will spend a share of the treasury on Megapot tickets. Current jackpot: $${jackpotFormatted}`;
   const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/raiders`;
 
   return {

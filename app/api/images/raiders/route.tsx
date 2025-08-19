@@ -1,3 +1,5 @@
+import { potraiderContract } from "@/app/lib/contracts/potraider";
+import { formatUnits } from "ethers";
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
@@ -11,6 +13,17 @@ export async function GET(request: Request) {
     const interRegularFont = await fetch(
       new URL("../assets/Inter-Regular.ttf", import.meta.url),
     ).then((res) => res.arrayBuffer());
+
+    const contract = potraiderContract();
+    const jackpot = await contract.getLotteryJackpot();
+    const jackpotFormatted = Number(formatUnits(jackpot, 6)).toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+    );
+    const description = `For a full year, Pot Raiders will spend a share of the treasury on Megapot tickets. Current jackpot: $${jackpotFormatted}`;
 
     return new ImageResponse(
       (
@@ -31,9 +44,7 @@ export async function GET(request: Request) {
               <div tw="text-8xl mb-6 mt-11 font-bold text-[#FEC94F]">
                 Pot Raiders
               </div>
-              <div tw="text-4xl text-[#B9B9B9]">
-                1K degens raiding Megapot every day for one year.
-              </div>
+              <div tw="text-4xl text-[#B9B9B9]">{description}</div>
             </div>
             <div tw="flex items-center w-[560px]">
               <img

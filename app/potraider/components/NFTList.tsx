@@ -30,7 +30,7 @@ export const NFTList = () => {
 
   useEffect(() => {
     if (totalSupply) {
-      if (Number(totalSupply) >= 1) {
+      if (Number(totalSupply) >= 1000) {
         setCallToAction(
           <>
             Buy Pot Raiders on{" "}
