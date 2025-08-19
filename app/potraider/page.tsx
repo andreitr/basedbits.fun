@@ -36,9 +36,8 @@ export async function generateMetadata() {
 export default async function Page() {
   const contract = potraiderContract();
 
-  const [jackpot, lastJackpotEndTime, currentDay] = await Promise.all([
+  const [jackpot, currentDay] = await Promise.all([
     contract.getLotteryJackpot(),
-    contract.getLotterylastJackpotEndTime(),
     contract.currentLotteryDay(),
   ]);
 
@@ -51,11 +50,7 @@ export default async function Page() {
           <Header />
 
           <div className="flex flex-col gap-4">
-            <MintComponent
-              lastJackpotEndTime={lastJackpotEndTime}
-              jackpot={jackpot}
-              history={history}
-            />
+            <MintComponent jackpot={jackpot} history={history} />
 
             <div className="mt-2 mb-12 flex flex-col gap-4 px-4 sm:px-0">
               <UserComponent />
