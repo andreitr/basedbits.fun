@@ -3,9 +3,9 @@
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
-import { MintComponent } from "@/app/potraider/components/MintComponent";
-import { NFTList } from "@/app/potraider/components/NFTList";
-import { UserComponent } from "@/app/potraider/components/UserComponent";
+import { MintComponent } from "@/app/raid/components/MintComponent";
+import { NFTList } from "@/app/raid/components/NFTList";
+import { UserComponent } from "@/app/raid/components/UserComponent";
 import { formatUnits } from "ethers";
 
 export async function generateMetadata() {
@@ -21,7 +21,7 @@ export async function generateMetadata() {
 
   const title = "Pot Raiders";
   const description = `For a full year, Pot Raiders will spend a share of the treasury on Megapot tickets. Current jackpot: $${jackpotFormatted}`;
-  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/raiders`;
+  const ogPreviewPath = `${process.env.NEXT_PUBLIC_URL}/api/images/raid`;
 
   return {
     title: title,

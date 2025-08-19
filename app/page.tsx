@@ -7,7 +7,7 @@ import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard"
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
-import { MintComponent } from "@/app/potraider/components/MintComponent";
+import { MintComponent } from "@/app/raid/components/MintComponent";
 
 export default async function Home() {
   const contract = potraiderContract();
@@ -35,7 +35,7 @@ export default async function Home() {
               title="Pot Raiders"
               description="Minting now"
               image={"/images/raider.svg"}
-              link="/potraider"
+              link="/raid"
             />
             <FeatureCard
               title="Burned Bits"

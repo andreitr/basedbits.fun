@@ -3,7 +3,7 @@
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
 import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
-import { MintButton } from "@/app/potraider/components/MintButton";
+import { MintButton } from "@/app/raid/components/MintButton";
 import { formatUnits } from "ethers";
 import { base } from "viem/chains";
 import Image from "next/image";
