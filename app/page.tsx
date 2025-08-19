@@ -6,9 +6,19 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { PromoComponent } from "./potraider/components/PromoComponent";
+import { potraiderContract } from "@/app/lib/contracts/potraider";
+import { MintComponent } from "@/app/potraider/components/MintComponent";
 
 export default async function Home() {
+  const contract = potraiderContract();
+
+  const [jackpot, currentDay] = await Promise.all([
+    contract.getLotteryJackpot(),
+    contract.currentLotteryDay(),
+  ]);
+
+  const history = await contract.lotteryPurchaseHistory(Number(currentDay) - 1);
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
@@ -22,16 +32,16 @@ export default async function Home() {
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
+              title="Pot Raiders"
+              description="Minting now"
+              image={"/images/raider.svg"}
+              link="/potraider"
+            />
+            <FeatureCard
               title="Burned Bits"
               description="Minting now"
               image={"/images/burnedbit.svg"}
               link="/burn"
-            />
-            <FeatureCard
-              title="Pot Raiders"
-              description="Minting soon"
-              image={"/images/raider.svg"}
-              link="https://farcaster.xyz/andreitr.eth/0x3128f0cd"
             />
             <FeatureBasePaintCard
               title="Mint BasePaint"
@@ -51,7 +61,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full pt-10 pb-3 mt-10 md:mt-0">
         <div className="container max-w-screen-lg mb-8">
-          <PromoComponent />
+          <MintComponent jackpot={jackpot} history={history} />
         </div>
       </div>
 
