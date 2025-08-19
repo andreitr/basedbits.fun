@@ -26,11 +26,11 @@
     },
     {
       "path": "/api/cron/potraider",
-      "schedule": "30 20 * * *"
+      "schedule": "0 19 * * *"
     },
     {
       "path": "/api/cron/potraider",
-      "schedule": "30 21 * * *"
+      "schedule": "10 19 * * *"
     }
   ]
 }
