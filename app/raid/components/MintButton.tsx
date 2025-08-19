@@ -115,6 +115,8 @@ export const MintButton = () => {
     setQuantity((q) => Math.max(1, q - 1));
   };
 
+
+  
   if (!isConnected) {
     return (
       <div className="w-full">
