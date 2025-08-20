@@ -50,7 +50,7 @@ export const UserComponent = () => {
           </div>
           <div className="text-2xl ">
             {etValue.toFixed(5)}Ξ
-            {usdcValue > 0 && `${usdcValue.toFixed(2)}USDC`}
+            {usdcValue > 1 && ` + $${usdcValue.toFixed(2)}`}
           </div>
         </div>
       )}

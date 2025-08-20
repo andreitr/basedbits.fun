@@ -143,9 +143,9 @@ export const NFTCard = ({
                   <div>
                     {Number(formatUnits(redeemValue[0], 18)).toFixed(5)}Ξ
                   </div>
-                  {Number(redeemValue[1]) > 0 && (
+                  {Number(formatUnits(redeemValue[1], 6)) > 1 && (
                     <div>
-                      + {Number(formatUnits(redeemValue[1], 6)).toFixed(2)} USDC
+                      {Number(formatUnits(redeemValue[1], 6)).toFixed(2)}USDC
                     </div>
                   )}
                 </div>

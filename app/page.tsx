@@ -35,7 +35,7 @@ export default async function Home() {
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
               title="Pot Raiders"
-              description="Minting now"
+              description="Raiding now"
               image={"/images/raider.svg"}
               link="/raid"
             />

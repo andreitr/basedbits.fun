@@ -5,9 +5,9 @@ import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance
 import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
 import { MintButton } from "@/app/raid/components/MintButton";
 import { formatUnits } from "ethers";
-import { base } from "viem/chains";
 import Image from "next/image";
 import Link from "next/link";
+import { base } from "viem/chains";
 
 interface Props {
   jackpot: number;
@@ -29,8 +29,6 @@ export const MintComponent = ({ jackpot, history }: Props) => {
       maximumFractionDigits: 2,
     },
   );
-
-
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
@@ -118,17 +116,6 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                   </div>
                 </div>
               )}
-
-              
-                <div className="flex flex-col gap-2 hidden sm:flex">
-                  <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                    mint progress
-                  </div>
-                  <div className="text-2xl text-[#FEC94F]">
-                    Sold out
-                  </div>
-                </div>
-              
             </div>
           </div>
           {totalSupply && Number(totalSupply) < 1000 ? (
