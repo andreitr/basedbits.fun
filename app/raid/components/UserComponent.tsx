@@ -56,8 +56,7 @@ export const UserComponent = ({ jackpot }: Props) => {
             <Tooltip
               content={
                 <div className="normal-case text-sm">
-                  The amount you receive if you all of your Raiders are
-                  redeemed.
+                  The amount you receive if you redeem all of your Raiders.
                 </div>
               }
             >
@@ -82,7 +81,7 @@ export const UserComponent = ({ jackpot }: Props) => {
               content={
                 <div className="normal-case text-sm">
                   The value of your portfolio if the PotRaider protocol wins
-                  today's jackpot.
+                  today&apos;s jackpot.
                 </div>
               }
             >
