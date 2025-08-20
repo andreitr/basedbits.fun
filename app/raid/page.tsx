@@ -53,7 +53,7 @@ export default async function Page() {
   ]);
 
   const history = await contract.lotteryPurchaseHistory(
-    currentDay > 0 ? Number(currentDay) - 1 : 0,
+    currentDay > 0 ? Number(currentDay) : 0,
   );
 
   return (
@@ -66,7 +66,7 @@ export default async function Page() {
             <MintComponent jackpot={jackpot} history={history} />
 
             <div className="mt-2 mb-12 flex flex-col gap-4 px-4 sm:px-0">
-              <UserComponent />
+              <UserComponent jackpot={jackpot} />
               <NFTList />
             </div>
           </div>

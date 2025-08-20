@@ -2,7 +2,7 @@ export const InfoOutline = ({
   fill = "black",
   className,
 }: {
-  fill: string;
+  fill?: string;
   className: string;
 }) => {
   return (

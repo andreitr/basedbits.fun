@@ -38,6 +38,13 @@ export const CheckInComponent = () => {
           <Link href="/burn" className="hover:underline font-semibold">
             Burned Bits
           </Link>
+          {/* ,{" "}
+          <Link
+            href="/raid"
+                      className="hover:underline font-semibold"
+          >
+            Pot Raiders
+          </Link> */}
           , or{" "}
           <Link
             href="https://opensea.io/collection/punkalot"

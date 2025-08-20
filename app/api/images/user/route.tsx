@@ -24,6 +24,7 @@ export async function GET(request: Request) {
         process.env.NEXT_PUBLIC_BB_NFT_ADDRESS,
         process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
         process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+        process.env.NEXT_PUBLIC_RAIDER_ADDRESS,
       ].toString(),
       size: 1,
     });

@@ -18,7 +18,7 @@ export default async function Home() {
   ]);
 
   const history = await contract.lotteryPurchaseHistory(
-    currentDay > 0 ? Number(currentDay) - 1 : 0,
+    currentDay > 0 ? Number(currentDay) : 0,
   );
 
   return (
