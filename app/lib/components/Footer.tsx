@@ -157,10 +157,10 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}`}
+              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
               target="_blank"
             >
-              AEYE: Genesis Contract
+              Pot Raiders Contract
             </Link>
           </div>
         </div>

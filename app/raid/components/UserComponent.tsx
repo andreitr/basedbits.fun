@@ -52,7 +52,7 @@ export const UserComponent = ({ jackpot }: Props) => {
       {balance && (
         <div className="flex flex-col gap-2">
           <div className="uppercase text-xs text-gray-600 flex items-center gap-1">
-            Total Value
+            Current Value
             <Tooltip
               content={
                 <div className="normal-case text-sm">

@@ -8,6 +8,7 @@ import { formatUnits } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { base } from "viem/chains";
+import { usePathname } from "next/navigation";
 
 interface Props {
   jackpot: number;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export const MintComponent = ({ jackpot, history }: Props) => {
+  const pathname = usePathname();
   const { data: contractBalance } = useContractBalance({
     address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
     enabled: true,
@@ -90,7 +92,7 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                     {
                       <CountDownToDate
                         targetDate={Number(history[1]) + 86400}
-                        message="Raid Started"
+                        message="Raiding Now!"
                       />
                     }
                   </div>
@@ -121,15 +123,38 @@ export const MintComponent = ({ jackpot, history }: Props) => {
           {totalSupply && Number(totalSupply) < 1000 ? (
             <MintButton />
           ) : (
-            <div className="text-sm text-gray-400">
-              Pot Raiders are sold out! Buy on{" "}
-              <Link
-                href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
-                className="underline"
-                target="_blank"
-              >
-                OpenSea
-              </Link>
+            <div className="flex text-sm w-full justify-between ">
+              {pathname !== "/raid" && (
+                <Link
+                  href={`/raid`}
+                  className="underline text-gray-400 hover:text-white"
+                >
+                  Your Holdings
+                </Link>
+              )}
+              <div className="flex flex-row gap-3 text-gray-500">
+                <Link
+                  href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+                  className="underline hover:text-white"
+                  target="_blank"
+                >
+                  OpenSea
+                </Link>
+                <Link
+                  href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+                  className="underline hover:text-white"
+                  target="_blank"
+                >
+                  Basescan
+                </Link>
+                <Link
+                  href={`https://megapot.io`}
+                  className="underline hover:text-white"
+                  target="_blank"
+                >
+                  Megapot
+                </Link>
+              </div>
             </div>
           )}
         </div>

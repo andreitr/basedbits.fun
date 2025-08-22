@@ -39,10 +39,7 @@ export const CheckInComponent = () => {
             Burned Bits
           </Link>
           ,{" "}
-          <Link
-            href="/raid"
-                      className="hover:underline font-semibold"
-          >
+          <Link href="/raid" className="hover:underline font-semibold">
             Pot Raiders
           </Link>
           , or{" "}
