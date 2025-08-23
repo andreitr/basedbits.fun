@@ -16,13 +16,7 @@ export async function generateMetadata() {
   return {
     title: title,
     description: description,
-    other: {
-      ["fc:frame"]: "vNext",
-      ["fc:frame:image"]: "images/aeye_preview.png",
-      ["fc:frame:button:1"]: "View",
-      ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/aeye`,
-    },
+
     openGraph: {
       images: [
         {

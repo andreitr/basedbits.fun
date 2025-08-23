@@ -34,14 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       ],
     },
-    other: {
-      "fc:frame": "vNext",
-      "fc:frame:image": `https://basepaint.xyz/api/art/image?day=${tokenId}`,
-      "fc:frame:button:1": "Mint",
-      "fc:frame:button:1:action": "link",
-      "fc:frame:button:1:target":
-        "https://basepaint.xyz/mint?referrer=0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1",
-    },
+
   };
 }
 

@@ -31,13 +31,7 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: title,
     description: description,
-    other: {
-      ["fc:frame"]: "vNext",
-      ["fc:frame:image"]: ogPreviewPath,
-      ["fc:frame:button:1"]: `View Profile`,
-      ["fc:frame:button:1:action"]: "link",
-      ["fc:frame:button:1:target"]: `${process.env.NEXT_PUBLIC_URL}/users/${csAddress}`,
-    },
+
     openGraph: {
       images: [
         {
