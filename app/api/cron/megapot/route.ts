@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const contract = megapotContract();
-           
+
     const tx = await contract.withdrawReferralFees();
     await tx.wait();
 

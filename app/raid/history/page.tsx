@@ -1,5 +1,6 @@
 "use server";
 
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
@@ -55,15 +56,60 @@ export default async function Page() {
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
-        <div className="container max-w-screen-lg">
+        <div className="container max-w-screen-lg px-5 sm:px-0">
           <Header />
 
-          <div className="flex flex-col gap-2">
-            <div className="text-2xl font-semibold">Megapot Ticket Purchase History</div>
-            <div>The Pot Raiders purchase Megapot tickets every day at 7UTC. The number of tickets is calculated dynamically based on the treasury amount divided by the number of remaining days. {365 - latestDay} more days to go!
+          <div className="flex flex-col gap-4">
+            <div className="text-2xl font-semibold">
+              Megapot Ticket Purchase History
+            </div>
+            <div className="flex flex-wrap gap-7 w-full">
+              {history[currentDay] && (
+                <div className="flex flex-col gap-1">
+                  <div className="uppercase text-xs text-gray-600">
+                    next ticket purchase
+                  </div>
+                  <div className="text-2xl">
+                    {
+                      <CountDownToDate
+                        targetDate={Number(history[currentDay][1]) + 86400}
+                        message="Raiding Now!"
+                      />
+                    }
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1">
+                <div className="uppercase text-xs text-gray-600">progress</div>
+                <div className="text-2xl">{currentDay}/365</div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="uppercase text-xs text-gray-600">
+                  tix bought
+                </div>
+                <div className="text-2xl">
+                  {history
+                    .reduce((acc, [tickets]) => acc + Number(tickets), 0)
+                    .toString()}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="uppercase text-xs text-gray-600">
+                  est tix left
+                </div>
+                <div className="text-2xl">
+                  {(365 - Number(currentDay)) * Number(history[currentDay][0])}
+                </div>
+              </div>
+            </div>
+            <div>
+              The Pot Raiders purchase Megapot tickets every day at 7UTC. The
+              number of tickets is calculated dynamically based on the treasury
+              amount divided by the number of remaining days!
             </div>
 
-            
             <table className="w-full text-left mt-4 mb-12">
               <thead>
                 <tr className="border-b border-gray-300 text-sm">
@@ -100,9 +146,7 @@ export default async function Page() {
                     </tr>
                   ))}
               </tbody>
-          
             </table>
-            
           </div>
         </div>
       </div>
