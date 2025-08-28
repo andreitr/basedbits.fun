@@ -4,7 +4,9 @@ import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { potraiderContract } from "@/app/lib/contracts/potraider";
+import { ArrowLeft } from "@/app/lib/icons/remix";
 import { formatUnits } from "ethers";
+import Link from "next/link";
 
 export async function generateMetadata() {
   const contract = potraiderContract();
@@ -60,8 +62,11 @@ export default async function Page() {
           <Header />
 
           <div className="flex flex-col gap-4">
-            <div className="text-2xl font-semibold">
-              Megapot Ticket Purchase History
+            <div className="text-2xl font-semibold flex flex-row gap-2 items-center">
+              <Link href="/raid">
+                <ArrowLeft className="w-6 h-6 fill-current text-blue-800" />
+              </Link>
+              <div>Megapot Ticket Purchase History</div>
             </div>
             <div className="flex flex-wrap gap-7 w-full">
               {history[currentDay] && (
@@ -105,9 +110,9 @@ export default async function Page() {
               </div>
             </div>
             <div>
-              The Pot Raiders purchase Megapot tickets every day at 7UTC. The
+              The Pot Raiders purchase Megapot tickets every day at 7 UTC. The
               number of tickets is calculated dynamically based on the treasury
-              amount divided by the number of remaining days!
+              amount divided by the number of remaining days.
             </div>
 
             <table className="w-full text-left mt-4 mb-12">

@@ -134,6 +134,12 @@ export const MintComponent = ({ jackpot, history }: Props) => {
               )}
               <div className="flex flex-row gap-3 text-gray-500">
                 <Link
+                  href="/raid/history"
+                  className="underline hover:text-white"
+                >
+                  Lottery History
+                </Link>
+                <Link
                   href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
                   className="underline hover:text-white"
                   target="_blank"
