@@ -58,9 +58,13 @@ export default async function Page() {
         <div className="container max-w-screen-lg">
           <Header />
 
-          <div className="flex flex-col gap-4">
-            <div className="text-xl font-semibold">Purchase History</div>
-            <table className="w-full text-left">
+          <div className="flex flex-col gap-2">
+            <div className="text-2xl font-semibold">Megapot Ticket Purchase History</div>
+            <div>The Pot Raiders purchase Megapot tickets every day at 7UTC. The number of tickets is calculated dynamically based on the treasury amount divided by the number of remaining days. {365 - latestDay} more days to go!
+            </div>
+
+            
+            <table className="w-full text-left mt-4 mb-12">
               <thead>
                 <tr className="border-b border-gray-300 text-sm">
                   <th className="py-2">Day</th>
@@ -72,6 +76,7 @@ export default async function Page() {
                 {history
                   .map((entry, index) => ({ day: days[index], entry }))
                   .reverse()
+                  .filter(({ day }) => day > 0)
                   .map(({ day, entry }) => (
                     <tr
                       key={day}
@@ -95,7 +100,9 @@ export default async function Page() {
                     </tr>
                   ))}
               </tbody>
+          
             </table>
+            
           </div>
         </div>
       </div>
