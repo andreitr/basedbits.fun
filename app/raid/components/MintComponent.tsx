@@ -124,7 +124,9 @@ export const MintComponent = ({ jackpot, history }: Props) => {
             <MintButton />
           ) : (
             <div className="flex text-sm w-full justify-between ">
+              <div className="flex flex-row gap-3">
               {pathname !== "/raid" && (
+                
                 <Link
                   href={`/raid`}
                   className="underline text-gray-400 hover:text-white"
@@ -132,13 +134,15 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                   Your Holdings
                 </Link>
               )}
-              <div className="flex flex-row gap-3 text-gray-500">
-                <Link
+              <Link
                   href="/raid/history"
-                  className="underline hover:text-white"
+                  className="underline text-gray-400 hover:text-white"
                 >
-                  Lottery History
+                  Stats
                 </Link>
+                </div>
+              <div className="flex flex-row gap-3 text-gray-500">
+              
                 <Link
                   href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
                   className="underline hover:text-white"
