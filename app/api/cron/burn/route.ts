@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     const signer = new Wallet(process.env.BURNER_BOT_PK as string, provider);
     const burnAmount = parseUnits("0.0002", 18);
-    const minAmount = parseUnits("0.00025", 18);
+    const minAmount = parseUnits("0.00022", 18);
 
     // Check wallet balance before proceeding
     const ethBalance = await provider.getBalance(signer.address);
