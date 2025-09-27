@@ -5,8 +5,8 @@ import { NextRequest } from "next/server";
 
 const BASEPAINT_REWARDS_ADDRESS = "0xaff1A9E200000061fC3283455d8B0C7e3e728161";
 const REFERRER_ADDRESS = "0xDAdA5bAd8cdcB9e323d0606d081E6Dc5D3a577a1";
-const MINT_COUNT = 3n;
-const MINT_PRICE_WEI = 2600000000000000n; // 0.0026 ETH per mint
+const MINT_COUNT = 3;
+const MINT_PRICE_WEI = 2_600_000_000_000_000; // 0.0026 ETH per mint
 
 let provider: JsonRpcProvider | null = null;
 
