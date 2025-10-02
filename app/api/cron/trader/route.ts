@@ -1,6 +1,6 @@
 import { BasePaintRewardsAbi } from "@/app/lib/abi/BasePaintRewards.abi";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
-import { Contract, JsonRpcProvider, Wallet } from "ethers";
+import { Contract, JsonRpcProvider, Wallet, getAddress } from "ethers";
 import { Chain, OpenSeaSDK, TokenStandard } from "opensea-js";
 import { NextRequest } from "next/server";
 
@@ -13,7 +13,20 @@ const LISTING_PRICE_ETH = "0.00267";
 const LISTING_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const NFT_PAGE_SIZE = 50;
 
-const normalizedBasePaintAddress = BASEPAINT_CONTRACT_ADDRESS.toLowerCase();
+const checksummedBasePaintAddress = getAddress(BASEPAINT_CONTRACT_ADDRESS);
+
+const normalizeAddress = (address?: string | null) => {
+  if (!address) {
+    return undefined;
+  }
+
+  try {
+    return getAddress(address);
+  } catch (error) {
+    console.warn("Failed to normalize address", address, error);
+    return undefined;
+  }
+};
 
 let provider: JsonRpcProvider | null = null;
 
@@ -37,7 +50,11 @@ const listAllBasePaintNftsForSale = async (
   client: OpenSeaSDK,
   accountAddress: string,
 ) => {
-  const normalizedAccount = accountAddress.toLowerCase();
+  const normalizedAccount = normalizeAddress(accountAddress);
+
+  if (!normalizedAccount) {
+    throw new Error("Invalid account address provided");
+  }
   const expirationTime = Math.floor(Date.now() / 1000) + LISTING_DURATION_SECONDS;
   let cursor: string | undefined;
   const failedTokenIds: string[] = [];
@@ -45,7 +62,7 @@ const listAllBasePaintNftsForSale = async (
 
   do {
     const response = await client.api.getNFTsByAccount(
-      accountAddress,
+      normalizedAccount,
       NFT_PAGE_SIZE,
       cursor,
       Chain.Base,
@@ -54,7 +71,9 @@ const listAllBasePaintNftsForSale = async (
     const nfts = response?.nfts ?? [];
 
     for (const nft of nfts) {
-      if (nft.contract.toLowerCase() !== normalizedBasePaintAddress) {
+      const nftContract = normalizeAddress(nft.contract);
+
+      if (nftContract !== checksummedBasePaintAddress) {
         continue;
       }
 
@@ -62,11 +81,21 @@ const listAllBasePaintNftsForSale = async (
         continue;
       }
 
-      const ownerEntry = nft.owners.find(
-        (owner) => owner.address.toLowerCase() === normalizedAccount,
-      );
+      const owners = nft.owners ?? [];
 
-      if (!ownerEntry || ownerEntry.quantity <= 0) {
+      const ownerEntry = owners.find((owner) => {
+        const ownerAddress = normalizeAddress(owner.address);
+        return ownerAddress === normalizedAccount;
+      });
+
+      if (!ownerEntry) {
+        continue;
+      }
+
+      const quantityOwnedRaw = ownerEntry.quantity ?? 0;
+      const quantityOwned = Number(quantityOwnedRaw);
+
+      if (!Number.isFinite(quantityOwned) || quantityOwned <= 0) {
         continue;
       }
 
@@ -77,9 +106,9 @@ const listAllBasePaintNftsForSale = async (
             tokenId: nft.identifier,
             tokenStandard: TokenStandard.ERC1155,
           },
-          accountAddress,
+          accountAddress: normalizedAccount,
           startAmount: LISTING_PRICE_ETH,
-          quantity: ownerEntry.quantity,
+          quantity: quantityOwned,
           expirationTime,
         });
         processedTokenIds.add(nft.identifier);
