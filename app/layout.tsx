@@ -23,7 +23,7 @@ export default async function RootLayout({
       <body className="font-mono">
         <Toaster />
         <SpeedInsights />
-        <Web3Provider>{children}</Web3Provider>
+        <Web3Provider cookie={cookie}>{children}</Web3Provider>
       </body>
     </html>
   );
