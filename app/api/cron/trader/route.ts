@@ -49,6 +49,7 @@ const getOpenSeaClient = (signer: Wallet) =>
 const listAllBasePaintNftsForSale = async (
   client: OpenSeaSDK,
   accountAddress: string,
+  mintedTokenQuantities: Map<string, number | string | bigint>,
 ) => {
   const normalizedAccount = normalizeAddress(accountAddress);
 
@@ -88,14 +89,65 @@ const listAllBasePaintNftsForSale = async (
         return ownerAddress === normalizedAccount;
       });
 
-      if (!ownerEntry) {
-        continue;
+      let quantityOwned: number | undefined;
+
+      if (ownerEntry?.quantity != null) {
+        const quantityOwnedRaw = ownerEntry.quantity ?? 0;
+        const parsedQuantity = Number(quantityOwnedRaw);
+
+        if (Number.isFinite(parsedQuantity)) {
+          quantityOwned = parsedQuantity;
+        }
       }
 
-      const quantityOwnedRaw = ownerEntry.quantity ?? 0;
-      const quantityOwned = Number(quantityOwnedRaw);
+      if (quantityOwned === undefined || quantityOwned <= 0) {
+        const mintedQuantityRaw = mintedTokenQuantities.get(nft.identifier);
 
-      if (!Number.isFinite(quantityOwned) || quantityOwned <= 0) {
+        if (mintedQuantityRaw !== undefined) {
+          const mintedQuantity = Number(mintedQuantityRaw);
+
+          if (Number.isFinite(mintedQuantity) && mintedQuantity > 0) {
+            quantityOwned = mintedQuantity;
+            console.info(
+              `Using minted quantity fallback for BasePaint token ${nft.identifier}: ${mintedQuantity}`,
+            );
+          }
+        }
+      }
+
+      if (quantityOwned === undefined || quantityOwned <= 0) {
+        try {
+          const fallbackNft = await client.api.getNFT(
+            BASEPAINT_CONTRACT_ADDRESS,
+            nft.identifier,
+            Chain.Base,
+          );
+
+          const fallbackOwners = fallbackNft?.owners ?? [];
+          const fallbackOwnerEntry = fallbackOwners.find((owner) => {
+            const ownerAddress = normalizeAddress(owner.address);
+            return ownerAddress === normalizedAccount;
+          });
+
+          if (fallbackOwnerEntry?.quantity != null) {
+            const fallbackQuantity = Number(fallbackOwnerEntry.quantity);
+
+            if (Number.isFinite(fallbackQuantity) && fallbackQuantity > 0) {
+              quantityOwned = fallbackQuantity;
+              console.info(
+                `Recovered quantity via getNFT fallback for BasePaint token ${nft.identifier}: ${fallbackQuantity}`,
+              );
+            }
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to fetch fallback quantity for BasePaint token ${nft.identifier}`,
+            error,
+          );
+        }
+      }
+
+      if (quantityOwned === undefined || !Number.isFinite(quantityOwned) || quantityOwned <= 0) {
         continue;
       }
 
@@ -164,7 +216,12 @@ export async function GET(req: NextRequest) {
     await tx.wait();
 
     const openSeaClient = getOpenSeaClient(signer);
-    await listAllBasePaintNftsForSale(openSeaClient, recipient);
+    const mintedTokenQuantities = new Map<string, number>();
+    await listAllBasePaintNftsForSale(
+      openSeaClient,
+      recipient,
+      mintedTokenQuantities,
+    );
 
     return new Response("BasePaint minted successfully", {
       status: 200,
