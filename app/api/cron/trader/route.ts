@@ -123,7 +123,8 @@ const listAllBasePaintNftsForSale = async (
             Chain.Base,
           );
 
-          const fallbackOwners = fallbackNft?.owners ?? [];
+          const fallbackNftData = fallbackNft?.nft;
+          const fallbackOwners = fallbackNftData?.owners ?? [];
           const fallbackOwnerEntry = fallbackOwners.find((owner) => {
             const ownerAddress = normalizeAddress(owner.address);
             return ownerAddress === normalizedAccount;
