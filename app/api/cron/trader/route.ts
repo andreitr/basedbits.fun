@@ -49,6 +49,7 @@ const getOpenSeaClient = (signer: Wallet) =>
 const listAllBasePaintNftsForSale = async (
   client: OpenSeaSDK,
   accountAddress: string,
+  mintedTokenQuantities: Map<string, number | string | bigint>,
 ) => {
   const normalizedAccount = normalizeAddress(accountAddress);
 
@@ -227,7 +228,12 @@ export async function GET(req: NextRequest) {
     await tx.wait();
 
     const openSeaClient = getOpenSeaClient(signer);
-    await listAllBasePaintNftsForSale(openSeaClient, recipient);
+    const mintedTokenQuantities = new Map<string, number>();
+    await listAllBasePaintNftsForSale(
+      openSeaClient,
+      recipient,
+      mintedTokenQuantities,
+    );
 
     return new Response("BasePaint minted successfully", {
       status: 200,
