@@ -1,6 +1,13 @@
 import { BasePaintRewardsAbi } from "@/app/lib/abi/BasePaintRewards.abi";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
-import { Contract, JsonRpcProvider, Wallet, getAddress } from "ethers";
+import {
+  Contract,
+  Interface,
+  JsonRpcProvider,
+  Wallet,
+  ZeroAddress,
+  getAddress,
+} from "ethers";
 import { Chain, OpenSeaSDK, TokenStandard } from "opensea-js";
 import { NextRequest } from "next/server";
 
@@ -12,6 +19,13 @@ const MINT_PRICE_WEI = 2_600_000_000_000_000; // 0.0026 ETH per mint
 const LISTING_PRICE_ETH = "0.00267";
 const LISTING_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const NFT_PAGE_SIZE = 50;
+
+const transferEventInterface = new Interface([
+  "event TransferSingle(address indexed operator,address indexed from,address indexed to,uint256 id,uint256 value)",
+  "event TransferBatch(address indexed operator,address indexed from,address indexed to,uint256[] ids,uint256[] values)",
+]);
+const transferSingleTopic = transferEventInterface.getEventTopic("TransferSingle");
+const transferBatchTopic = transferEventInterface.getEventTopic("TransferBatch");
 
 const checksummedBasePaintAddress = getAddress(BASEPAINT_CONTRACT_ADDRESS);
 
@@ -49,7 +63,7 @@ const getOpenSeaClient = (signer: Wallet) =>
 const listAllBasePaintNftsForSale = async (
   client: OpenSeaSDK,
   accountAddress: string,
-  mintedTokenQuantities: Map<string, number | string | bigint>,
+  mintedTokenQuantities: Map<string, number>,
 ) => {
   const normalizedAccount = normalizeAddress(accountAddress);
 
@@ -91,7 +105,17 @@ const listAllBasePaintNftsForSale = async (
 
       let quantityOwned: number | undefined;
 
-      if (ownerEntry) {
+      const mintedQuantity = mintedTokenQuantities.get(nft.identifier);
+
+      if (
+        typeof mintedQuantity === "number" &&
+        Number.isFinite(mintedQuantity) &&
+        mintedQuantity > 0
+      ) {
+        quantityOwned = mintedQuantity;
+      }
+
+      if (!quantityOwned && ownerEntry) {
         const quantityOwnedRaw = ownerEntry.quantity ?? 0;
         const parsedQuantityOwned = Number(quantityOwnedRaw);
 
@@ -100,7 +124,7 @@ const listAllBasePaintNftsForSale = async (
         }
 
         quantityOwned = parsedQuantityOwned;
-      } else {
+      } else if (!quantityOwned) {
         try {
           const fallbackNftResponse = await client.api.getNFT(
             nft.contract,
@@ -214,6 +238,12 @@ export async function GET(req: NextRequest) {
     );
 
     const recipient = await signer.getAddress();
+    const normalizedRecipient = normalizeAddress(recipient);
+
+    if (!normalizedRecipient) {
+      throw new Error("Failed to normalize recipient address");
+    }
+
     const mintCost = MINT_PRICE_WEI * MINT_COUNT;
 
     const tx = await rewardsContract.mintLatest(
@@ -225,10 +255,83 @@ export async function GET(req: NextRequest) {
       },
     );
 
-    await tx.wait();
+    const receipt = await tx.wait();
+
+    const mintedTokenQuantities = new Map<string, number>();
+
+    for (const log of receipt?.logs ?? []) {
+      const logAddress = normalizeAddress(log.address);
+
+      if (logAddress !== checksummedBasePaintAddress) {
+        continue;
+      }
+
+      if (
+        !log.topics?.[0] ||
+        (log.topics[0] !== transferSingleTopic &&
+          log.topics[0] !== transferBatchTopic)
+      ) {
+        continue;
+      }
+
+      try {
+        const parsedLog = transferEventInterface.parseLog(log);
+
+        if (parsedLog.name === "TransferSingle") {
+          const fromAddress = normalizeAddress(parsedLog.args.from);
+          const toAddress = normalizeAddress(parsedLog.args.to);
+          const tokenId = parsedLog.args.id?.toString();
+          const value = Number(parsedLog.args.value?.toString() ?? "0");
+
+          if (
+            fromAddress === ZeroAddress &&
+            toAddress === normalizedRecipient &&
+            tokenId &&
+            Number.isFinite(value) &&
+            value > 0
+          ) {
+            const previous = mintedTokenQuantities.get(tokenId) ?? 0;
+            mintedTokenQuantities.set(tokenId, previous + value);
+          }
+        } else if (parsedLog.name === "TransferBatch") {
+          const fromAddress = normalizeAddress(parsedLog.args.from);
+          const toAddress = normalizeAddress(parsedLog.args.to);
+          const ids = parsedLog.args
+            .ids as Array<bigint | number | string> | undefined;
+          const values = parsedLog.args
+            .values as Array<bigint | number | string> | undefined;
+
+          if (
+            fromAddress !== ZeroAddress ||
+            toAddress !== normalizedRecipient ||
+            !ids ||
+            !values
+          ) {
+            continue;
+          }
+
+          for (let index = 0; index < ids.length; index += 1) {
+            const tokenId = ids[index]?.toString();
+            const rawValue = values[index]?.toString();
+            const value = Number(rawValue ?? "0");
+
+            if (!tokenId || !Number.isFinite(value) || value <= 0) {
+              continue;
+            }
+
+            const previous = mintedTokenQuantities.get(tokenId) ?? 0;
+            mintedTokenQuantities.set(tokenId, previous + value);
+          }
+        }
+      } catch (logParseError) {
+        console.warn("Failed to parse ERC1155 mint log", {
+          log,
+          logParseError,
+        });
+      }
+    }
 
     const openSeaClient = getOpenSeaClient(signer);
-    const mintedTokenQuantities = new Map<string, number>();
     await listAllBasePaintNftsForSale(
       openSeaClient,
       recipient,
