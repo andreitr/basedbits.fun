@@ -31,6 +31,15 @@ export async function getFarcasterUser(
 
     if (!response.ok) {
       const errorText = await response.text();
+
+      if (response.status === 404) {
+        console.info(
+          "Farcaster user not found for address, skipping update",
+          normalizedAddress,
+        );
+        return null;
+      }
+
       throw new Error(
         `Failed to fetch Farcaster user: ${response.statusText} (${response.status})\nResponse: ${errorText}`,
       );
