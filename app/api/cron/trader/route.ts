@@ -91,34 +91,19 @@ const listAllBasePaintNftsForSale = async (
 
       let quantityOwned: number | undefined;
 
-      if (ownerEntry?.quantity != null) {
+      if (ownerEntry) {
         const quantityOwnedRaw = ownerEntry.quantity ?? 0;
         const parsedQuantityOwned = Number(quantityOwnedRaw);
 
-        if (Number.isFinite(parsedQuantityOwned) && parsedQuantityOwned > 0) {
-          quantityOwned = parsedQuantityOwned;
+        if (!Number.isFinite(parsedQuantityOwned) || parsedQuantityOwned <= 0) {
+          continue;
         }
-      }
 
-      if (quantityOwned === undefined || quantityOwned <= 0) {
-        const mintedQuantityRaw = mintedTokenQuantities.get(nft.identifier);
-
-        if (mintedQuantityRaw !== undefined) {
-          const mintedQuantity = Number(mintedQuantityRaw);
-
-          if (Number.isFinite(mintedQuantity) && mintedQuantity > 0) {
-            quantityOwned = mintedQuantity;
-            console.info(
-              `Using minted quantity fallback for BasePaint token ${nft.identifier}: ${mintedQuantity}`,
-            );
-          }
-        }
-      }
-
-      if (quantityOwned === undefined || quantityOwned <= 0) {
+        quantityOwned = parsedQuantityOwned;
+      } else {
         try {
           const fallbackNftResponse = await client.api.getNFT(
-            BASEPAINT_CONTRACT_ADDRESS,
+            nft.contract,
             nft.identifier,
             Chain.Base,
           );
@@ -140,33 +125,33 @@ const listAllBasePaintNftsForSale = async (
                 fallbackNft,
               },
             );
-          } else if (fallbackOwnerEntry.quantity != null) {
-            const fallbackQuantityOwnedRaw = fallbackOwnerEntry.quantity ?? 0;
-            const parsedFallbackQuantityOwned = Number(fallbackQuantityOwnedRaw);
-
-            if (
-              Number.isFinite(parsedFallbackQuantityOwned) &&
-              parsedFallbackQuantityOwned > 0
-            ) {
-              quantityOwned = parsedFallbackQuantityOwned;
-              console.info(
-                `Recovered quantity via getNFT fallback for BasePaint token ${nft.identifier}: ${parsedFallbackQuantityOwned}`,
-              );
-            } else {
-              console.warn(
-                `Invalid fallback quantity for BasePaint token ${nft.identifier}`,
-                {
-                  fallbackQuantityOwnedRaw,
-                  parsedFallbackQuantityOwned,
-                },
-              );
-            }
+            continue;
           }
+
+          const fallbackQuantityOwnedRaw = fallbackOwnerEntry.quantity ?? 0;
+          const parsedFallbackQuantityOwned = Number(fallbackQuantityOwnedRaw);
+
+          if (
+            !Number.isFinite(parsedFallbackQuantityOwned) ||
+            parsedFallbackQuantityOwned <= 0
+          ) {
+            console.warn(
+              `Invalid fallback quantity for BasePaint token ${nft.identifier}`,
+              {
+                fallbackQuantityOwnedRaw,
+                parsedFallbackQuantityOwned,
+              },
+            );
+            continue;
+          }
+
+          quantityOwned = parsedFallbackQuantityOwned;
         } catch (fallbackError) {
           console.error(
             `Failed to fetch fallback NFT data for BasePaint token ${nft.identifier}:`,
             fallbackError,
           );
+          continue;
         }
       }
 
