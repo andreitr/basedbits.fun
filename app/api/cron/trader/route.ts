@@ -24,8 +24,15 @@ const transferEventInterface = new Interface([
   "event TransferSingle(address indexed operator,address indexed from,address indexed to,uint256 id,uint256 value)",
   "event TransferBatch(address indexed operator,address indexed from,address indexed to,uint256[] ids,uint256[] values)",
 ]);
-const transferSingleTopic = transferEventInterface.getEventTopic("TransferSingle");
-const transferBatchTopic = transferEventInterface.getEventTopic("TransferBatch");
+const transferSingleEvent = transferEventInterface.getEvent("TransferSingle");
+const transferBatchEvent = transferEventInterface.getEvent("TransferBatch");
+
+if (!transferSingleEvent || !transferBatchEvent) {
+  throw new Error("Failed to resolve ERC1155 transfer event fragments");
+}
+
+const transferSingleTopic = transferSingleEvent.topicHash;
+const transferBatchTopic = transferBatchEvent.topicHash;
 
 const checksummedBasePaintAddress = getAddress(BASEPAINT_CONTRACT_ADDRESS);
 
