@@ -1,6 +1,13 @@
 import { BasePaintRewardsAbi } from "@/app/lib/abi/BasePaintRewards.abi";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
-import { Contract, JsonRpcProvider, Wallet, getAddress } from "ethers";
+import {
+  Contract,
+  Interface,
+  JsonRpcProvider,
+  TransactionReceipt,
+  Wallet,
+  getAddress,
+} from "ethers";
 import { Chain, OpenSeaSDK, TokenStandard } from "opensea-js";
 import { NextRequest } from "next/server";
 
@@ -14,6 +21,11 @@ const LISTING_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const NFT_PAGE_SIZE = 50;
 
 const checksummedBasePaintAddress = getAddress(BASEPAINT_CONTRACT_ADDRESS);
+
+const erc1155Interface = new Interface([
+  "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
+  "event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values)",
+]);
 
 const normalizeAddress = (address?: string | null) => {
   if (!address) {
@@ -46,10 +58,96 @@ const getOpenSeaClient = (signer: Wallet) =>
     apiKey: process.env.OPENSEA_API_KEY,
   });
 
+const getMintedTokenQuantitiesFromReceipt = (
+  receipt: TransactionReceipt,
+  recipientAddress: string,
+) => {
+  const mintedTokenQuantities = new Map<string, number>();
+  const normalizedRecipient = normalizeAddress(recipientAddress);
+
+  if (!normalizedRecipient) {
+    return mintedTokenQuantities;
+  }
+
+  for (const log of receipt.logs ?? []) {
+    if (normalizeAddress(log.address) !== checksummedBasePaintAddress) {
+      continue;
+    }
+
+    let parsedLog;
+
+    try {
+      parsedLog = erc1155Interface.parseLog(log);
+    } catch {
+      continue;
+    }
+
+    if (parsedLog.name === "TransferSingle") {
+      const { to, id, value } = parsedLog.args as unknown as {
+        to: string;
+        id: bigint;
+        value: bigint;
+      };
+
+      const normalizedTo = normalizeAddress(to);
+
+      if (normalizedTo !== normalizedRecipient) {
+        continue;
+      }
+
+      const tokenId = id?.toString?.();
+      const numericValue = Number(value);
+
+      if (!tokenId || !Number.isFinite(numericValue) || numericValue <= 0) {
+        continue;
+      }
+
+      mintedTokenQuantities.set(
+        tokenId,
+        (mintedTokenQuantities.get(tokenId) ?? 0) + numericValue,
+      );
+    } else if (parsedLog.name === "TransferBatch") {
+      const { to, ids, values } = parsedLog.args as unknown as {
+        to: string;
+        ids: readonly bigint[];
+        values: readonly bigint[];
+      };
+
+      const normalizedTo = normalizeAddress(to);
+
+      if (normalizedTo !== normalizedRecipient) {
+        continue;
+      }
+
+      if (ids.length !== values.length) {
+        continue;
+      }
+
+      for (let index = 0; index < ids.length; index += 1) {
+        const idValue = ids[index];
+        const value = values[index];
+        const tokenId = idValue?.toString?.();
+        const numericValue = Number(value);
+
+        if (!tokenId || !Number.isFinite(numericValue) || numericValue <= 0) {
+          continue;
+        }
+
+        mintedTokenQuantities.set(
+          tokenId,
+          (mintedTokenQuantities.get(tokenId) ?? 0) + numericValue,
+        );
+      }
+    }
+  }
+
+  return mintedTokenQuantities;
+};
+
 const listAllBasePaintNftsForSale = async (
   client: OpenSeaSDK,
   accountAddress: string,
-  mintedTokenQuantities: Map<string, number | string | bigint>,
+  mintedTokenQuantities: Map<string, number>,
 ) => {
   const normalizedAccount = normalizeAddress(accountAddress);
 
@@ -101,6 +199,22 @@ const listAllBasePaintNftsForSale = async (
 
         quantityOwned = parsedQuantityOwned;
       } else {
+        const mintedQuantity = mintedTokenQuantities.get(nft.identifier);
+
+        if (
+          typeof mintedQuantity === "number" &&
+          Number.isFinite(mintedQuantity) &&
+          mintedQuantity > 0
+        ) {
+          quantityOwned = mintedQuantity;
+        }
+      }
+
+      if (
+        typeof quantityOwned !== "number" ||
+        !Number.isFinite(quantityOwned) ||
+        quantityOwned <= 0
+      ) {
         try {
           const fallbackNftResponse = await client.api.getNFT(
             nft.contract,
@@ -153,14 +267,6 @@ const listAllBasePaintNftsForSale = async (
           );
           continue;
         }
-      }
-
-      if (
-        typeof quantityOwned !== "number" ||
-        !Number.isFinite(quantityOwned) ||
-        quantityOwned <= 0
-      ) {
-        continue;
       }
 
       try {
@@ -225,10 +331,13 @@ export async function GET(req: NextRequest) {
       },
     );
 
-    await tx.wait();
+    const receipt = await tx.wait();
 
     const openSeaClient = getOpenSeaClient(signer);
-    const mintedTokenQuantities = new Map<string, number>();
+    const mintedTokenQuantities = getMintedTokenQuantitiesFromReceipt(
+      receipt,
+      recipient,
+    );
     await listAllBasePaintNftsForSale(
       openSeaClient,
       recipient,
