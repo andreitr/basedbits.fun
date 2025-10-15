@@ -79,7 +79,8 @@ const listAllBasePaintNftsForSale = async (
           tokenStandard: TokenStandard.ERC1155,
         },
         accountAddress: normalizedAccount,
-        startAmount: LISTING_PRICE_ETH,
+        // Ensure per-unit price is 0.00267 ETH for ERC1155 quantity listings
+        startAmount: LISTING_PRICE_ETH * Math.max(1, Number(quantityOwned)),
         quantity: quantityOwned,
         expirationTime,
         paymentTokenAddress: "0x0000000000000000000000000000000000000000", // ETH
