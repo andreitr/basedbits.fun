@@ -22,15 +22,15 @@
     },
     {
       "path": "/api/cron/potraider",
-      "schedule": "0 19 * * *"
+      "schedule": "0 20 * * *"
     },
     {
       "path": "/api/cron/potraider",
-      "schedule": "10 19 * * *"
+      "schedule": "10 20 * * *"
     },
     {
       "path": "/api/cron/megapot",
-      "schedule": "30 20 * * *"
+      "schedule": "30 21 * * *"
     },
     {
       "path": "/api/cron/trader/mint",
