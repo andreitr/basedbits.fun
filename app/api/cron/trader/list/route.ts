@@ -9,7 +9,7 @@ const ERC1155_ABI = [
 ];
 
 const BASEPAINT_CONTRACT_ADDRESS = "0xBa5e05cb26b78eDa3A2f8e3b3814726305dcAc83";
-const LISTING_PRICE_ETH = 0.00267;
+const LISTING_PRICE_ETH = 0.00269;
 const LISTING_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 const checksummedBasePaintAddress = getAddress(BASEPAINT_CONTRACT_ADDRESS);
@@ -79,7 +79,7 @@ const listAllBasePaintNftsForSale = async (
           tokenStandard: TokenStandard.ERC1155,
         },
         accountAddress: normalizedAccount,
-        // Ensure per-unit price is 0.00267 ETH for ERC1155 quantity listings
+        // Ensure per-unit price is 0.00269 ETH for ERC1155 quantity listings
         startAmount: LISTING_PRICE_ETH * Math.max(1, Number(quantityOwned)),
         quantity: quantityOwned,
         expirationTime,
