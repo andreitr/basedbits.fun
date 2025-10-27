@@ -84,6 +84,8 @@ const listAllBasePaintNftsForSale = async (
         quantity: quantityOwned,
         expirationTime,
         paymentTokenAddress: "0x0000000000000000000000000000000000000000", // ETH
+        // Explicitly disable optional creator royalties on the listing
+        excludeOptionalCreatorFees: true,
       });
       
       console.log(`Successfully listed token ${nft.identifier} (quantity: ${quantityOwned})`);
