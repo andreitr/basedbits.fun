@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     );
 
     const recipient = await signer.getAddress();
-    const mintCost = MINT_PRICE_WEI * MINT_COUNT;
+    const mintCost = BigInt(MINT_PRICE_WEI) * BigInt(MINT_COUNT);
 
     const tx = await rewardsContract.mintLatest(
       recipient,
