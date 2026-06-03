@@ -54,7 +54,7 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                 For a full year, Pot Raiders will spend a share of the treasury
                 on{" "}
                 <Link
-                  href="https://megapot.io"
+                  href="https://v1.megapot.io"
                   target="_blank"
                   className="underline hover:text-white"
                 >
@@ -158,7 +158,7 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                   Basescan
                 </Link>
                 <Link
-                  href={`https://megapot.io`}
+                  href={`https://v1.megapot.io`}
                   className="underline hover:text-white"
                   target="_blank"
                 >
