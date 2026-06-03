@@ -82,17 +82,6 @@ export interface DBUser {
   farcaster_avatar: string | null;
 }
 
-export interface DBMessage {
-  id: number;
-  user_id: number;
-  bounty: number | null;
-  txn_hash: string | null;
-  rand_hash: string;
-  expires_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface DBAeye {
   id: number;
   token: number;

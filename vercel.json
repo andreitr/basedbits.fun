@@ -17,10 +17,6 @@
       "schedule": "30 * * * *"
     },
     {
-      "path": "/api/bots/message/weekly",
-      "schedule": "0 16 * * 0"
-    },
-    {
       "path": "/api/cron/potraider",
       "schedule": "0 20 * * *"
     },
