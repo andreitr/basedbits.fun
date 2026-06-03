@@ -17,15 +17,20 @@ export const fetchNFTsForOwner = async ({
   pageKey,
   size,
 }: Props) => {
-  const response = await fetch(
-    `${baseNFTUrl}/getNFTsForOwner?owner=${address}&contractAddresses%5B%5D=${contract}&withMetadata=true&pageSize=${size}&pageKey=${pageKey}&orderBy=null`,
-    {
-      next: {
-        revalidate: 43_200, // 12 hours
-        tags: [`getNFTsForOwner-${address}`],
-      },
+  const params = new URLSearchParams({
+    owner: address ?? "",
+    "contractAddresses[]": contract,
+    withMetadata: "true",
+  });
+  if (size !== undefined) params.set("pageSize", String(size));
+  if (pageKey) params.set("pageKey", pageKey);
+
+  const response = await fetch(`${baseNFTUrl}/getNFTsForOwner?${params}`, {
+    next: {
+      revalidate: 43_200, // 12 hours
+      tags: [`getNFTsForOwner-${address}`],
     },
-  );
+  });
   return (await response.json()) as AlchemyUserResponse;
 };
 
