@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { DBMessage, DBUser } from "@/app/lib/types/types";
+import { DBUser } from "@/app/lib/types/types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -89,68 +89,4 @@ export async function createCheckin(
   }
 
   return true;
-}
-
-// Helper function to create a message record
-export async function createMessage(
-  userId: number,
-  bounty?: number,
-  expires_at?: string,
-): Promise<DBMessage | null> {
-  const { data: message, error } = await supabase
-    .from("messages")
-    .insert([
-      {
-        user_id: userId,
-        bounty,
-        expires_at,
-      },
-    ])
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error creating message:", error);
-    return null;
-  }
-
-  return message as DBMessage;
-}
-
-// Helper function to get users with recent checkins and high streaks
-export async function getUsersWithRecentCheckins(): Promise<
-  (DBUser & { streak: number })[]
-> {
-  const oneWeekAgo = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60;
-
-  const { data, error } = await supabase
-    .from("checkins")
-    .select(
-      `
-      streak,
-      user:users(*)
-    `,
-    )
-    .gte("block_timestamp", oneWeekAgo)
-    .gte("streak", 7)
-    .not("user.farcaster_name", "is", null)
-    .order("block_timestamp", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching users with recent checkins:", error);
-    return [];
-  }
-
-  // Extract unique users from the results
-  const uniqueUsers = new Map<number, DBUser & { streak: number }>();
-  data.forEach((checkin: any) => {
-    if (checkin.user && !uniqueUsers.has(checkin.user.id)) {
-      uniqueUsers.set(checkin.user.id, {
-        ...checkin.user,
-        streak: checkin.streak,
-      });
-    }
-  });
-
-  return Array.from(uniqueUsers.values());
 }

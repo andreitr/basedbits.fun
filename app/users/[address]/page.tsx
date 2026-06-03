@@ -10,7 +10,6 @@ import {
 import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 import { getAddress } from "ethers";
 import { Suspense } from "react";
-import { MessageClaim } from "@/app/users/[address]/components/MessageClaim";
 
 interface Props {
   params: Promise<{
@@ -77,7 +76,6 @@ export default async function Page(props: Props) {
       <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10 lg:px-0 pb-8 sm:pb-0">
         <div className="flex flex-col gap-8 container max-w-screen-lg mb-10">
           <UserInfo user={user} checkin={lastCheckin} />
-          <MessageClaim />
           <Suspense fallback={<NFTListSkeleton />}>
             <NFTList list={userNFTs?.ownedNfts || []} />
           </Suspense>
