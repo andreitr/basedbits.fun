@@ -9,6 +9,10 @@
       "schedule": "0 7 * * *"
     },
     {
+      "path": "/api/cron/pennypot",
+      "schedule": "0 8 * * *"
+    },
+    {
       "path": "/api/bots/backfill/checkins",
       "schedule": "0 0 * * *"
     },
