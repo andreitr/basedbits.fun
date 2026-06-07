@@ -36,4 +36,17 @@ export const PennyPotABI = [
     inputs: [],
     outputs: [],
   },
+  // Custom errors — required so ethers v6 can decode reverts by name. The buy
+  // loop relies on these names to detect a ticket that rolled/filled mid-run.
+  {
+    type: "error",
+    name: "UnexpectedTicket",
+    inputs: [
+      { name: "active", type: "uint256" },
+      { name: "expected", type: "uint256" },
+    ],
+  },
+  { type: "error", name: "PastSellingWindow", inputs: [] },
+  { type: "error", name: "NoActiveTicket", inputs: [] },
+  { type: "error", name: "InvalidCount", inputs: [] },
 ] as const;

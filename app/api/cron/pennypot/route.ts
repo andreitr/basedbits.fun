@@ -130,8 +130,11 @@ export async function GET(req: NextRequest) {
         const gas = await pennypot.buyTicket.estimateGas();
         const tx = await pennypot.buyTicket({
           gasLimit: (gas * BUY_TICKET_GAS_BPS) / BigInt(100),
-          nonce: nonce++,
+          nonce,
         });
+        // Only advance the nonce once the tx is actually broadcast; a revert
+        // during estimate/populate rejects without consuming it.
+        nonce++;
         await tx.wait();
       } catch (error) {
         console.error("pennypot cron: buyTicket failed/not buyable", error);
@@ -163,8 +166,12 @@ export async function GET(req: NextRequest) {
             ticketId,
             count,
             recipient,
-            { nonce: nonce++ },
+            { nonce },
           );
+          // Only advance the nonce once broadcast; a pre-broadcast revert
+          // (estimate/populate) rejects without consuming it, so we must not
+          // leave a gap for the next recipient.
+          nonce++;
           await tx.wait();
           succeeded++;
           sharesBought += count;
@@ -172,18 +179,21 @@ export async function GET(req: NextRequest) {
           remaining -= count;
           need -= count;
         } catch (error) {
+          // ethers v6 decodes custom errors by name into `revert.name` (the ABI
+          // now carries the error fragments); fall back to the message string.
+          const revertName =
+            (error as { revert?: { name?: string } })?.revert?.name ?? "";
           const msg = (error as Error)?.message ?? "";
-          // Ticket rolled between read and send — refresh and retry the user once.
-          if (
-            !retried &&
-            /UnexpectedTicket|PastSellingWindow|NoActiveTicket/.test(msg)
-          ) {
+          const rolled =
+            /UnexpectedTicket|PastSellingWindow|NoActiveTicket|InvalidCount/.test(
+              `${revertName} ${msg}`,
+            );
+          // Ticket rolled/filled between read and send — refresh and retry once.
+          if (!retried && rolled) {
             retried = true;
             state = await readState(pennypot);
             ticketId = state.ticketId;
             remaining = ticketId === ZERO ? 0 : SHARES_PER_TICKET - state.sold;
-            // resync nonce in case the failed tx never broadcast
-            nonce = await baseProvider.getTransactionCount(signer.address);
             continue;
           }
           console.error(
