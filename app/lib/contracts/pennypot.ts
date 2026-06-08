@@ -5,6 +5,11 @@ import { Contract, Wallet } from "ethers";
 // Base mainnet USDC (6 decimals). PennyPot shares are priced in USDC.
 export const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
+// Live PennyPot deployment on Base. Hardcoded constant: this is server-only
+// cron code against a fixed contract, so there's no env override (and NEXT_PUBLIC_*
+// vars are inlined at build time anyway, which previously left the target undefined).
+export const PENNYPOT_ADDRESS = "0x133195CEd7Cf71A7ed3a428a30816d83f022C9A1";
+
 // Minimal ERC20 surface the cron needs: read balance/allowance, approve PennyPot.
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
@@ -16,12 +21,11 @@ const ERC20_ABI = [
 // wallet (AIRDROP_BOT_PK). buyTicketSharesFor / buyTicket are permissionless,
 // so the bot only needs USDC + ETH (gas), not the contract owner role.
 export const getPennyPotKeeper = () => {
-  const signer = new Wallet(process.env.AIRDROP_BOT_PK as string, baseProvider);
-  const pennypot = new Contract(
-    process.env.NEXT_PUBLIC_PENNYPOT_ADDRESS as string,
-    PennyPotABI,
-    signer,
-  );
+  const pk = process.env.AIRDROP_BOT_PK;
+  if (!pk) throw new Error("AIRDROP_BOT_PK is not set");
+
+  const signer = new Wallet(pk, baseProvider);
+  const pennypot = new Contract(PENNYPOT_ADDRESS, PennyPotABI, signer);
   const usdc = new Contract(USDC_ADDRESS, ERC20_ABI, signer);
   return { signer, pennypot, usdc };
 };
