@@ -19,6 +19,7 @@ export const maxDuration = 300;
 type State = {
   ticketId: bigint;
   sold: number;
+  deadline: number;
   canBuyNextTicket: boolean;
   isPaused: boolean;
 };
@@ -30,9 +31,18 @@ const readState = async (
   return {
     ticketId: s.currentTicketId as bigint,
     sold: Number(s.sold as bigint),
+    deadline: Number(s.deadline as bigint),
     canBuyNextTicket: s.canBuyNextTicket as boolean,
     isPaused: s.isPaused as boolean,
   };
+};
+
+// Shares we can still buy on the active ticket: 0 if there's no active ticket or
+// its selling window has closed (buyTicketSharesFor would revert PastSellingWindow).
+const sellableRemaining = (state: State): number => {
+  const now = Math.floor(Date.now() / 1000);
+  if (state.ticketId === ZERO || now >= state.deadline) return 0;
+  return SHARES_PER_TICKET - state.sold;
 };
 
 export async function GET(req: NextRequest) {
@@ -116,16 +126,29 @@ export async function GET(req: NextRequest) {
 
     // 4. Buy loop. Front a fresh ticket whenever the active one is full / absent.
     let nonce = await baseProvider.getTransactionCount(signer.address);
-    let remaining =
-      state.ticketId === ZERO ? 0 : SHARES_PER_TICKET - state.sold;
+    let remaining = sellableRemaining(state);
     let ticketId = state.ticketId;
     const ticketIds = new Set<string>();
     let attempted = 0;
     let succeeded = 0;
     let sharesBought = 0;
     let stop = false;
+    let frontNote: string | undefined;
 
     const frontNextTicket = async (): Promise<boolean> => {
+      // Re-read state; canBuyNextTicket mirrors buyTicket()'s full guard set
+      // (selling-window blackout, reserve, snapshot gate). Skip the doomed call
+      // — and its scary CALL_EXCEPTION log — when it can't currently front.
+      state = await readState(pennypot);
+      ticketId = state.ticketId;
+      remaining = sellableRemaining(state);
+      if (remaining > 0) return true; // active ticket re-opened/has room
+      if (!state.canBuyNextTicket) {
+        frontNote =
+          "no buyable ticket (selling-window/reserve/snapshot); stopped";
+        console.log(`pennypot cron: ${frontNote}`);
+        return false;
+      }
       try {
         const gas = await pennypot.buyTicket.estimateGas();
         const tx = await pennypot.buyTicket({
@@ -137,13 +160,14 @@ export async function GET(req: NextRequest) {
         nonce++;
         await tx.wait();
       } catch (error) {
-        console.error("pennypot cron: buyTicket failed/not buyable", error);
+        frontNote = "buyTicket reverted unexpectedly; stopped";
+        console.error(`pennypot cron: ${frontNote}`, error);
         return false;
       }
       state = await readState(pennypot);
       ticketId = state.ticketId;
-      remaining = ticketId === ZERO ? 0 : SHARES_PER_TICKET - state.sold;
-      return ticketId !== ZERO && remaining > 0;
+      remaining = sellableRemaining(state);
+      return remaining > 0;
     };
 
     for (const recipient of recipients) {
@@ -193,7 +217,7 @@ export async function GET(req: NextRequest) {
             retried = true;
             state = await readState(pennypot);
             ticketId = state.ticketId;
-            remaining = ticketId === ZERO ? 0 : SHARES_PER_TICKET - state.sold;
+            remaining = sellableRemaining(state);
             continue;
           }
           console.error(
@@ -214,6 +238,7 @@ export async function GET(req: NextRequest) {
       sharesBought,
       spentUsdc: (BigInt(sharesBought) * SHARE_PRICE).toString(),
       ticketIds: Array.from(ticketIds),
+      ...(frontNote ? { note: frontNote } : {}),
     });
   } catch (error) {
     console.error("pennypot cron: internal error", error);
