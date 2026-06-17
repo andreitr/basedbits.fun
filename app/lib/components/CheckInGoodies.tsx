@@ -45,7 +45,17 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
           </Link>
         </div>
         <div>{"• Receive daily BBITS airdrop"}</div>
-        <div>{"• Receive daily Megapot ticket share (Pennypot.xyz)"}</div>
+        <div>
+          {"• Receive daily Megapot ticket share via "}
+          <Link
+            className="hover:no-underline underline text-[#0000FF]"
+            href="https://pennypot.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pennypot
+          </Link>
+        </div>
         {user?.farcaster_name && streak >= 7 && (
           <div>{"• Receive weekly Farcaster airdrop"}</div>
         )}
