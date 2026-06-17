@@ -45,6 +45,7 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
           </Link>
         </div>
         <div>{"• Receive daily BBITS airdrop"}</div>
+        <div>{"• Receive a daily share of Megapot ticket via Pennypot.xyz"}</div>
         {user?.farcaster_name && streak >= 7 && (
           <div>{"• Receive weekly Farcaster airdrop"}</div>
         )}
