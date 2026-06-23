@@ -5,7 +5,6 @@ import { CheckIn } from "@/app/lib/types/types";
 import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useUser } from "@/app/lib/hooks/useUser";
 
 interface Props {
   checkin: CheckIn;
@@ -15,11 +14,6 @@ interface Props {
 export const CheckInGoodies = ({ checkin, address }: Props) => {
   const [streak, setStreak] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
-
-  const { data: user } = useUser({
-    address,
-    enabled: true,
-  });
 
   useEffect(() => {
     setStreak(checkin.streak);
@@ -56,9 +50,6 @@ export const CheckInGoodies = ({ checkin, address }: Props) => {
             Pennypot
           </Link>
         </div>
-        {user?.farcaster_name && streak >= 7 && (
-          <div>{"• Receive weekly Farcaster airdrop"}</div>
-        )}
       </div>
     </div>
   );
