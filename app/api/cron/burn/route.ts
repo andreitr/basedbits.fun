@@ -74,6 +74,7 @@ export async function GET(req: NextRequest) {
       });
     }
   } catch (error) {
+    console.error("Error burning BBITS:", error);
     return new Response("Internal Server Error", {
       status: 500,
     });
