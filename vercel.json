@@ -21,14 +21,6 @@
       "schedule": "30 * * * *"
     },
     {
-      "path": "/api/cron/potraider",
-      "schedule": "0 20 * * *"
-    },
-    {
-      "path": "/api/cron/potraider",
-      "schedule": "10 20 * * *"
-    },
-    {
       "path": "/api/cron/megapot",
       "schedule": "30 21 * * *"
     },
