@@ -1,36 +1,11 @@
 "use client";
 
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { useContractBalance } from "@/app/lib/hooks/potraider/useContractBalance";
-import { useTotalSupply } from "@/app/lib/hooks/potraider/useTotalSupply";
-import { MintButton } from "@/app/raid/components/MintButton";
-import { formatUnits } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
-import { base } from "viem/chains";
 import { usePathname } from "next/navigation";
 
-interface Props {
-  jackpot: number;
-  history: [bigint, number];
-}
-
-export const MintComponent = ({ jackpot, history }: Props) => {
+export const MintComponent = () => {
   const pathname = usePathname();
-  const { data: contractBalance } = useContractBalance({
-    address: process.env.NEXT_PUBLIC_RAIDER_ADDRESS as `0x${string}`,
-    enabled: true,
-    chainId: base.id,
-  });
-
-  const { data: totalSupply } = useTotalSupply({ enabled: true });
-  const jackpotFormatted = Number(formatUnits(jackpot, 6)).toLocaleString(
-    "en-US",
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    },
-  );
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
@@ -51,82 +26,15 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                 Pot Raiders
               </div>
               <div className="text-sm text-gray-400">
-                For a full year, Pot Raiders will spend a share of the treasury
-                on{" "}
-                <Link
-                  href="https://v1.megapot.io"
-                  target="_blank"
-                  className="underline hover:text-white"
-                >
-                  Megapot
-                </Link>{" "}
-                tickets. Current jackpot is{" "}
-                <span className="font-semibold">${jackpotFormatted}</span>. Join
-                the raid!
+                The Pot Raiders raid has ended. For a full year, Pot Raiders
+                spent a share of the treasury on Megapot tickets. Thanks to
+                everyone who joined the raid!
               </div>
             </div>
-            <div className="border-b border-gray-700 mb-6"></div>
-
-            <div className="flex flex-wrap gap-4 sm:gap-8 items-center w-full">
-              {history[0] > 0 && (
-                <div className="flex flex-col gap-1">
-                  <div className="uppercase text-xs text-gray-400">
-                    last raid:{" "}
-                    {new Date(Number(history[1]) * 1000).toLocaleDateString(
-                      "en-US",
-                      { month: "short", day: "numeric" },
-                    )}
-                  </div>
-                  <div className="text-2xl text-[#FEC94F]">
-                    {history[0].toString()} Tickets
-                  </div>
-                </div>
-              )}
-
-              {history[0] > 0 && (
-                <div className="flex flex-col gap-1">
-                  <div className="uppercase text-xs text-gray-400">
-                    next raid
-                  </div>
-                  <div className="text-2xl text-[#FEC94F]">
-                    {
-                      <CountDownToDate
-                        targetDate={Number(history[1]) + 86400}
-                        message="Raiding Now!"
-                      />
-                    }
-                  </div>
-                </div>
-              )}
-
-              {history[0] === BigInt(0) && (
-                <div className="flex flex-col gap-1">
-                  <div className="uppercase text-xs text-gray-400">
-                    next raid
-                  </div>
-                  <div className="text-2xl text-[#FEC94F]">Starts soon</div>
-                </div>
-              )}
-
-              {contractBalance && (
-                <div className="flex flex-col gap-2">
-                  <div className="uppercase text-xs text-gray-400 flex items-center gap-1">
-                    treasury
-                  </div>
-                  <div className="text-2xl text-[#FEC94F]">
-                    {Number(formatUnits(contractBalance, 18)).toFixed(5)}Ξ
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
-          {totalSupply && Number(totalSupply) < 1000 ? (
-            <MintButton />
-          ) : (
-            <div className="flex text-sm w-full justify-between ">
-              <div className="flex flex-row gap-3">
+          <div className="flex text-sm w-full justify-between ">
+            <div className="flex flex-row gap-3">
               {pathname !== "/raid" && (
-                
                 <Link
                   href={`/raid`}
                   className="underline text-gray-400 hover:text-white"
@@ -135,38 +43,36 @@ export const MintComponent = ({ jackpot, history }: Props) => {
                 </Link>
               )}
               <Link
-                  href="/raid/history"
-                  className="underline text-gray-400 hover:text-white"
-                >
-                  Stats
-                </Link>
-                </div>
-              <div className="flex flex-row gap-3 text-gray-500">
-              
-                <Link
-                  href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
-                  className="underline hover:text-white"
-                  target="_blank"
-                >
-                  OpenSea
-                </Link>
-                <Link
-                  href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
-                  className="underline hover:text-white"
-                  target="_blank"
-                >
-                  Basescan
-                </Link>
-                <Link
-                  href={`https://v1.megapot.io`}
-                  className="underline hover:text-white"
-                  target="_blank"
-                >
-                  Megapot
-                </Link>
-              </div>
+                href="/raid/history"
+                className="underline text-gray-400 hover:text-white"
+              >
+                Stats
+              </Link>
             </div>
-          )}
+            <div className="flex flex-row gap-3 text-gray-500">
+              <Link
+                href={`https://opensea.io/item/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+                className="underline hover:text-white"
+                target="_blank"
+              >
+                OpenSea
+              </Link>
+              <Link
+                href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+                className="underline hover:text-white"
+                target="_blank"
+              >
+                Basescan
+              </Link>
+              <Link
+                href={`https://v1.megapot.io`}
+                className="underline hover:text-white"
+                target="_blank"
+              >
+                Megapot
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

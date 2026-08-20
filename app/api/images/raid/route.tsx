@@ -1,5 +1,3 @@
-import { potraiderContract } from "@/app/lib/contracts/potraider";
-import { formatUnits } from "ethers";
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
@@ -14,48 +12,37 @@ export async function GET(request: Request) {
       new URL("../assets/Inter-Regular.ttf", import.meta.url),
     ).then((res) => res.arrayBuffer());
 
-    const contract = potraiderContract();
-    const jackpot = await contract.getLotteryJackpot();
-    const jackpotFormatted = Number(formatUnits(jackpot, 6)).toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      },
-    );
-    const description = `For a full year, Pot Raiders will spend a share of the treasury on Megapot tickets. Current jackpot: $${jackpotFormatted}`;
+    const description = "The Pot Raiders raid has ended.";
 
     return new ImageResponse(
-      (
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            fontFamily: '"Inter"',
-            justifyContent: "flex-start",
-            backgroundColor: "#000000",
-          }}
-        >
-          <div tw="flex flex-row justify-between h-[630px] w-[1200px]">
-            <div tw="flex flex-col justify-center w-[680px] pl-30">
-              <div tw="text-8xl mb-6 mt-11 font-bold text-[#FEC94F]">
-                Pot Raiders
-              </div>
-              <div tw="text-4xl text-[#B9B9B9]">{description}</div>
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          fontFamily: '"Inter"',
+          justifyContent: "flex-start",
+          backgroundColor: "#000000",
+        }}
+      >
+        <div tw="flex flex-row justify-between h-[630px] w-[1200px]">
+          <div tw="flex flex-col justify-center w-[680px] pl-30">
+            <div tw="text-8xl mb-6 mt-11 font-bold text-[#FEC94F]">
+              Pot Raiders
             </div>
-            <div tw="flex items-center w-[560px]">
-              <img
-                src="https://basedbits.fun/images/raider_black.svg"
-                alt="Pot Raider"
-                tw="w-[500px] h-[500px]"
-              />
-            </div>
+            <div tw="text-4xl text-[#B9B9B9]">{description}</div>
+          </div>
+          <div tw="flex items-center w-[560px]">
+            <img
+              src="https://basedbits.fun/images/raider_black.svg"
+              alt="Pot Raider"
+              tw="w-[500px] h-[500px]"
+            />
           </div>
         </div>
-      ),
+      </div>,
       {
         width: 1200,
         height: 630,
