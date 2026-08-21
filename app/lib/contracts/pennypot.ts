@@ -8,7 +8,7 @@ export const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 // Live PennyPot deployment on Base. Hardcoded constant: this is server-only
 // cron code against a fixed contract, so there's no env override (and NEXT_PUBLIC_*
 // vars are inlined at build time anyway, which previously left the target undefined).
-export const PENNYPOT_ADDRESS = "0x133195CEd7Cf71A7ed3a428a30816d83f022C9A1";
+export const PENNYPOT_ADDRESS = "0x68C2F365DA5D55CC4CdbD4fE3A3a10EE56d0846A";
 
 // Minimal ERC20 surface the cron needs: read balance/allowance, approve PennyPot.
 const ERC20_ABI = [

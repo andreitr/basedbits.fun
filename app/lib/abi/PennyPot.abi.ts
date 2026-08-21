@@ -1,6 +1,5 @@
 // Minimal ABI for the PennyPot functions the check-in rewards cron calls.
-// Hand-authored because the live deployment
-// (0x133195CEd7Cf71A7ed3a428a30816d83f022C9A1) is unverified on the explorer.
+// Hand-authored for the live deployment 0x68C2F365DA5D55CC4CdbD4fE3A3a10EE56d0846A.
 // Source of truth: andreitr/pennypot. `buyTicketSharesFor` selector 0xf6e2e620.
 export const PennyPotABI = [
   {
