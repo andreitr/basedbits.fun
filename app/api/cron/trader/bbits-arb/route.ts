@@ -13,8 +13,10 @@ import {
 import {
   Contract,
   ContractRunner,
+  EventLog,
   MaxUint256,
   Wallet,
+  ZeroAddress,
   formatEther,
   getAddress,
 } from "ethers";
@@ -71,6 +73,12 @@ const OFFER_DURATION_SECONDS = 60 * 60;
 // Spam NFTs are routine on Base, so a real holding can sit well past page one.
 const MAX_NFT_PAGES = 10;
 
+// Blocks to look back for a deposit that no sale has followed. ~67 minutes on Base's
+// 2s blocks — a crash last tick plus a few failed retries — and within the
+// eth_getLogs range Alchemy accepts. A deposit older than this simply isn't
+// recovered: its mint stays in the wallet mislabelled as margin. Safe, just unpaid.
+const UNSETTLED_LOOKBACK_BLOCKS = 2000;
+
 // Writes are disabled unless BBITS_ARB_DRY_RUN is explicitly "0".
 const isDryRun = () => process.env.BBITS_ARB_DRY_RUN !== "0";
 
@@ -81,6 +89,7 @@ const SEAPORT_ABI = [
 type Provider = ContractRunner & {
   getBalance: (a: string) => Promise<bigint>;
   getFeeData: () => Promise<{ maxFeePerGas: bigint | null }>;
+  getBlockNumber: () => Promise<number>;
 };
 
 type Keeper = {
@@ -269,6 +278,45 @@ const collectStrayNfts = async (
     );
   }
   return owned;
+};
+
+/**
+ * BBITS minted by a deposit that no sale has followed — the signature of a run that
+ * died between depositing and settling.
+ *
+ * Decided by event ORDER, not amounts. By amount, retained margin is also "unsold
+ * mint", which is exactly what makes balance-based attribution impossible; but only
+ * an unsettled deposit has no outbound transfer after it. Bounded to mints since the
+ * last sale, so a deposit is recovered at most once and nothing minted earlier is
+ * ever reached. Fails closed: a read error reports nothing unsettled.
+ */
+const findUnsettledMint = async (k: Keeper): Promise<bigint> => {
+  try {
+    const latest = await k.provider.getBlockNumber();
+    const from = Math.max(0, latest - UNSETTLED_LOOKBACK_BLOCKS);
+    const [mints, sales] = await Promise.all([
+      k.vault.queryFilter(
+        k.vault.filters.Transfer(ZeroAddress, k.bot),
+        from,
+        latest,
+      ),
+      k.vault.queryFilter(k.vault.filters.Transfer(k.bot, null), from, latest),
+    ]);
+    const lastSale = sales.reduce((m, e) => Math.max(m, e.blockNumber), -1);
+    let unsettled = BigInt(0);
+    for (const e of mints) {
+      if (e instanceof EventLog && e.blockNumber > lastSale) {
+        unsettled += BigInt(e.args[2]);
+      }
+    }
+    return unsettled;
+  } catch (error) {
+    console.error(
+      "Could not read deposit/sale history — assuming nothing unsettled:",
+      error,
+    );
+    return BigInt(0);
+  }
 };
 
 const ensureVaultApproval = async (collection: Contract, bot: string) => {
@@ -594,17 +642,19 @@ export async function GET(req: NextRequest) {
       // A filled bid OpenSea hasn't indexed yet: its shortfall must wait for its own
       // deposit, not be covered out of banked margin.
       actions.push("recover:awaiting-deposit");
-    } else if ((await weth.balanceOf(bot)) < maxPayWei) {
-      // No mint this run, nothing pending, yet the float can't fund a bid: a previous
-      // run died between depositing and settling. Recover at most one mint, and only
-      // by exact output, so it either clears the deficit or does nothing — a partial
-      // sale here would leave a residual for every later tick to chase.
-      //
-      // This is the one place banked margin can be touched. Without persisted
-      // attribution a deficit left by a fill that parity then moved against is
-      // indistinguishable from a crash, so the trade taken is "unstall the bot once,
-      // bounded to one mint" over "stay deadlocked with no way to bid".
-      actions.push(...(await settle(k, conversionRate, maxPayWei, false)));
+    } else {
+      // No mint this run and nothing pending. Look for on-chain evidence of a deposit
+      // no sale has followed — a previous run that died between depositing and
+      // settling. Keyed on that evidence rather than on whether the next bid is
+      // affordable: one acquisition usually leaves WETH well above maxPayWei, and a
+      // native sweep leaves it untouched, so affordability never signals this state.
+      // Recovered by exact output only, so it either clears the deficit or does
+      // nothing, and bounded to the unsettled mint so banked margin is never reached.
+      const unsettled = await findUnsettledMint(k);
+      if (unsettled > BigInt(0)) {
+        actions.push(`recover:unsettled-mint:${formatEther(unsettled)}-bbits`);
+        actions.push(...(await settle(k, unsettled, maxPayWei, false)));
+      }
     }
 
     // --- Step 1: single-open-order invariant --------------------------------
