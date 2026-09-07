@@ -492,7 +492,9 @@ const offchainCancel = async (
   client: OpenSeaSDK,
   order: OrderV2,
 ): Promise<boolean> => {
-  if (!order.orderHash) return true;
+  // No hash means no cancel was even attempted: the signed Seaport order is still
+  // usable from its protocol data. Report it live so callers escalate on-chain.
+  if (!order.orderHash) return false;
   const response = await client.offchainCancelOrder(
     order.protocolAddress,
     order.orderHash,
@@ -569,13 +571,22 @@ export async function GET(req: NextRequest) {
 
     // --- Parity -------------------------------------------------------------
     // Independent reads are issued together so ethers can batch them into one POST.
-    const [conversionRate, gasBufferWei, heldNfts]: [bigint, bigint, bigint] =
-      await Promise.all([
-        vault.conversionRate(),
-        effectiveGasBuffer(provider),
-        collection.balanceOf(bot),
-      ]);
-    const parityWei = await quoteParityWei(quoter, conversionRate);
+    // Resting offers are loaded here, before any write: whatever the run does next
+    // must start from a known orderbook so a live offer can be de-risked first. A
+    // read failure therefore fails the whole run closed — nothing is written while
+    // the orderbook is unknown.
+    const [conversionRate, gasBufferWei, heldNfts, restingOffers]: [
+      bigint,
+      bigint,
+      bigint,
+      OrderV2[],
+    ] = await Promise.all([
+      vault.conversionRate(),
+      effectiveGasBuffer(provider),
+      collection.balanceOf(bot),
+      findRestingOffers(client, bot),
+    ]);
+    let parityWei = await quoteParityWei(quoter, conversionRate);
 
     const lower =
       (SANITY_PARITY_WEI * (BigInt(10_000) - SANITY_BAND_BPS)) / BigInt(10_000);
@@ -589,10 +600,9 @@ export async function GET(req: NextRequest) {
       // moved, an offer priced from an earlier parity is no longer justifiable and
       // could fill at a severe loss within its hour. Nothing else is done on a suspect
       // price — no settle, no bid — only the cancel, on-chain and confirmed.
-      const resting = await findRestingOffers(client, bot);
       let cancelled = 0;
       if (!dryRun) {
-        for (const order of resting) {
+        for (const order of restingOffers) {
           await client.cancelOrder({ order, accountAddress: bot });
           if (await confirmCancelled(provider, order)) cancelled++;
           else console.error("On-chain cancel unconfirmed during sanity abort");
@@ -604,7 +614,7 @@ export async function GET(req: NextRequest) {
           dryRun,
           action: "ABORT_PARITY_SANITY",
           parityWei: parityWei.toString(),
-          restingOffers: resting.length,
+          restingOffers: restingOffers.length,
           cancelled,
         },
         { status: 200 },
@@ -613,17 +623,85 @@ export async function GET(req: NextRequest) {
 
     // The most the bot will pay for one NFT, by either route. This single value gates
     // bids, sweeps, and repricing so the exposure bound has exactly one definition.
-    const maxProfitablePriceWei = parityWei - TARGET_MARGIN_WEI - gasBufferWei;
-    // Clamped at zero: when nothing is profitable the bot still reconciles and cancels
-    // below, and the gas-reserve maths must not see a negative bid size.
-    const maxPayWei =
-      maxProfitablePriceWei > BigInt(0)
-        ? min(maxProfitablePriceWei, MAX_SPEND_WEI)
-        : BigInt(0);
-    const unprofitable = maxProfitablePriceWei <= BigInt(0);
+    // A helper because it is recomputed after any reconciliation sale moves the pool.
+    // maxPayWei is clamped at zero: when nothing is profitable the bot still reconciles
+    // and cancels, and the gas-reserve maths must not see a negative bid size. A parity
+    // that has drifted out of the sanity band after a sale is treated as unprofitable,
+    // which routes it through the same cancel-and-hold path.
+    const priceCeiling = (parity: bigint) => {
+      const maxProfitablePriceWei = parity - TARGET_MARGIN_WEI - gasBufferWei;
+      const inBand = parity >= lower && parity <= upper;
+      const profitable = maxProfitablePriceWei > BigInt(0) && inBand;
+      return {
+        maxProfitablePriceWei,
+        maxPayWei: profitable
+          ? min(maxProfitablePriceWei, MAX_SPEND_WEI)
+          : BigInt(0),
+        unprofitable: !profitable,
+      };
+    };
+    let { maxProfitablePriceWei, maxPayWei, unprofitable } =
+      priceCeiling(parityWei);
 
     // --- Step 0: reconcile --------------------------------------------------
-    // Every check derives from live on-chain balances, so a crash at any point
+    // Orderbook hygiene comes first, ahead of every write. Recovery writes can throw
+    // (approval, deposit, RPC) and exit through the outer catch; if a live offer were
+    // still resting at that point it would stay fillable while an acquisition is
+    // pending. So duplicates and any offer coexisting with a held NFT are dealt with
+    // here, where nothing has been written yet.
+    if (restingOffers.length > 1) {
+      actions.push(`recover:duplicate-offers:${restingOffers.length}`);
+      if (!dryRun) {
+        for (const stale of restingOffers.slice(1)) {
+          // Duplicates are an invariant violation and must be certainly dead before
+          // anything else runs: a sweep hard-cancels only the newest offer and a
+          // reprice posts a replacement, either of which would leave a still-signed
+          // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
+          if (await offchainCancel(client, stale)) continue;
+          await client.cancelOrder({ order: stale, accountAddress: bot });
+          if (!(await confirmCancelled(provider, stale))) {
+            console.error(
+              "Duplicate offer could not be cancelled — aborting run",
+            );
+            return Response.json({
+              ok: false,
+              dryRun,
+              action: "ABORT_DUPLICATE_UNCANCELLED",
+              actions,
+              parityWei: parityWei.toString(),
+            });
+          }
+          actions.push("recover:duplicate-hard-cancelled");
+        }
+      }
+    }
+    let openOrder: OrderV2 | null = restingOffers[0] ?? null;
+
+    // One unsettled acquisition at a time. findRestingOffers filters finalized orders,
+    // so an offer still resting while the bot holds an NFT is a separate live one — a
+    // surviving duplicate, or one placed from elsewhere — that could fill before the
+    // deposit lands. Hard-cancelled here, before the deposit is attempted.
+    if (heldNfts > BigInt(0) && openOrder) {
+      actions.push("recover:cancel-offer-while-holding");
+      if (!dryRun) {
+        await client.cancelOrder({ order: openOrder, accountAddress: bot });
+        if (!(await confirmCancelled(provider, openOrder))) {
+          console.error(
+            "On-chain cancel unconfirmed while holding an NFT — aborting run",
+          );
+          return Response.json({
+            ok: false,
+            dryRun,
+            action: "ABORT_CANCEL_UNCONFIRMED",
+            actions,
+            parityWei: parityWei.toString(),
+          });
+        }
+        openOrder = null;
+      }
+    }
+
+    // Every check below derives from live on-chain balances, so a crash at any point
     // re-derives the same state on the next run.
     const strayNfts = await collectStrayNfts(client, collection, bot, heldNfts);
     if (strayNfts.length) {
@@ -657,49 +735,29 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // --- Step 1: single-open-order invariant --------------------------------
-    // A read failure must never fall through to "no open order -> bid": failing
-    // closed is the only safe response when the orderbook is unknown. The two
-    // OpenSea reads are independent, so they run together.
-    const [restingOffers, floor, wethAvailable, nativeAvailable]: [
-      OrderV2[],
+    // A settlement sells BBITS into a shallow pool, which moves the very price this
+    // run was priced from. Requote after any sale so the decision below is against
+    // the pool as it is now, not as it was before the bot pushed it.
+    if (
+      actions.includes("settle:float-restored") ||
+      actions.includes("settle:float-partial")
+    ) {
+      parityWei = await quoteParityWei(quoter, conversionRate);
+      ({ maxProfitablePriceWei, maxPayWei, unprofitable } =
+        priceCeiling(parityWei));
+      actions.push(`requote:parity:${formatEther(parityWei)}-eth`);
+    }
+
+    // --- Step 1: market state -----------------------------------------------
+    const [floor, wethAvailable, nativeAvailable]: [
       Floor | null,
       bigint,
       bigint,
     ] = await Promise.all([
-      findRestingOffers(client, bot),
       findBestFloor(client),
       weth.balanceOf(bot),
       provider.getBalance(bot),
     ]);
-
-    if (restingOffers.length > 1) {
-      actions.push(`recover:duplicate-offers:${restingOffers.length}`);
-      if (!dryRun) {
-        for (const stale of restingOffers.slice(1)) {
-          // Duplicates are an invariant violation and must be certainly dead before
-          // anything else runs: a sweep hard-cancels only the newest offer and a
-          // reprice posts a replacement, either of which would leave a still-signed
-          // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
-          if (await offchainCancel(client, stale)) continue;
-          await client.cancelOrder({ order: stale, accountAddress: bot });
-          if (!(await confirmCancelled(provider, stale))) {
-            console.error(
-              "Duplicate offer could not be cancelled — aborting run",
-            );
-            return Response.json({
-              ok: false,
-              dryRun,
-              action: "ABORT_DUPLICATE_UNCANCELLED",
-              actions,
-              parityWei: parityWei.toString(),
-            });
-          }
-          actions.push("recover:duplicate-hard-cancelled");
-        }
-      }
-    }
-    const openOrder = restingOffers[0] ?? null;
     const openOrderPriceWei = openOrder
       ? restingOfferPriceWei(openOrder)
       : BigInt(0);
