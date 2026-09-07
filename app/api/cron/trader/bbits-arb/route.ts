@@ -25,6 +25,7 @@ import {
   OrderSide,
   OrderType,
   type OrderV2,
+  type ProtocolData,
 } from "opensea-js";
 
 export const dynamic = "force-dynamic";
@@ -99,8 +100,8 @@ const getOpenSeaClient = (signer: Wallet) =>
     apiKey: process.env.OPENSEA_API_KEY,
   });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const parameters = (protocolData: any) => protocolData?.parameters;
+const parameters = (protocolData: ProtocolData | undefined) =>
+  protocolData?.parameters;
 
 const min = (a: bigint, b: bigint) => (a < b ? a : b);
 
@@ -146,7 +147,7 @@ const findRestingOffers = async (client: OpenSeaSDK, maker: string) => {
 
 // The exact WETH the bot has committed, read off the Seaport offer item rather than
 // `currentPrice`, which is a derived display value.
-const restingOfferPriceWei = (order: { protocolData: unknown }): bigint =>
+const restingOfferPriceWei = (order: OrderV2): bigint =>
   BigInt(parameters(order.protocolData)?.offer?.[0]?.startAmount ?? 0);
 
 type Floor = {
@@ -169,6 +170,7 @@ const findBestFloor = async (client: OpenSeaSDK): Promise<Floor | null> => {
 
   const priced = (listings ?? []).flatMap((listing): Floor[] => {
     const params = parameters(listing.protocol_data);
+    if (!params) return [];
     const consideration = params?.consideration ?? [];
     const tokenId: string | undefined =
       params?.offer?.[0]?.identifierOrCriteria;
@@ -228,7 +230,7 @@ const collectStrayNfts = async (
 ): Promise<string[]> => {
   if (heldCount <= BigInt(0)) return [];
 
-  const candidates: string[] = [];
+  const owned: string[] = [];
   let next: string | undefined;
   for (let page = 0; page < MAX_NFT_PAGES; page++) {
     const response = await client.api.getNFTsByAccount(
@@ -237,23 +239,29 @@ const collectStrayNfts = async (
       next,
       Chain.Base,
     );
-    for (const nft of response?.nfts ?? []) {
-      if (getAddress(nft.contract) === getAddress(BBITS_COLLECTION)) {
-        candidates.push(nft.identifier);
+    const candidates = (response?.nfts ?? [])
+      .filter(
+        (nft) => getAddress(nft.contract) === getAddress(BBITS_COLLECTION),
+      )
+      .map((nft) => nft.identifier);
+
+    // Confirm each page on-chain before deciding whether to keep walking. The index
+    // can still list a token the bot already deposited, so counting raw candidates
+    // would stop pagination early while the token actually held sits on a later page.
+    const owners = await Promise.allSettled(
+      candidates.map((id) => collection.ownerOf(id)),
+    );
+    candidates.forEach((id, i) => {
+      const r = owners[i];
+      if (r.status === "fulfilled" && getAddress(r.value) === getAddress(bot)) {
+        owned.push(id);
       }
-    }
-    // Stop as soon as every held token is accounted for, or the index runs out.
-    if (candidates.length >= Number(heldCount) || !response?.next) break;
+    });
+
+    // Stop once every held token is confirmed, or the index runs out.
+    if (owned.length >= Number(heldCount) || !response?.next) break;
     next = response.next;
   }
-
-  const owners = await Promise.allSettled(
-    candidates.map((id) => collection.ownerOf(id)),
-  );
-  const owned = candidates.filter((_, i) => {
-    const r = owners[i];
-    return r.status === "fulfilled" && getAddress(r.value) === getAddress(bot);
-  });
 
   if (owned.length < Number(heldCount)) {
     console.log(
@@ -583,7 +591,15 @@ export async function GET(req: NextRequest) {
     let action: string;
     let reason = "";
 
-    if (floorTotalWei !== null && floorTotalWei <= maxPayWei) {
+    if (pendingNfts > BigInt(0)) {
+      // One unsettled acquisition at a time. A held NFT that OpenSea hasn't indexed
+      // yet is exposure the float hasn't been repaid for; buying or bidding again
+      // now would stack a second on top of it. An existing resting order is left
+      // alone — it was placed when it was safe, and cancelling it only to re-post
+      // next tick is churn.
+      action = "HOLD";
+      reason = "awaiting deposit of held NFT";
+    } else if (floorTotalWei !== null && floorTotalWei <= maxPayWei) {
       action = "SWEEP";
       reason = "floor clears margin outright";
     } else if (!openOrder) {
@@ -635,9 +651,14 @@ export async function GET(req: NextRequest) {
       // Affordability is checked against the currency the listing is actually paid in,
       // and BEFORE the resting bid is touched: cancelling first and then discovering
       // the sweep is unfundable would destroy a healthy offer for nothing.
-      const payBalance =
-        floor.currency === "weth" ? wethAvailable : nativeAvailable;
-      if (payBalance < floor.totalCostWei + gasBufferWei) {
+      // Gas is always paid in native ETH, so it is charged against the native balance
+      // regardless of which currency the listing itself is priced in.
+      const affordable =
+        floor.currency === "weth"
+          ? wethAvailable >= floor.totalCostWei &&
+            nativeAvailable >= gasBufferWei
+          : nativeAvailable >= floor.totalCostWei + gasBufferWei;
+      if (!affordable) {
         console.error(`Insufficient ${floor.currency} balance to sweep`);
         return Response.json({
           ...result,
