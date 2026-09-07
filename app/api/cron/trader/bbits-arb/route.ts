@@ -748,20 +748,9 @@ export async function GET(req: NextRequest) {
       actions.push(`requote:parity:${formatEther(parityWei)}-eth`);
     }
 
-    // --- Step 1: market state -----------------------------------------------
-    const [floor, wethAvailable, nativeAvailable]: [
-      Floor | null,
-      bigint,
-      bigint,
-    ] = await Promise.all([
-      findBestFloor(client),
-      weth.balanceOf(bot),
-      provider.getBalance(bot),
-    ]);
-    const openOrderPriceWei = openOrder
-      ? restingOfferPriceWei(openOrder)
-      : BigInt(0);
-
+    // Placed ahead of the market-state reads below on purpose: this cancel needs
+    // nothing from them, and gating it behind unrelated floor/balance fetches meant a
+    // transient rejection there reached the outer catch with the offer still live.
     if (unprofitable) {
       // No price clears margin+gas right now (a fee spike, or parity collapsed). An
       // offer posted under earlier conditions would fill at exactly the loss this
@@ -786,6 +775,20 @@ export async function GET(req: NextRequest) {
         gasBufferWei: gasBufferWei.toString(),
       });
     }
+
+    // --- Step 1: market state -----------------------------------------------
+    const [floor, wethAvailable, nativeAvailable]: [
+      Floor | null,
+      bigint,
+      bigint,
+    ] = await Promise.all([
+      findBestFloor(client),
+      weth.balanceOf(bot),
+      provider.getBalance(bot),
+    ]);
+    const openOrderPriceWei = openOrder
+      ? restingOfferPriceWei(openOrder)
+      : BigInt(0);
 
     // --- Step 2: decide -----------------------------------------------------
     const floorTotalWei = floor?.totalCostWei ?? null;
