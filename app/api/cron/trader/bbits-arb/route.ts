@@ -21,14 +21,7 @@ import {
   getAddress,
 } from "ethers";
 import { NextRequest } from "next/server";
-import {
-  Chain,
-  OpenSeaSDK,
-  OrderSide,
-  OrderType,
-  type OrderV2,
-  type ProtocolData,
-} from "opensea-js";
+import { Chain, OpenSeaSDK, type OrderV2, type ProtocolData } from "opensea-js";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -124,39 +117,80 @@ const effectiveGasBuffer = async (provider: Provider): Promise<bigint> => {
   }
 };
 
+// Pages of the collection offer book to walk when looking for the bot's own bids.
+const MAX_OFFER_PAGES = 20;
+
+// Seaport ItemType for an ERC721 consideration resolved by merkle criteria — the
+// shape of every collection offer.
+const ERC721_WITH_CRITERIA = 4;
+
+/**
+ * The subset of an OpenSea order the run needs: enough to price it, cancel it on- or
+ * off-chain, and confirm the cancel. Built from the collection offer feed rather than
+ * the SDK's `OrderV2`, whose backing endpoint (`/orders/{chain}/{protocol}/offers`)
+ * OpenSea has removed (it now answers 405).
+ */
+type RestingOffer = Pick<
+  OrderV2,
+  "orderHash" | "protocolAddress" | "protocolData"
+>;
+
 /**
  * The bot's resting collection offers, newest first.
  *
- * The API returns cancelled and expired orders, and `assetContractAddress` filtering is
- * unreliable for criteria orders, so everything is re-checked in code against the
- * consideration item rather than trusted from the query.
+ * The offer feed only returns active, valid orders, so cancelled, filled and expired
+ * bids are already gone; expiry is still re-checked in code because the feed's view
+ * can lag. The feed is collection-wide with no maker filter, so every page is walked
+ * and filtered by offerer, and the consideration item is checked against the
+ * collection rather than trusting the slug.
  */
-const findRestingOffers = async (client: OpenSeaSDK, maker: string) => {
-  const { orders } = await client.api.getOrders({
-    side: OrderSide.OFFER,
-    protocol: "seaport",
-    maker,
-    orderBy: "created_date",
-    orderDirection: "desc",
-  });
+const findRestingOffers = async (
+  client: OpenSeaSDK,
+  maker: string,
+): Promise<RestingOffer[]> => {
+  const nowSec = BigInt(Math.floor(Date.now() / 1000));
+  const makerAddress = getAddress(maker);
+  const found: { offer: RestingOffer; startTime: bigint }[] = [];
 
-  const nowSec = Math.floor(Date.now() / 1000);
+  let next: string | undefined;
+  for (let page = 0; page < MAX_OFFER_PAGES; page++) {
+    const response = await client.api.getAllOffers(COLLECTION_SLUG, 100, next);
+    for (const offer of response.offers) {
+      const params = offer.protocol_data?.parameters;
+      if (!params) continue;
+      if (getAddress(params.offerer) !== makerAddress) continue;
+      if (BigInt(params.endTime) <= nowSec) continue;
 
-  return orders.filter((order) => {
-    if (order.orderType !== OrderType.CRITERIA) return false;
-    if (order.cancelled || order.finalized || order.markedInvalid) return false;
-    if (order.remainingQuantity <= 0) return false;
-    if (order.expirationTime <= nowSec) return false;
+      // Collection (criteria) offers only — the bot never bids on a single token.
+      // Read off the signed Seaport item rather than the API's optional `criteria`
+      // field: an ERC721_WITH_CRITERIA consideration is what a collection offer is.
+      const item = params.consideration?.[0];
+      if (!item || Number(item.itemType) !== ERC721_WITH_CRITERIA) continue;
+      if (getAddress(item.token) !== getAddress(BBITS_COLLECTION)) continue;
 
-    const consideration = parameters(order.protocolData)?.consideration ?? [];
-    const target = consideration[0]?.token;
-    return !!target && getAddress(target) === getAddress(BBITS_COLLECTION);
-  });
+      found.push({
+        offer: {
+          orderHash: offer.order_hash,
+          protocolAddress: offer.protocol_address,
+          protocolData: offer.protocol_data,
+        },
+        startTime: BigInt(params.startTime),
+      });
+    }
+    next = response.next;
+    if (!next) break;
+  }
+
+  return found
+    .sort((a, b) =>
+      a.startTime > b.startTime ? -1 : a.startTime < b.startTime ? 1 : 0,
+    )
+    .map(({ offer }) => offer);
 };
 
 // The exact WETH the bot has committed, read off the Seaport offer item rather than
 // `currentPrice`, which is a derived display value.
-const restingOfferPriceWei = (order: OrderV2): bigint =>
+const restingOfferPriceWei = (order: RestingOffer): bigint =>
   BigInt(parameters(order.protocolData)?.offer?.[0]?.startAmount ?? 0);
 
 type Floor = {
@@ -490,7 +524,7 @@ const settle = async (
  */
 const offchainCancel = async (
   client: OpenSeaSDK,
-  order: OrderV2,
+  order: RestingOffer,
 ): Promise<boolean> => {
   // No hash means no cancel was even attempted: the signed Seaport order is still
   // usable from its protocol data. Report it live so callers escalate on-chain.
@@ -528,11 +562,24 @@ const postOffer = async (client: OpenSeaSDK, bot: string, priceWei: bigint) => {
   });
 };
 
+/**
+ * On-chain Seaport cancel. The SDK types this against `OrderV2` but only reads the
+ * protocol address and the signed order parameters, both of which a RestingOffer
+ * carries, hence the cast.
+ */
+const hardCancel = async (
+  client: OpenSeaSDK,
+  order: RestingOffer,
+  accountAddress: string,
+) => {
+  await client.cancelOrder({ order: order as OrderV2, accountAddress });
+};
+
 // The SDK awaits its own confirmation, but that wrapper is soft. Read the canonical
 // on-chain status before spending, using the order's own protocol address.
 const confirmCancelled = async (
   provider: ContractRunner,
-  order: OrderV2,
+  order: RestingOffer,
 ): Promise<boolean> => {
   if (!order.orderHash) return false;
   const seaport = new Contract(order.protocolAddress, SEAPORT_ABI, provider);
@@ -579,7 +626,7 @@ export async function GET(req: NextRequest) {
       bigint,
       bigint,
       bigint,
-      OrderV2[],
+      RestingOffer[],
     ] = await Promise.all([
       vault.conversionRate(),
       effectiveGasBuffer(provider),
@@ -603,7 +650,7 @@ export async function GET(req: NextRequest) {
       let cancelled = 0;
       if (!dryRun) {
         for (const order of restingOffers) {
-          await client.cancelOrder({ order, accountAddress: bot });
+          await hardCancel(client, order, bot);
           if (await confirmCancelled(provider, order)) cancelled++;
           else console.error("On-chain cancel unconfirmed during sanity abort");
         }
@@ -658,7 +705,7 @@ export async function GET(req: NextRequest) {
           // reprice posts a replacement, either of which would leave a still-signed
           // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
           if (await offchainCancel(client, stale)) continue;
-          await client.cancelOrder({ order: stale, accountAddress: bot });
+          await hardCancel(client, stale, bot);
           if (!(await confirmCancelled(provider, stale))) {
             console.error(
               "Duplicate offer could not be cancelled — aborting run",
@@ -675,7 +722,7 @@ export async function GET(req: NextRequest) {
         }
       }
     }
-    let openOrder: OrderV2 | null = restingOffers[0] ?? null;
+    let openOrder: RestingOffer | null = restingOffers[0] ?? null;
 
     // One unsettled acquisition at a time. findRestingOffers filters finalized orders,
     // so an offer still resting while the bot holds an NFT is a separate live one — a
@@ -684,7 +731,7 @@ export async function GET(req: NextRequest) {
     if (heldNfts > BigInt(0) && openOrder) {
       actions.push("recover:cancel-offer-while-holding");
       if (!dryRun) {
-        await client.cancelOrder({ order: openOrder, accountAddress: bot });
+        await hardCancel(client, openOrder, bot);
         if (!(await confirmCancelled(provider, openOrder))) {
           console.error(
             "On-chain cancel unconfirmed while holding an NFT — aborting run",
@@ -759,7 +806,7 @@ export async function GET(req: NextRequest) {
       if (openOrder) {
         actions.push("hold:cancel-unprofitable-offer");
         if (!dryRun) {
-          await client.cancelOrder({ order: openOrder, accountAddress: bot });
+          await hardCancel(client, openOrder, bot);
           if (!(await confirmCancelled(provider, openOrder))) {
             console.error("On-chain cancel unconfirmed while holding");
           }
@@ -858,7 +905,7 @@ export async function GET(req: NextRequest) {
       if (openOrder) {
         // Hard cancel: a fill here would stack a second acquisition on the one still
         // awaiting deposit, and off-chain cancel can't revoke a signature already vended.
-        await client.cancelOrder({ order: openOrder, accountAddress: bot });
+        await hardCancel(client, openOrder, bot);
         if (!(await confirmCancelled(provider, openOrder))) {
           console.error("On-chain cancel unconfirmed while awaiting deposit");
           return Response.json({
@@ -895,7 +942,7 @@ export async function GET(req: NextRequest) {
       // A resting bid must be hard-cancelled first: a seller could otherwise fill it
       // independently of this purchase, committing capital twice in one cycle.
       if (openOrder) {
-        await client.cancelOrder({ order: openOrder, accountAddress: bot });
+        await hardCancel(client, openOrder, bot);
         const cancelled = await confirmCancelled(provider, openOrder);
         if (!cancelled) {
           console.error("On-chain cancel unconfirmed — aborting sweep");
