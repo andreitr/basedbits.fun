@@ -306,6 +306,7 @@ const depositNfts = async (k: Keeper, ids: string[]) => {
 const restoreFloat = async (
   k: Keeper,
   maxSellBbits: bigint,
+  allowPartial: boolean,
 ): Promise<string | null> => {
   const [wethBalance, nativeBalance, bbitsBalance]: bigint[] =
     await Promise.all([
@@ -345,8 +346,17 @@ const restoreFloat = async (
     return "settle:float-restored";
   }
 
-  // Parity fell below the cost basis — the mint can't cover the whole gap. Recover what
-  // this acquisition can, bounded by maxSellBbits so banked margin stays untouched.
+  // Parity fell below the cost basis — the mint can't cover the whole gap.
+  if (!allowPartial) {
+    // Without a fresh mint to attribute it to, a partial sale would leave a residual
+    // deficit that every later tick would chase out of banked margin. Leave it.
+    console.log(
+      `Deficit ${formatEther(deficit)} ETH exceeds what one mint covers — not selling without a fresh deposit`,
+    );
+    return "settle:deficit-exceeds-mint";
+  }
+  // Recover what this acquisition can, bounded by maxSellBbits so banked margin stays
+  // untouched.
   const partialOut = await quoteWethForBbits(k.quoter, spendable);
   if (partialOut < MIN_WORTHWHILE_WEI) {
     console.log(
@@ -414,24 +424,42 @@ const settle = async (
   k: Keeper,
   maxSellBbits: bigint,
   maxPayWei: bigint,
+  allowPartial: boolean,
 ): Promise<string[]> => {
   const done: string[] = [];
-  const restored = await restoreFloat(k, maxSellBbits);
+  const restored = await restoreFloat(k, maxSellBbits, allowPartial);
   if (restored) done.push(restored);
   const topped = await ensureGasReserve(k, maxPayWei);
   if (topped) done.push(topped);
   return done;
 };
 
-const offchainCancel = async (client: OpenSeaSDK, order: OrderV2) => {
-  if (!order.orderHash) return;
-  await client.offchainCancelOrder(
+/**
+ * Gasless cancel via OpenSea's SignedZone. Returns whether the order is now certainly
+ * unfillable. The zone cannot revoke a fulfilment signature it has already handed to
+ * a seller; the API reports how long such a signature stays valid, and until then the
+ * old order can still fill.
+ */
+const offchainCancel = async (
+  client: OpenSeaSDK,
+  order: OrderV2,
+): Promise<boolean> => {
+  if (!order.orderHash) return true;
+  const response = await client.offchainCancelOrder(
     order.protocolAddress,
     order.orderHash,
     Chain.Base,
     undefined,
     true, // derive the offerer signature from the bot's signer
   );
+  const validUntil = response?.last_signature_issued_valid_until;
+  if (!validUntil) return true;
+  // Accept either an ISO timestamp or unix seconds. Anything unparseable is treated
+  // as still live: fail closed rather than risk the old and new offers both filling.
+  const untilMs = /^\d+$/.test(validUntil)
+    ? Number(validUntil) * 1000
+    : Date.parse(validUntil);
+  return Number.isFinite(untilMs) && untilMs <= Date.now();
 };
 
 /**
@@ -522,16 +550,13 @@ export async function GET(req: NextRequest) {
     // The most the bot will pay for one NFT, by either route. This single value gates
     // bids, sweeps, and repricing so the exposure bound has exactly one definition.
     const maxProfitablePriceWei = parityWei - TARGET_MARGIN_WEI - gasBufferWei;
-    const maxPayWei = min(maxProfitablePriceWei, MAX_SPEND_WEI);
-
-    if (maxProfitablePriceWei <= BigInt(0)) {
-      return Response.json({
-        ok: true,
-        action: "HOLD",
-        reason: "margin+gas exceeds parity",
-        parityWei: parityWei.toString(),
-      });
-    }
+    // Clamped at zero: when nothing is profitable the bot still reconciles and cancels
+    // below, and the gas-reserve maths must not see a negative bid size.
+    const maxPayWei =
+      maxProfitablePriceWei > BigInt(0)
+        ? min(maxProfitablePriceWei, MAX_SPEND_WEI)
+        : BigInt(0);
+    const unprofitable = maxProfitablePriceWei <= BigInt(0);
 
     // --- Step 0: reconcile --------------------------------------------------
     // Every check derives from live on-chain balances, so a crash at any point
@@ -542,18 +567,28 @@ export async function GET(req: NextRequest) {
       if (!dryRun) await depositNfts(k, strayNfts);
     }
 
-    // Settle whenever it is safe to attribute the deficit. After a deposit the sale is
-    // bounded to that mint, so it is safe even if more fills are still unindexed. With
-    // nothing deposited, only proceed once no NFT is pending — a filled bid OpenSea
-    // hasn't indexed yet would otherwise have its shortfall covered out of banked
-    // margin. The bound of one mint keeps a crash-recovery sale from overreaching too.
     const pendingNfts: bigint =
       strayNfts.length && !dryRun ? await collection.balanceOf(bot) : heldNfts;
-    if (strayNfts.length || pendingNfts === BigInt(0)) {
-      const mints = BigInt(Math.max(strayNfts.length, 1));
-      actions.push(...(await settle(k, mints * conversionRate, maxPayWei)));
-    } else {
+    if (strayNfts.length) {
+      // A mint this run: sell from it, bounded to its size. Safe even if more fills
+      // are still unindexed, since the bound can't reach anything minted earlier.
+      const minted = BigInt(strayNfts.length) * conversionRate;
+      actions.push(...(await settle(k, minted, maxPayWei, true)));
+    } else if (pendingNfts > BigInt(0)) {
+      // A filled bid OpenSea hasn't indexed yet: its shortfall must wait for its own
+      // deposit, not be covered out of banked margin.
       actions.push("recover:awaiting-deposit");
+    } else if ((await weth.balanceOf(bot)) < maxPayWei) {
+      // No mint this run, nothing pending, yet the float can't fund a bid: a previous
+      // run died between depositing and settling. Recover at most one mint, and only
+      // by exact output, so it either clears the deficit or does nothing — a partial
+      // sale here would leave a residual for every later tick to chase.
+      //
+      // This is the one place banked margin can be touched. Without persisted
+      // attribution a deficit left by a fill that parity then moved against is
+      // indistinguishable from a crash, so the trade taken is "unstall the bot once,
+      // bounded to one mint" over "stay deadlocked with no way to bid".
+      actions.push(...(await settle(k, conversionRate, maxPayWei, false)));
     }
 
     // --- Step 1: single-open-order invariant --------------------------------
@@ -584,6 +619,31 @@ export async function GET(req: NextRequest) {
     const openOrderPriceWei = openOrder
       ? restingOfferPriceWei(openOrder)
       : BigInt(0);
+
+    if (unprofitable) {
+      // No price clears margin+gas right now (a fee spike, or parity collapsed). An
+      // offer posted under earlier conditions would fill at exactly the loss this
+      // guard detected, so it is cancelled on-chain before holding — the hard form,
+      // since off-chain cancel can't revoke a fulfilment signature already vended.
+      if (openOrder) {
+        actions.push("hold:cancel-unprofitable-offer");
+        if (!dryRun) {
+          await client.cancelOrder({ order: openOrder, accountAddress: bot });
+          if (!(await confirmCancelled(provider, openOrder))) {
+            console.error("On-chain cancel unconfirmed while holding");
+          }
+        }
+      }
+      return Response.json({
+        ok: true,
+        dryRun,
+        action: "HOLD",
+        reason: "margin+gas exceeds parity",
+        actions,
+        parityWei: parityWei.toString(),
+        gasBufferWei: gasBufferWei.toString(),
+      });
+    }
 
     // --- Step 2: decide -----------------------------------------------------
     const floorTotalWei = floor?.totalCostWei ?? null;
@@ -722,7 +782,7 @@ export async function GET(req: NextRequest) {
       // would usually defer the deposit to the next tick.
       await depositNfts(k, [floor.tokenId]);
       actions.push("sweep:deposited");
-      actions.push(...(await settle(k, conversionRate, maxPayWei)));
+      actions.push(...(await settle(k, conversionRate, maxPayWei, true)));
     } else if (action === "BID") {
       if (!canFundBid) {
         console.error("Insufficient WETH to post bid");
@@ -744,7 +804,14 @@ export async function GET(req: NextRequest) {
             executed: "SKIP_INSUFFICIENT_WETH",
           });
         }
-        await offchainCancel(client, openOrder);
+        const dead = await offchainCancel(client, openOrder);
+        if (!dead) {
+          // A seller may already hold a fulfilment signature for the old offer, so
+          // posting the replacement now could let both fill. Wait it out: the old
+          // order expires within the hour and the next tick re-evaluates.
+          actions.push("reprice:deferred-vended-signature");
+          return Response.json({ ...result, executed: "REPRICE_DEFERRED" });
+        }
         await postOffer(client, bot, maxPayWei);
         actions.push("reprice:done");
       }
