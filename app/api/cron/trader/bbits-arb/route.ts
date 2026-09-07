@@ -38,11 +38,25 @@ const GAS_BUFFER_WEI = BigInt("40000000000000"); // 0.00004 ETH — floor; see e
 const REPRICE_THRESHOLD_WEI = GAS_BUFFER_WEI; // don't churn for sub-gas drift
 const MAX_SPEND_WEI = BigInt("3000000000000000"); // 0.003 ETH — one NFT
 
-// The seeded WETH balance the bot returns to after every fill. This doubles as the
-// profit/float boundary: BBITS left over once WETH is back at target is banked margin.
+// The seeded WETH balance the bot returns to after every fill. This is the profit
+// boundary: whatever of the mint is left once the float is whole is banked margin.
 const TARGET_WETH_FLOAT_WEI = BigInt("3000000000000000"); // 0.003 ETH
 
 const MIN_BBITS_RESERVE = BigInt(0); // optional floor protecting banked profit
+
+// Don't run a partial float recovery that recoups less than the gas it burns —
+// otherwise a permanently short float retries the same dust swap every tick.
+const MIN_PARTIAL_RECOVERY_WEI = GAS_BUFFER_WEI;
+
+// Native ETH the bot holds for gas and for paying sweeps, which settle in native
+// currency rather than WETH. Repaid out of the mint so sweeps don't drain it.
+// Set this to the amount actually seeded: if it exceeds the real balance, every run
+// sells part of the mint to top up gas instead of retaining it as margin.
+const TARGET_NATIVE_FLOAT_WEI = BigInt("10000000000000000"); // 0.01 ETH
+
+// Floor on the native top-up: below this the swap plus unwrap costs more than it moves.
+const MIN_NATIVE_TOPUP_WEI = GAS_BUFFER_WEI;
+
 const SLIPPAGE_BPS = BigInt(100); // 1% on the exit swap
 const ESTIMATED_GAS = BigInt(600_000); // fulfill + approve + exchange + swap
 
@@ -168,8 +182,8 @@ const collectStrayNfts = async (
   client: OpenSeaSDK,
   collection: Contract,
   bot: string,
+  heldCount: bigint,
 ): Promise<string[]> => {
-  const heldCount: bigint = await collection.balanceOf(bot);
   if (heldCount <= BigInt(0)) return [];
 
   const response = await client.api.getNFTsByAccount(
@@ -207,14 +221,82 @@ const ensureVaultApproval = async (collection: Contract, bot: string) => {
 };
 
 const ensureSwapAllowance = async (
-  vault: Contract,
+  token: Contract,
   bot: string,
   needed: bigint,
 ) => {
-  const allowance: bigint = await vault.allowance(bot, SWAP_ROUTER_02_ADDRESS);
+  const allowance: bigint = await token.allowance(bot, SWAP_ROUTER_02_ADDRESS);
   if (allowance >= needed) return;
-  const tx = await vault.approve(SWAP_ROUTER_02_ADDRESS, MaxUint256);
+  const tx = await token.approve(SWAP_ROUTER_02_ADDRESS, MaxUint256);
   await tx.wait();
+};
+
+/**
+ * Repay native ETH spent on a sweep.
+ *
+ * Sweeps pay their listing in native currency rather than WETH, so without this the gas
+ * float drains one sweep at a time while the BBITS that should have repaid it sits idle.
+ * Sized by exact output, so it never sells more of the mint than the debt requires.
+ */
+const restoreNativeFloat = async ({
+  vault,
+  weth,
+  quoter,
+  swapRouter,
+  provider,
+  bot,
+  dryRun,
+}: {
+  vault: Contract;
+  weth: Contract;
+  quoter: Contract;
+  swapRouter: Contract;
+  provider: ContractRunner & { getBalance: (a: string) => Promise<bigint> };
+  bot: string;
+  dryRun: boolean;
+}): Promise<string | null> => {
+  const nativeBalance = await provider.getBalance(bot);
+  if (nativeBalance >= TARGET_NATIVE_FLOAT_WEI) return null;
+
+  const deficit = TARGET_NATIVE_FLOAT_WEI - nativeBalance;
+  // Gas alone leaves the float a little short every run; topping that up would cost
+  // more than it moves, so only act once the gap is worth a transaction.
+  if (deficit < MIN_NATIVE_TOPUP_WEI) return null;
+
+  const bbitsBalance: bigint = await vault.balanceOf(bot);
+  const spendable =
+    bbitsBalance > MIN_BBITS_RESERVE
+      ? bbitsBalance - MIN_BBITS_RESERVE
+      : BigInt(0);
+  if (spendable <= BigInt(0)) return null;
+
+  const needIn = await quoteBbitsForExactWeth(quoter, deficit);
+  const amountInMaximum =
+    (needIn * (BigInt(10_000) + SLIPPAGE_BPS)) / BigInt(10_000);
+  if (amountInMaximum > spendable) {
+    console.log(
+      `Cannot repay native float: need ${formatEther(amountInMaximum)} BBITS, have ${formatEther(spendable)}`,
+    );
+    return null;
+  }
+
+  if (dryRun) return `settle:native-topup-planned:${formatEther(deficit)}-eth`;
+
+  await ensureSwapAllowance(vault, bot, amountInMaximum);
+  const swapTx = await swapRouter.exactOutputSingle({
+    tokenIn: BBITS_VAULT,
+    tokenOut: WETH_ADDRESS,
+    fee: POOL_FEE,
+    recipient: bot,
+    amountOut: deficit,
+    amountInMaximum,
+    sqrtPriceLimitX96: 0,
+  });
+  await swapTx.wait();
+
+  const unwrapTx = await weth.withdraw(deficit);
+  await unwrapTx.wait();
+  return `settle:native-repaid:${formatEther(deficit)}-eth`;
 };
 
 /**
@@ -270,11 +352,21 @@ const restoreWethFloat = async ({
   console.log(
     `Cannot fully restore WETH float: need ${formatEther(amountInMaximum)} BBITS, have ${formatEther(spendable)}`,
   );
+
+  // Without a floor here this branch re-fires every tick while the float stays short,
+  // swapping dust and burning gas forever. Only bother if the recovery is worth more
+  // than the gas it costs.
+  const partialOut = await quoteWethForBbits(quoter, spendable);
+  if (partialOut < MIN_PARTIAL_RECOVERY_WEI) {
+    console.log(
+      `Partial recovery of ${formatEther(partialOut)} ETH below the ${formatEther(MIN_PARTIAL_RECOVERY_WEI)} floor — holding`,
+    );
+    return "recover:partial-below-threshold";
+  }
   if (dryRun) return "recover:partial-swap-planned";
 
-  const expectedOut = await quoteWethForBbits(quoter, spendable);
   const amountOutMinimum =
-    (expectedOut * (BigInt(10_000) - SLIPPAGE_BPS)) / BigInt(10_000);
+    (partialOut * (BigInt(10_000) - SLIPPAGE_BPS)) / BigInt(10_000);
   await ensureSwapAllowance(vault, bot, spendable);
   const tx = await swapRouter.exactInputSingle({
     tokenIn: BBITS_VAULT,
@@ -287,6 +379,63 @@ const restoreWethFloat = async ({
   });
   await tx.wait();
   return "recover:float-partial";
+};
+
+/**
+ * Close out an acquisition.
+ *
+ * Both floats are made whole by selling only as many BBITS as the debt actually needs;
+ * the rest of the mint simply stays in the wallet as margin.
+ *
+ * Selling the whole mint and buying BBITS back with the proceeds was considered and
+ * rejected: the rebuy is funded by the larger sale moments earlier, so it nets out
+ * against itself in the pool while paying the 0.3% fee twice — measurably less BBITS
+ * retained (97.4 vs 99.2 per fill) for the same net market impact.
+ */
+const settleAcquisition = async ({
+  vault,
+  weth,
+  quoter,
+  swapRouter,
+  provider,
+  bot,
+  dryRun,
+}: {
+  vault: Contract;
+  weth: Contract;
+  quoter: Contract;
+  swapRouter: Contract;
+  provider: ContractRunner & { getBalance: (a: string) => Promise<bigint> };
+  bot: string;
+  dryRun: boolean;
+}): Promise<string[]> => {
+  const done: string[] = [];
+
+  const wethBalance: bigint = await weth.balanceOf(bot);
+  if (wethBalance < TARGET_WETH_FLOAT_WEI) {
+    const restored = await restoreWethFloat({
+      vault,
+      quoter,
+      swapRouter,
+      bot,
+      wethBalance,
+      dryRun,
+    });
+    if (restored) done.push(restored);
+  }
+
+  const repaid = await restoreNativeFloat({
+    vault,
+    weth,
+    quoter,
+    swapRouter,
+    provider,
+    bot,
+    dryRun,
+  });
+  if (repaid) done.push(repaid);
+
+  return done;
 };
 
 const offchainCancel = async (client: OpenSeaSDK, order: OrderV2) => {
@@ -388,7 +537,8 @@ export async function GET(req: NextRequest) {
     // --- Step 0: reconcile --------------------------------------------------
     // Every check derives from live on-chain balances, so a crash at any point
     // re-derives the same state on the next run.
-    const strayNfts = await collectStrayNfts(client, collection, bot);
+    const heldNfts: bigint = await collection.balanceOf(bot);
+    const strayNfts = await collectStrayNfts(client, collection, bot, heldNfts);
     if (strayNfts.length) {
       actions.push(`recover:deposit:${strayNfts.length}`);
       if (!dryRun) {
@@ -396,17 +546,30 @@ export async function GET(req: NextRequest) {
         const tx = await vault.exchangeNFTsForTokens(strayNfts);
         await tx.wait();
       }
+      actions.push(
+        ...(await settleAcquisition({
+          vault,
+          weth,
+          quoter,
+          swapRouter,
+          provider,
+          bot,
+          dryRun,
+        })),
+      );
     }
 
-    // The exit leg is triggered by a WETH float deficit, never by BBITS balance:
-    // once margin banks up as BBITS, a balance trigger would eventually mistake
-    // accumulated profit for an unprocessed deposit and sell it.
+    // Fallback for a run that died between depositing and settling. The normal exit
+    // runs inside settleAcquisition; this only catches a WETH float left short with no
+    // deposit to attribute it to, and it uses the conservative exact-output swap so it
+    // can never oversell margin banked by earlier cycles.
     //
-    // It is additionally gated on holding no undeposited NFT. A bid can fill before
-    // OpenSea indexes the transfer, which leaves the float short while the 1024 BBITS
-    // that repays it doesn't exist yet — without this gate the shortfall would be
-    // covered by selling previously banked margin instead. Wait for the deposit.
-    const pendingNfts: bigint = await collection.balanceOf(bot);
+    // Gated on holding no undeposited NFT: a bid can fill before OpenSea indexes the
+    // transfer, leaving the float short while the BBITS that repays it does not exist
+    // yet — without this gate the shortfall would be covered out of banked margin.
+    // Only re-read when a deposit actually ran; otherwise the earlier read still holds.
+    const pendingNfts: bigint =
+      strayNfts.length && !dryRun ? await collection.balanceOf(bot) : heldNfts;
     const wethBalance: bigint = await weth.balanceOf(bot);
     if (pendingNfts > BigInt(0)) {
       actions.push("recover:awaiting-deposit");
@@ -451,7 +614,14 @@ export async function GET(req: NextRequest) {
     let action: string;
     let reason = "";
 
-    if (floorTotalWei !== null && floorTotalWei <= maxProfitablePriceWei) {
+    // The spend cap has to gate the sweep as well as the bid: maxProfitablePriceWei
+    // rises with parity and can exceed MAX_SPEND_WEI, so checking margin alone would
+    // let an outright purchase spend past the configured exposure bound.
+    if (
+      floorTotalWei !== null &&
+      floorTotalWei <= maxProfitablePriceWei &&
+      floorTotalWei <= MAX_SPEND_WEI
+    ) {
       action = "SWEEP";
       reason = "floor clears margin outright";
     } else if (!openOrder) {
@@ -516,40 +686,56 @@ export async function GET(req: NextRequest) {
         return Response.json({ ...result, executed: "SKIP_INSUFFICIENT_ETH" });
       }
 
+      // Only the purchase itself is caught here. Everything after it is post-purchase
+      // bookkeeping: folding it into this catch would report a completed buy as a
+      // failed sweep and then place a compensating bid on top of the NFT we just won.
       try {
         await client.fulfillOrder({
           order: floor.listing,
           accountAddress: bot,
         });
         actions.push("sweep:filled");
-
-        // Follow through in the same run rather than leaving capital idle until the
-        // next cycle. Reconcile still covers us if any of this crashes.
-        const bought = await collectStrayNfts(client, collection, bot);
-        if (bought.length) {
-          await ensureVaultApproval(collection, bot);
-          const depositTx = await vault.exchangeNFTsForTokens(bought);
-          await depositTx.wait();
-          actions.push(`sweep:deposited:${bought.length}`);
-        }
-        const postSweepWeth: bigint = await weth.balanceOf(bot);
-        if (postSweepWeth < TARGET_WETH_FLOAT_WEI) {
-          const restored = await restoreWethFloat({
-            vault,
-            quoter,
-            swapRouter,
-            bot,
-            wethBalance: postSweepWeth,
-            dryRun,
-          });
-          if (restored) actions.push(restored);
-        }
       } catch (error) {
         // Listing raced away. The hard cancel already happened, so fall through to
         // re-posting a bid rather than leaving the bot with no order at all.
         console.error("Sweep fulfilment failed, falling back to bid:", error);
-        await postOffer(client, bot, bidWei);
-        return Response.json({ ...result, executed: "SWEEP_FAILED_REBID" });
+        if (wethAvailable >= bidWei) {
+          await postOffer(client, bot, bidWei);
+          return Response.json({ ...result, executed: "SWEEP_FAILED_REBID" });
+        }
+        console.error("Insufficient WETH to re-post a bid after failed sweep");
+        return Response.json({ ...result, executed: "SWEEP_FAILED_NO_REBID" });
+      }
+
+      // Follow through in the same run rather than leaving capital idle until the
+      // next cycle. Reconcile still covers us if any of this throws — the NFT and any
+      // BBITS are both recoverable from on-chain balances.
+      const boughtCount: bigint = await collection.balanceOf(bot);
+      const bought = await collectStrayNfts(
+        client,
+        collection,
+        bot,
+        boughtCount,
+      );
+      if (bought.length) {
+        await ensureVaultApproval(collection, bot);
+        const depositTx = await vault.exchangeNFTsForTokens(bought);
+        await depositTx.wait();
+        actions.push(`sweep:deposited:${bought.length}`);
+
+        // The sweep paid in native ETH, so settleAcquisition's unwrap step is what
+        // repays it before the remainder is treated as margin.
+        actions.push(
+          ...(await settleAcquisition({
+            vault,
+            weth,
+            quoter,
+            swapRouter,
+            provider,
+            bot,
+            dryRun,
+          })),
+        );
       }
     } else if (action === "BID") {
       if (wethAvailable < bidWei) {
@@ -560,6 +746,18 @@ export async function GET(req: NextRequest) {
       actions.push("bid:posted");
     } else if (action === "REPRICE_DOWN" || action === "REPRICE_UP") {
       if (openOrder) {
+        // Check funding before cancelling: otherwise a short float trades a healthy
+        // resting order for an un-honourable one, or for no order at all if the
+        // repost throws after the cancel has already gone through.
+        if (wethAvailable < bidWei) {
+          console.error(
+            "Insufficient WETH to reprice — leaving existing offer",
+          );
+          return Response.json({
+            ...result,
+            executed: "SKIP_INSUFFICIENT_WETH",
+          });
+        }
         await offchainCancel(client, openOrder);
         await postOffer(client, bot, bidWei);
         actions.push("reprice:done");

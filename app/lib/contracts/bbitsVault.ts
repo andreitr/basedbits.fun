@@ -37,6 +37,8 @@ const WETH_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function allowance(address owner, address spender) view returns (uint256)",
   "function approve(address spender, uint256 amount) returns (bool)",
+  // Unwrap back to native ETH, to repay what a sweep spent in native currency.
+  "function withdraw(uint256 amount)",
 ] as const;
 
 // SwapRouter02 structs carry NO deadline field — 7 members each.
