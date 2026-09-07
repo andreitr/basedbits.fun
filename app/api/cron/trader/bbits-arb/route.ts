@@ -688,11 +688,15 @@ export async function GET(req: NextRequest) {
     if (pendingNfts > BigInt(0)) {
       // One unsettled acquisition at a time. A held NFT that OpenSea hasn't indexed
       // yet is exposure the float hasn't been repaid for; buying or bidding again
-      // now would stack a second on top of it. An existing resting order is left
-      // alone — it was placed when it was safe, and cancelling it only to re-post
-      // next tick is churn.
-      action = "HOLD";
+      // now would stack a second on top of it.
+      //
+      // Any resting order is cancelled too, not left alone. findRestingOffers filters
+      // finalized orders, so the offer that produced the held NFT is already gone —
+      // whatever is still resting is a *separate* live offer (a surviving duplicate,
+      // or one placed from elsewhere) that could fill before the deposit lands.
+      action = "HOLD_PENDING";
       reason = "awaiting deposit of held NFT";
+      if (openOrder) actions.push("hold:cancel-offer-while-pending");
     } else if (floorTotalWei !== null && floorTotalWei <= maxPayWei) {
       action = "SWEEP";
       reason = "floor clears margin outright";
@@ -739,6 +743,23 @@ export async function GET(req: NextRequest) {
     }
 
     // --- Step 3: execute ----------------------------------------------------
+    if (action === "HOLD_PENDING") {
+      if (openOrder) {
+        // Hard cancel: a fill here would stack a second acquisition on the one still
+        // awaiting deposit, and off-chain cancel can't revoke a signature already vended.
+        await client.cancelOrder({ order: openOrder, accountAddress: bot });
+        if (!(await confirmCancelled(provider, openOrder))) {
+          console.error("On-chain cancel unconfirmed while awaiting deposit");
+          return Response.json({
+            ...result,
+            executed: "HOLD_CANCEL_UNCONFIRMED",
+          });
+        }
+        actions.push("hold:offer-cancelled");
+      }
+      return Response.json({ ...result, executed: action });
+    }
+
     const canFundBid = wethAvailable >= maxPayWei;
 
     if (action === "SWEEP" && floor) {
