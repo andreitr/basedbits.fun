@@ -537,11 +537,27 @@ export async function GET(req: NextRequest) {
       console.error(
         `Parity ${parityWei} outside sanity band [${lower}, ${upper}] — skipping run`,
       );
+      // De-risk before bailing. Whether the quote is corrupt or the market genuinely
+      // moved, an offer priced from an earlier parity is no longer justifiable and
+      // could fill at a severe loss within its hour. Nothing else is done on a suspect
+      // price — no settle, no bid — only the cancel, on-chain and confirmed.
+      const resting = await findRestingOffers(client, bot);
+      let cancelled = 0;
+      if (!dryRun) {
+        for (const order of resting) {
+          await client.cancelOrder({ order, accountAddress: bot });
+          if (await confirmCancelled(provider, order)) cancelled++;
+          else console.error("On-chain cancel unconfirmed during sanity abort");
+        }
+      }
       return Response.json(
         {
           ok: false,
+          dryRun,
           action: "ABORT_PARITY_SANITY",
           parityWei: parityWei.toString(),
+          restingOffers: resting.length,
+          cancelled,
         },
         { status: 200 },
       );
@@ -611,7 +627,25 @@ export async function GET(req: NextRequest) {
       actions.push(`recover:duplicate-offers:${restingOffers.length}`);
       if (!dryRun) {
         for (const stale of restingOffers.slice(1)) {
-          await offchainCancel(client, stale);
+          // Duplicates are an invariant violation and must be certainly dead before
+          // anything else runs: a sweep hard-cancels only the newest offer and a
+          // reprice posts a replacement, either of which would leave a still-signed
+          // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
+          if (await offchainCancel(client, stale)) continue;
+          await client.cancelOrder({ order: stale, accountAddress: bot });
+          if (!(await confirmCancelled(provider, stale))) {
+            console.error(
+              "Duplicate offer could not be cancelled — aborting run",
+            );
+            return Response.json({
+              ok: false,
+              dryRun,
+              action: "ABORT_DUPLICATE_UNCANCELLED",
+              actions,
+              parityWei: parityWei.toString(),
+            });
+          }
+          actions.push("recover:duplicate-hard-cancelled");
         }
       }
     }
@@ -743,29 +777,37 @@ export async function GET(req: NextRequest) {
       // Only the purchase itself is caught here. Everything after it is post-purchase
       // bookkeeping: folding it into this catch would report a completed buy as a
       // failed sweep and then place a compensating bid on top of the NFT we just won.
-      let filled = false;
       try {
         await client.fulfillOrder({
           order: floor.listing,
           accountAddress: bot,
         });
-        filled = true;
       } catch (error) {
+        // Not conclusive either way: the SDK can throw after the purchase has already
+        // been broadcast, e.g. a transient RPC failure while awaiting confirmation.
         console.error("Sweep fulfilment threw:", error);
       }
 
-      // The SDK resolves on any mined receipt, reverted or not, so success is decided
-      // by ownership rather than by the promise settling.
-      if (filled) {
-        try {
-          const owner: string = await collection.ownerOf(floor.tokenId);
-          filled = getAddress(owner) === getAddress(bot);
-        } catch {
-          filled = false;
-        }
+      // Ownership is the only source of truth, so it is checked whether or not the SDK
+      // threw. The promise resolves on any mined receipt, reverted or not, and it can
+      // reject after a successful broadcast — deciding on it alone would either report
+      // a reverted fill as won, or re-bid on top of an NFT the bot already holds.
+      let owned: boolean | null;
+      try {
+        const owner: string = await collection.ownerOf(floor.tokenId);
+        owned = getAddress(owner) === getAddress(bot);
+      } catch {
+        owned = null;
       }
 
-      if (!filled) {
+      if (owned === null) {
+        // Can't tell — fail closed. Re-bidding is the one move that could double the
+        // exposure; if the purchase went through, reconcile deposits it next tick.
+        console.error("Ownership unknown after sweep — holding, no rebid");
+        return Response.json({ ...result, executed: "SWEEP_UNCONFIRMED" });
+      }
+
+      if (!owned) {
         // Listing raced away or the fill reverted. The hard cancel already happened,
         // so re-post a bid rather than leaving the bot with no order at all.
         if (canFundBid) {
