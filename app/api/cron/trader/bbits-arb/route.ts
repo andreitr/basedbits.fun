@@ -72,9 +72,6 @@ const MAX_NFT_PAGES = 10;
 // recovered: its mint stays in the wallet mislabelled as margin. Safe, just unpaid.
 const UNSETTLED_LOOKBACK_BLOCKS = 2000;
 
-// Writes are disabled unless BBITS_ARB_DRY_RUN is explicitly "0".
-const isDryRun = () => process.env.BBITS_ARB_DRY_RUN !== "0";
-
 const SEAPORT_ABI = [
   "function getOrderStatus(bytes32 orderHash) view returns (bool isValidated, bool isCancelled, uint256 totalFilled, uint256 totalSize)",
 ] as const;
@@ -93,7 +90,6 @@ type Keeper = {
   quoter: Contract;
   provider: Provider;
   bot: string;
-  dryRun: boolean;
 };
 
 const getOpenSeaClient = (signer: Wallet) =>
@@ -412,8 +408,6 @@ const restoreFloat = async (
     (needIn * (BigInt(10_000) + SLIPPAGE_BPS)) / BigInt(10_000);
 
   if (amountInMaximum <= spendable) {
-    if (k.dryRun)
-      return `settle:swap-planned:${formatEther(amountInMaximum)}-bbits`;
     await ensureSwapAllowance(k.vault, k.bot, amountInMaximum);
     const tx = await k.swapRouter.exactOutputSingle({
       tokenIn: BBITS_VAULT,
@@ -449,8 +443,6 @@ const restoreFloat = async (
   console.log(
     `Cannot fully restore ETH float: need ${formatEther(amountInMaximum)} BBITS, selling ${formatEther(spendable)}`,
   );
-  if (k.dryRun) return "settle:partial-swap-planned";
-
   const amountOutMinimum =
     (partialOut * (BigInt(10_000) - SLIPPAGE_BPS)) / BigInt(10_000);
   await ensureSwapAllowance(k.vault, k.bot, spendable);
@@ -486,7 +478,6 @@ const ensureGasReserve = async (
   const amount = min(deficit, surplus);
   if (amount < MIN_WORTHWHILE_WEI) return null;
 
-  if (k.dryRun) return `settle:unwrap-planned:${formatEther(amount)}-eth`;
   const tx = await k.weth.withdraw(amount);
   await tx.wait();
   return `settle:unwrapped:${formatEther(amount)}-eth`;
@@ -598,7 +589,6 @@ export async function GET(req: NextRequest) {
       throw new Error("OPENSEA_API_KEY is not configured");
     }
 
-    const dryRun = isDryRun();
     const keeper = getBbitsArbKeeper();
     const { signer, provider, vault, collection, weth, swapRouter, quoter } =
       keeper;
@@ -612,7 +602,6 @@ export async function GET(req: NextRequest) {
       quoter,
       provider,
       bot,
-      dryRun,
     };
     const actions: string[] = [];
 
@@ -648,17 +637,14 @@ export async function GET(req: NextRequest) {
       // could fill at a severe loss within its hour. Nothing else is done on a suspect
       // price — no settle, no bid — only the cancel, on-chain and confirmed.
       let cancelled = 0;
-      if (!dryRun) {
-        for (const order of restingOffers) {
-          await hardCancel(client, order, bot);
-          if (await confirmCancelled(provider, order)) cancelled++;
-          else console.error("On-chain cancel unconfirmed during sanity abort");
-        }
+      for (const order of restingOffers) {
+        await hardCancel(client, order, bot);
+        if (await confirmCancelled(provider, order)) cancelled++;
+        else console.error("On-chain cancel unconfirmed during sanity abort");
       }
       return Response.json(
         {
           ok: false,
-          dryRun,
           action: "ABORT_PARITY_SANITY",
           parityWei: parityWei.toString(),
           restingOffers: restingOffers.length,
@@ -698,28 +684,25 @@ export async function GET(req: NextRequest) {
     // here, where nothing has been written yet.
     if (restingOffers.length > 1) {
       actions.push(`recover:duplicate-offers:${restingOffers.length}`);
-      if (!dryRun) {
-        for (const stale of restingOffers.slice(1)) {
-          // Duplicates are an invariant violation and must be certainly dead before
-          // anything else runs: a sweep hard-cancels only the newest offer and a
-          // reprice posts a replacement, either of which would leave a still-signed
-          // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
-          if (await offchainCancel(client, stale)) continue;
-          await hardCancel(client, stale, bot);
-          if (!(await confirmCancelled(provider, stale))) {
-            console.error(
-              "Duplicate offer could not be cancelled — aborting run",
-            );
-            return Response.json({
-              ok: false,
-              dryRun,
-              action: "ABORT_DUPLICATE_UNCANCELLED",
-              actions,
-              parityWei: parityWei.toString(),
-            });
-          }
-          actions.push("recover:duplicate-hard-cancelled");
+      for (const stale of restingOffers.slice(1)) {
+        // Duplicates are an invariant violation and must be certainly dead before
+        // anything else runs: a sweep hard-cancels only the newest offer and a
+        // reprice posts a replacement, either of which would leave a still-signed
+        // duplicate able to fill. Escalate to on-chain when off-chain can't assure it.
+        if (await offchainCancel(client, stale)) continue;
+        await hardCancel(client, stale, bot);
+        if (!(await confirmCancelled(provider, stale))) {
+          console.error(
+            "Duplicate offer could not be cancelled — aborting run",
+          );
+          return Response.json({
+            ok: false,
+            action: "ABORT_DUPLICATE_UNCANCELLED",
+            actions,
+            parityWei: parityWei.toString(),
+          });
         }
+        actions.push("recover:duplicate-hard-cancelled");
       }
     }
     let openOrder: RestingOffer | null = restingOffers[0] ?? null;
@@ -730,22 +713,19 @@ export async function GET(req: NextRequest) {
     // deposit lands. Hard-cancelled here, before the deposit is attempted.
     if (heldNfts > BigInt(0) && openOrder) {
       actions.push("recover:cancel-offer-while-holding");
-      if (!dryRun) {
-        await hardCancel(client, openOrder, bot);
-        if (!(await confirmCancelled(provider, openOrder))) {
-          console.error(
-            "On-chain cancel unconfirmed while holding an NFT — aborting run",
-          );
-          return Response.json({
-            ok: false,
-            dryRun,
-            action: "ABORT_CANCEL_UNCONFIRMED",
-            actions,
-            parityWei: parityWei.toString(),
-          });
-        }
-        openOrder = null;
+      await hardCancel(client, openOrder, bot);
+      if (!(await confirmCancelled(provider, openOrder))) {
+        console.error(
+          "On-chain cancel unconfirmed while holding an NFT — aborting run",
+        );
+        return Response.json({
+          ok: false,
+          action: "ABORT_CANCEL_UNCONFIRMED",
+          actions,
+          parityWei: parityWei.toString(),
+        });
       }
+      openOrder = null;
     }
 
     // Every check below derives from live on-chain balances, so a crash at any point
@@ -753,11 +733,12 @@ export async function GET(req: NextRequest) {
     const strayNfts = await collectStrayNfts(client, collection, bot, heldNfts);
     if (strayNfts.length) {
       actions.push(`recover:deposit:${strayNfts.length}`);
-      if (!dryRun) await depositNfts(k, strayNfts);
+      await depositNfts(k, strayNfts);
     }
 
-    const pendingNfts: bigint =
-      strayNfts.length && !dryRun ? await collection.balanceOf(bot) : heldNfts;
+    const pendingNfts: bigint = strayNfts.length
+      ? await collection.balanceOf(bot)
+      : heldNfts;
     if (strayNfts.length) {
       // A mint this run: sell from it, bounded to its size. Safe even if more fills
       // are still unindexed, since the bound can't reach anything minted earlier.
@@ -805,16 +786,13 @@ export async function GET(req: NextRequest) {
       // since off-chain cancel can't revoke a fulfilment signature already vended.
       if (openOrder) {
         actions.push("hold:cancel-unprofitable-offer");
-        if (!dryRun) {
-          await hardCancel(client, openOrder, bot);
-          if (!(await confirmCancelled(provider, openOrder))) {
-            console.error("On-chain cancel unconfirmed while holding");
-          }
+        await hardCancel(client, openOrder, bot);
+        if (!(await confirmCancelled(provider, openOrder))) {
+          console.error("On-chain cancel unconfirmed while holding");
         }
       }
       return Response.json({
         ok: true,
-        dryRun,
         action: "HOLD",
         reason: "margin+gas exceeds parity",
         actions,
@@ -878,7 +856,6 @@ export async function GET(req: NextRequest) {
 
     const result = {
       ok: true,
-      dryRun,
       action,
       reason,
       actions,
@@ -894,11 +871,6 @@ export async function GET(req: NextRequest) {
       wethBalanceWei: wethAvailable.toString(),
       nativeBalanceWei: nativeAvailable.toString(),
     };
-
-    if (dryRun) {
-      console.log("bbits-arb dry run:", result);
-      return Response.json(result);
-    }
 
     // --- Step 3: execute ----------------------------------------------------
     if (action === "HOLD_PENDING") {
