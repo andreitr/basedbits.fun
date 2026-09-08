@@ -62,6 +62,10 @@ const SANITY_BAND_BPS = BigInt(5_000); // accept +/- 50%
 // Short expiry so a dead cron leaves no stale bid resting at a price that has drifted.
 const OFFER_DURATION_SECONDS = 60 * 60;
 
+// OpenSea rejects offers that aren't a whole multiple of 0.0001 ETH per unit, so the
+// bid is rounded down to this grid. Rounding down keeps it under the profit ceiling.
+const BID_INCREMENT_WEI = BigInt("100000000000000"); // 0.0001 ETH
+
 // Pages of the OpenSea account index to walk when looking for held Based Bits.
 // Spam NFTs are routine on Base, so a real holding can sit well past page one.
 const MAX_NFT_PAGES = 10;
@@ -550,6 +554,8 @@ const postOffer = async (client: OpenSeaSDK, bot: string, priceWei: bigint) => {
     paymentTokenAddress: WETH_ADDRESS,
     expirationTime: Math.floor(Date.now() / 1000) + OFFER_DURATION_SECONDS,
     offerProtectionEnabled: true, // SignedZone — the precondition for gasless cancel
+    // OpenSea rejects offers that carry optional creator fees; the fulfiller decides.
+    excludeOptionalCreatorFees: true,
   });
 };
 
@@ -664,12 +670,15 @@ export async function GET(req: NextRequest) {
     const priceCeiling = (parity: bigint) => {
       const maxProfitablePriceWei = parity - TARGET_MARGIN_WEI - gasBufferWei;
       const inBand = parity >= lower && parity <= upper;
-      const profitable = maxProfitablePriceWei > BigInt(0) && inBand;
+      // Snapped to OpenSea's bid grid. A ceiling below one increment rounds to zero
+      // and is treated as unprofitable rather than posted as a zero bid.
+      const gridPriceWei =
+        (min(maxProfitablePriceWei, MAX_SPEND_WEI) / BID_INCREMENT_WEI) *
+        BID_INCREMENT_WEI;
+      const profitable = gridPriceWei > BigInt(0) && inBand;
       return {
         maxProfitablePriceWei,
-        maxPayWei: profitable
-          ? min(maxProfitablePriceWei, MAX_SPEND_WEI)
-          : BigInt(0),
+        maxPayWei: profitable ? gridPriceWei : BigInt(0),
         unprofitable: !profitable,
       };
     };
