@@ -24,7 +24,7 @@ export const POOL_FEE = 3000;
 export const COLLECTION_SLUG = "based-bits";
 
 // Hardcoded rather than read from NEXT_PUBLIC_* env vars: those are inlined at build
-// time and resolve to undefined in server-only cron code. Same reasoning as pennypot.ts.
+// time and resolve to undefined in server-only cron code.
 
 const ERC721_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
@@ -120,4 +120,74 @@ export const quoteBbitsForExactWeth = async (
     throw new Error("Quoter returned a non-positive exact-output BBITS amount");
   }
   return amountIn as bigint;
+};
+
+// BBITS received for spending `amountInWei` of WETH (exact-input quote, the inverse
+// of quoteWethForBbits).
+export const quoteBbitsForWeth = async (
+  quoter: Contract,
+  amountInWei: bigint,
+): Promise<bigint> => {
+  const [amountOut] = await quoter
+    .getFunction("quoteExactInputSingle")
+    .staticCall({
+      tokenIn: WETH_ADDRESS,
+      tokenOut: BBITS_VAULT,
+      amountIn: amountInWei,
+      fee: POOL_FEE,
+      sqrtPriceLimitX96: 0,
+    });
+
+  if (!amountOut || amountOut <= BigInt(0)) {
+    throw new Error("Quoter returned a non-positive WETH->BBITS quote");
+  }
+  return amountOut as bigint;
+};
+
+export type EthForBbitsSwap = {
+  txHash: string;
+  amountInWei: bigint;
+  quotedOutWei: bigint;
+  amountOutMinimumWei: bigint;
+};
+
+/**
+ * Spend `amountInWei` of native ETH on BBITS via the 0.3% Uniswap V3 pool, delivering
+ * the tokens to the signer.
+ *
+ * The ETH is sent as msg.value: SwapRouter02 wraps it into WETH itself when tokenIn is
+ * WETH9, so no deposit() call and no ERC20 approval are needed. Slippage protection is
+ * a quote taken in the same tick minus `slippageBps`.
+ */
+export const swapEthForBbits = async (
+  signer: Wallet,
+  amountInWei: bigint,
+  slippageBps: bigint = BigInt(100),
+): Promise<EthForBbitsSwap> => {
+  const quoter = new Contract(QUOTER_V2_ADDRESS, QuoterV2Abi, signer.provider);
+  const swapRouter = new Contract(
+    SWAP_ROUTER_02_ADDRESS,
+    SWAP_ROUTER_02_ABI,
+    signer,
+  );
+
+  const quotedOutWei = await quoteBbitsForWeth(quoter, amountInWei);
+  const amountOutMinimumWei =
+    (quotedOutWei * (BigInt(10_000) - slippageBps)) / BigInt(10_000);
+
+  const tx = await swapRouter.exactInputSingle(
+    {
+      tokenIn: WETH_ADDRESS,
+      tokenOut: BBITS_VAULT,
+      fee: POOL_FEE,
+      recipient: signer.address,
+      amountIn: amountInWei,
+      amountOutMinimum: amountOutMinimumWei,
+      sqrtPriceLimitX96: 0,
+    },
+    { value: amountInWei },
+  );
+  await tx.wait();
+
+  return { txHash: tx.hash, amountInWei, quotedOutWei, amountOutMinimumWei };
 };
