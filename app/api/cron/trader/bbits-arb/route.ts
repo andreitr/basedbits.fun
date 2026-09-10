@@ -37,7 +37,7 @@ const MAX_SPEND_WEI = BigInt("3000000000000000"); // 0.003 ETH — one NFT
 // acquisition. WETH and native are the same asset in two wrappers, so they share one
 // float: whatever of a mint is left once this is whole is banked margin.
 // Set this to the amount actually seeded.
-const TARGET_ETH_FLOAT_WEI = BigInt("13000000000000000"); // 0.013 ETH
+const TARGET_ETH_FLOAT_WEI = BigInt("18000000000000000"); // 0.018 ETH — seeded 2026-09-07 (0.013 WETH + 0.005 native)
 
 // Native ETH kept on hand for gas. Topped up by unwrapping WETH, never by selling
 // BBITS directly, and never below what a bid needs.
