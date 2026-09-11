@@ -1,7 +1,12 @@
 import { baseProvider } from "@/app/lib/Web3Configs";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { QuoterV2Abi } from "@/app/lib/abi/QuoterV2.abi";
-import { Contract, Wallet } from "ethers";
+import {
+  Contract,
+  ContractRunner,
+  ContractTransactionResponse,
+  Wallet,
+} from "ethers";
 
 // The BBITS token IS the NFT vault: one contract that mints `conversionRate`
 // tokens per deposited Based Bit and burns them on redemption. Verified on-chain:
@@ -144,38 +149,35 @@ export const quoteBbitsForWeth = async (
   return amountOut as bigint;
 };
 
-export type EthForBbitsSwap = {
-  txHash: string;
-  amountInWei: bigint;
-  quotedOutWei: bigint;
-  amountOutMinimumWei: bigint;
-};
+export const getQuoter = (runner: ContractRunner) =>
+  new Contract(QUOTER_V2_ADDRESS, QuoterV2Abi, runner);
+
+export const minOutWithSlippage = (
+  quotedOutWei: bigint,
+  slippageBps: bigint = BigInt(100),
+): bigint => (quotedOutWei * (BigInt(10_000) - slippageBps)) / BigInt(10_000);
 
 /**
- * Spend `amountInWei` of native ETH on BBITS via the 0.3% Uniswap V3 pool, delivering
- * the tokens to the signer.
+ * Broadcast a swap of `amountInWei` native ETH for BBITS via the 0.3% Uniswap V3 pool,
+ * delivering the tokens to the signer. Resolves as soon as the node accepts the
+ * transaction; the caller decides how long to wait for it to be mined.
  *
  * The ETH is sent as msg.value: SwapRouter02 wraps it into WETH itself when tokenIn is
- * WETH9, so no deposit() call and no ERC20 approval are needed. Slippage protection is
- * a quote taken in the same tick minus `slippageBps`.
+ * WETH9, so no deposit() call and no ERC20 approval are needed. `amountOutMinimumWei`
+ * is the slippage guard — see `minOutWithSlippage`.
  */
-export const swapEthForBbits = async (
+export const sendEthForBbitsSwap = async (
   signer: Wallet,
   amountInWei: bigint,
-  slippageBps: bigint = BigInt(100),
-): Promise<EthForBbitsSwap> => {
-  const quoter = new Contract(QUOTER_V2_ADDRESS, QuoterV2Abi, signer.provider);
+  amountOutMinimumWei: bigint,
+): Promise<ContractTransactionResponse> => {
   const swapRouter = new Contract(
     SWAP_ROUTER_02_ADDRESS,
     SWAP_ROUTER_02_ABI,
     signer,
   );
 
-  const quotedOutWei = await quoteBbitsForWeth(quoter, amountInWei);
-  const amountOutMinimumWei =
-    (quotedOutWei * (BigInt(10_000) - slippageBps)) / BigInt(10_000);
-
-  const tx = await swapRouter.exactInputSingle(
+  return swapRouter.exactInputSingle(
     {
       tokenIn: WETH_ADDRESS,
       tokenOut: BBITS_VAULT,
@@ -187,7 +189,4 @@ export const swapEthForBbits = async (
     },
     { value: amountInWei },
   );
-  await tx.wait();
-
-  return { txHash: tx.hash, amountInWei, quotedOutWei, amountOutMinimumWei };
 };
