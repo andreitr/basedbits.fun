@@ -6,7 +6,7 @@ import { ClientWrapper } from "@/app/lib/components/ClientWrapper";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { MintComponent } from "@/app/raid/components/MintComponent";
+import { LuckyGhoulsAnnouncement } from "@/app/lib/components/LuckyGhoulsAnnouncement";
 
 export default async function Home() {
   return (
@@ -22,10 +22,10 @@ export default async function Home() {
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 px-10 md:px-0 justify-between items-center w-full gap-4">
             <FeatureCard
-              title="Pot Raiders"
-              description="Raid over"
-              image={"/images/raider.svg"}
-              link="/raid"
+              title="Lucky Ghouls"
+              description="Minting soon"
+              image={"/images/lucky_ghoul.svg"}
+              link="/#lucky-ghouls"
             />
             <FeatureCard
               title="Burned Bits"
@@ -51,7 +51,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full pt-10 pb-3 mt-10 md:mt-0">
         <div className="container max-w-screen-lg mb-8">
-          <MintComponent />
+          <LuckyGhoulsAnnouncement />
         </div>
       </div>
 
