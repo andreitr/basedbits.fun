@@ -105,12 +105,15 @@ export async function GET(req: NextRequest) {
 
     for (const address of recipients.values()) {
       try {
-        lastTx = await contract.transfer(address, rewardWei, {
-          nonce: nonce++,
-        });
+        lastTx = await contract.transfer(address, rewardWei, { nonce });
+        nonce++;
       } catch (error) {
         failed.push(address);
         console.error("Airdrop: transfer failed", { address, error });
+        // Resync rather than guess: a transfer that never reached the mempool
+        // must not leave a nonce gap (which would strand every later transfer),
+        // and one that did reach it must not be re-sent under the same nonce.
+        nonce = await provider.getTransactionCount(signer.address, "pending");
       }
     }
 

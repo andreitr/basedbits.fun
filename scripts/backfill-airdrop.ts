@@ -275,8 +275,9 @@ async function main() {
   for (const t of transfers) {
     try {
       const tx: TransactionResponse = await token.transfer(t.to, t.amountWei, {
-        nonce: nonce++,
+        nonce,
       });
+      nonce++;
       lastTx = tx;
       sent.push({ to: t.to, window: t.window, hash: tx.hash });
       console.log(
@@ -286,6 +287,10 @@ async function main() {
       const message = error instanceof Error ? error.message : String(error);
       failed.push({ to: t.to, window: t.window, error: message });
       console.error(`  FAILED ${t.to} (${t.window.slice(0, 10)}): ${message}`);
+      // Resync rather than guess: a transfer that never reached the mempool must
+      // not leave a nonce gap (which would strand every later transfer), and one
+      // that did reach it must not be re-sent under the same nonce.
+      nonce = await provider.getTransactionCount(signer.address, "pending");
     }
   }
 

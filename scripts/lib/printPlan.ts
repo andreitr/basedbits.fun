@@ -14,6 +14,10 @@ export function printPlan(plan: WindowPlan[]) {
     (sum, w) => sum + w.rewardWei * BigInt(w.paid.length),
     BigInt(0),
   );
+  const totalBackfilledWei = plan.reduce(
+    (sum, w) => sum + w.rewardWei * BigInt(w.backfilled.length),
+    BigInt(0),
+  );
 
   console.log("=== Per-window detail ===\n");
   for (const w of plan) {
@@ -26,13 +30,18 @@ export function printPlan(plan: WindowPlan[]) {
       continue;
     }
     for (const address of w.paid) {
-      console.log(`  paid    ${address}`);
+      console.log(`  paid       ${address}`);
+    }
+    for (const address of w.backfilled) {
+      console.log(`  backfilled ${address}`);
     }
     for (const address of w.missed) {
-      console.log(`  MISSING ${address}  → send ${bbits(w.rewardWei)} BBITS`);
+      console.log(
+        `  MISSING    ${address}  → send ${bbits(w.rewardWei)} BBITS`,
+      );
     }
     console.log(
-      `  ${w.paid.length} paid, ${w.missed.length} missing, ${bbits(
+      `  ${w.paid.length} paid, ${w.backfilled.length} backfilled, ${w.missed.length} missing, ${bbits(
         w.rewardWei * BigInt(w.missed.length),
       )} BBITS to send\n`,
     );
@@ -40,13 +49,13 @@ export function printPlan(plan: WindowPlan[]) {
 
   console.log("=== Summary ===\n");
   console.log(
-    "window start (UTC)   check-ins  wallets   paid  missed   share (BBITS)   to send (BBITS)",
+    "window start (UTC)   check-ins  wallets   paid  backfilled  missed   share (BBITS)   to send (BBITS)",
   );
   for (const w of plan) {
     console.log(
       `${w.fromIso.slice(0, 16).padEnd(20)} ${String(w.checkins).padStart(9)}` +
         `  ${String(w.recipients).padStart(7)}  ${String(w.paid.length).padStart(5)}` +
-        `  ${String(w.missed.length).padStart(6)}   ${bbits(w.rewardWei).padStart(13)}   ` +
+        `  ${String(w.backfilled.length).padStart(10)}  ${String(w.missed.length).padStart(6)}   ${bbits(w.rewardWei).padStart(13)}   ` +
         `${bbits(w.rewardWei * BigInt(w.missed.length)).padStart(15)}`,
     );
   }
@@ -54,6 +63,10 @@ export function printPlan(plan: WindowPlan[]) {
   console.log(
     `\nAlready paid by the cron: ${bbits(totalPaidWei)} BBITS` +
       ` across ${plan.reduce((n, w) => n + w.paid.length, 0)} transfer(s)`,
+  );
+  console.log(
+    `Already backfilled:       ${bbits(totalBackfilledWei)} BBITS` +
+      ` across ${plan.reduce((n, w) => n + w.backfilled.length, 0)} transfer(s)`,
   );
   console.log(
     `Missing:                  ${bbits(totalWei)} BBITS` +
