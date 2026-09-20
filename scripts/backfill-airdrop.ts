@@ -42,6 +42,24 @@ loadEnvConfig(process.cwd());
 
 const CONFIRMATION_TIMEOUT_MS = 120_000;
 
+// Each transfer costs several RPC calls; Alchemy's free tier throttles bursts.
+// Pace the sends and retry transient failures with a growing pause.
+const PACE_MS = 1_000;
+const RETRY_DELAYS_MS = [2_000, 5_000, 15_000];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** A failure the chain itself reported: retrying cannot change the outcome. */
+const isRevert = (error: unknown) => {
+  const code = (error as { code?: string })?.code;
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    code === "CALL_EXCEPTION" ||
+    code === "INSUFFICIENT_FUNDS" ||
+    /revert|insufficient|exceeds balance/i.test(message)
+  );
+};
+
 const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function transfer(address to, uint256 amount) returns (bool)",
@@ -272,26 +290,67 @@ async function main() {
   const failed: { to: string; window: string; error: string }[] = [];
   let lastTx: TransactionResponse | null = null;
 
-  for (const t of transfers) {
-    try {
-      const tx: TransactionResponse = await token.transfer(t.to, t.amountWei, {
-        nonce,
-      });
-      nonce++;
-      lastTx = tx;
-      sent.push({ to: t.to, window: t.window, hash: tx.hash });
-      console.log(
-        `  sent ${formatUnits(t.amountWei, 18)} BBITS to ${t.to} (${t.window.slice(0, 10)}) ${tx.hash}`,
-      );
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      failed.push({ to: t.to, window: t.window, error: message });
-      console.error(`  FAILED ${t.to} (${t.window.slice(0, 10)}): ${message}`);
-      // Resync rather than guess: a transfer that never reached the mempool must
-      // not leave a nonce gap (which would strand every later transfer), and one
-      // that did reach it must not be re-sent under the same nonce.
-      nonce = await provider.getTransactionCount(signer.address, "pending");
+  /** Pending nonce, retried because the read itself can be throttled. */
+  const pendingNonce = async () => {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await provider.getTransactionCount(signer.address, "pending");
+      } catch (error) {
+        if (attempt >= RETRY_DELAYS_MS.length) throw error;
+        await sleep(RETRY_DELAYS_MS[attempt]);
+      }
     }
+  };
+
+  for (const t of transfers) {
+    const label = `${t.to} (${t.window.slice(0, 10)})`;
+    let done = false;
+    for (
+      let attempt = 0;
+      attempt <= RETRY_DELAYS_MS.length && !done;
+      attempt++
+    ) {
+      try {
+        const tx: TransactionResponse = await token.transfer(
+          t.to,
+          t.amountWei,
+          { nonce },
+        );
+        nonce++;
+        lastTx = tx;
+        sent.push({ to: t.to, window: t.window, hash: tx.hash });
+        console.log(
+          `  sent ${formatUnits(t.amountWei, 18)} BBITS to ${label} ${tx.hash}`,
+        );
+        done = true;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+
+        // Did the attempt reach the mempool even though the call failed? Then it
+        // is sent: never re-send it, and move past its nonce.
+        const pending = await pendingNonce();
+        if (pending > nonce) {
+          nonce = pending;
+          sent.push({ to: t.to, window: t.window, hash: "unknown" });
+          console.warn(
+            `  sent ${formatUnits(t.amountWei, 18)} BBITS to ${label} (broadcast, response lost: ${message})`,
+          );
+          done = true;
+          break;
+        }
+
+        if (isRevert(error) || attempt === RETRY_DELAYS_MS.length) {
+          failed.push({ to: t.to, window: t.window, error: message });
+          console.error(`  FAILED ${label}: ${message}`);
+          break;
+        }
+        console.warn(
+          `  retry ${attempt + 1}/${RETRY_DELAYS_MS.length} for ${label} in ${RETRY_DELAYS_MS[attempt] / 1000}s: ${message}`,
+        );
+        await sleep(RETRY_DELAYS_MS[attempt]);
+      }
+    }
+    await sleep(PACE_MS);
   }
 
   let confirmed = false;
