@@ -24,12 +24,20 @@ export const Footer = () => {
             </Link>
           </div>
           <div>
-            <Link className="hover:underline text-sm" href={"/raid"}>
+            <Link
+              className="hover:underline text-sm"
+              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+              target="_blank"
+            >
               Pot Raiders
             </Link>
           </div>
           <div>
-            <Link className="hover:underline text-sm" href={"/aeye"}>
+            <Link
+              className="hover:underline text-sm"
+              href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_AEYE_ADDRESS}`}
+              target="_blank"
+            >
               AEYE: Genesis
             </Link>
           </div>
