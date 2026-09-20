@@ -34,6 +34,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { DAY_SECONDS, getAirdropWindow } from "../app/lib/utils/airdropWindow";
 import { buildPlan, CheckinRow, iso, Payment } from "./lib/backfillPlan";
+import { printPlan } from "./lib/printPlan";
 
 loadEnvConfig(process.cwd());
 
@@ -209,24 +210,12 @@ async function main() {
 
   const plan = buildPlan(windows, checkins, payments);
 
-  console.log(
-    "window start (UTC)   check-ins  wallets   paid  missed   share (BBITS)",
-  );
-  for (const w of plan) {
-    console.log(
-      `${w.fromIso.slice(0, 16).padEnd(20)} ${String(w.checkins).padStart(9)}` +
-        `  ${String(w.recipients).padStart(7)}  ${String(w.paid.length).padStart(5)}` +
-        `  ${String(w.missed.length).padStart(6)}   ${w.reward}`,
-    );
-  }
-
   const transfers = plan.flatMap((w) =>
     w.missed.map((to) => ({ window: w.fromIso, to, amountWei: w.rewardWei })),
   );
   const totalWei = transfers.reduce((sum, t) => sum + t.amountWei, BigInt(0));
-  console.log(
-    `\n${transfers.length} missing transfer(s), ${formatUnits(totalWei, 18)} BBITS in total`,
-  );
+
+  printPlan(plan);
 
   const reportPath = resolve(process.cwd(), args.report);
   writeFileSync(
