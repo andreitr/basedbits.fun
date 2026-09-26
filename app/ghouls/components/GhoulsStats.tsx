@@ -1,7 +1,5 @@
 "use client";
 
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
 import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
 import { formatUnits } from "viem";
 
@@ -14,7 +12,11 @@ export const formatUsdc = (amount: bigint, digits = 2) =>
     maximumFractionDigits: digits,
   })} USDC`;
 
-const Stat = ({
+// "1 ticket" / "2 tickets"
+export const plural = (count: bigint | number, noun: string) =>
+  `${count} ${noun}${count.toString() === "1" ? "" : "s"}`;
+
+export const Stat = ({
   label,
   children,
   sub,
@@ -32,7 +34,6 @@ const Stat = ({
 
 export const GhoulsStats = () => {
   const { data: stats, isError } = useGhoulsStats();
-  const { data: drawings } = useGhoulsDrawings();
 
   if (isError) {
     return <div>Unable to load Ghouls stats. Try again shortly.</div>;
@@ -55,32 +56,16 @@ export const GhoulsStats = () => {
       >
         {formatEth(stats.redeemEth)}
       </Stat>
-      <Stat label="Treasury" sub={`${stats.totalSupply} Ghouls outstanding`}>
+      <Stat
+        label="Treasury"
+        sub={`${plural(stats.totalSupply, "Ghoul")} outstanding`}
+      >
         {formatEth(stats.treasuryEth, 5)}
       </Stat>
       <Stat label="Minted" sub={`${burned} burned`}>
         {stats.totalMinted.toString()}/{stats.maxSupply.toString()}
       </Stat>
       <Stat label="Mint price">{formatEth(stats.mintPrice)}</Stat>
-      <Stat
-        label="Purchase days"
-        sub={`${formatEth(stats.dailyEthBudget, 5)} next daily budget`}
-      >
-        {stats.completedPurchaseDays.toString()}/
-        {stats.totalPurchaseDays.toString()}
-      </Stat>
-      <Stat
-        label="Megapot jackpot"
-        sub={drawings && `drawing #${drawings.currentDrawingId}`}
-      >
-        {drawings ? formatUsdc(drawings.topPrize, 0) : "..."}
-      </Stat>
-      <Stat label="Next drawing">
-        <CountDownToDate
-          targetDate={Number(stats.nextDrawingTime)}
-          message="Drawing now"
-        />
-      </Stat>
     </div>
   );
 };

@@ -29,6 +29,10 @@ export interface GhoulsDrawings {
   currentDrawingId: bigint;
   // Top-tier (5 + bonusball) payout net of Megapot's referral win share, as shown on megapot.io
   topPrize: bigint;
+  // Current drawing's whole prize pool (USDC), close time, and tickets sold across Megapot
+  prizePool: bigint;
+  drawingTime: bigint;
+  globalTicketsBought: bigint;
   // Today's tickets are fully bought
   ticketsBought: boolean;
   // Today's target and progress (target is 0 until the first buyTickets call of the drawing)
@@ -161,6 +165,9 @@ export const useGhoulsDrawings = (options: { enabled?: boolean } = {}) => {
         currentDrawingId,
         topPrize:
           topTier - (topTier * drawingState.referralWinShare) / PRECISE_UNIT,
+        prizePool: drawingState.prizePool,
+        drawingTime: drawingState.drawingTime,
+        globalTicketsBought: drawingState.globalTicketsBought,
         ticketsBought: lastCompletedDrawingId === currentDrawingId,
         purchaseTarget,
         purchaseBought,

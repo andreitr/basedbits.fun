@@ -1,9 +1,8 @@
 "use server";
 
 import { GhoulsMint } from "@/app/ghouls/components/GhoulsMint";
-import { GhoulsNFTList } from "@/app/ghouls/components/GhoulsNFTList";
 import { GhoulsStats } from "@/app/ghouls/components/GhoulsStats";
-import { GhoulsTreasury } from "@/app/ghouls/components/GhoulsTreasury";
+import { GhoulsTabs } from "@/app/ghouls/components/GhoulsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 
@@ -34,12 +33,8 @@ export default async function Page() {
               <GhoulsStats />
             </div>
 
-            <div className="mt-6 flex flex-col gap-4 px-4 sm:px-0">
-              <GhoulsTreasury />
-            </div>
-
             <div className="mt-6 mb-12 flex flex-col gap-4 px-4 sm:px-0">
-              <GhoulsNFTList />
+              <GhoulsTabs />
             </div>
           </div>
         </div>

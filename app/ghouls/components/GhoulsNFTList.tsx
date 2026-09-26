@@ -32,7 +32,6 @@ export const GhoulsNFTList = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-2xl font-semibold">Your Ghouls</div>
       <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
         {list.ownedNfts.map((nft) => (
           <NFTCard key={nft.tokenId} nft={nft} />

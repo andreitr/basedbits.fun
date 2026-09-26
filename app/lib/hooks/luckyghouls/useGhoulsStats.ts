@@ -22,7 +22,6 @@ export interface GhoulsStats {
   dailyEthBudget: bigint;
   completedPurchaseDays: bigint;
   totalPurchaseDays: bigint;
-  nextDrawingTime: bigint;
   treasuryEth: bigint;
 }
 
@@ -44,7 +43,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       { ...contract, functionName: "getDailyEthBudget" },
       { ...contract, functionName: "completedPurchaseDays" },
       { ...contract, functionName: "totalPurchaseDays" },
-      { ...contract, functionName: "getNextDrawingTime" },
     ],
     query: { enabled, refetchInterval: 30_000 },
   });
@@ -73,7 +71,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       dailyEthBudget,
       completedPurchaseDays,
       totalPurchaseDays,
-      nextDrawingTime,
     ] = reads.data;
     data = {
       mintPrice,
@@ -87,7 +84,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       dailyEthBudget,
       completedPurchaseDays,
       totalPurchaseDays,
-      nextDrawingTime,
       treasuryEth: balance.data.value,
     };
   }

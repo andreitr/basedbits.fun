@@ -1,6 +1,6 @@
 "use client";
 
-import { formatEth } from "@/app/ghouls/components/GhoulsStats";
+import { formatEth, plural } from "@/app/ghouls/components/GhoulsStats";
 import { Button } from "@/app/lib/components/Button";
 import {
   ClaimableDrawing,
@@ -29,7 +29,7 @@ import { base } from "wagmi/chains";
 const buttonClass = "w-full sm:w-auto sm:min-w-[220px] text-base";
 
 // Connects the wallet or switches to Base before running `onClick`
-const ActionButton = ({
+export const ActionButton = ({
   onClick,
   disabled,
   busy,
@@ -100,7 +100,7 @@ const revertMessage = (error: Error) => {
   );
 };
 
-const BuyTickets = () => {
+export const BuyTickets = () => {
   const { address } = useAccount();
   const { data: stats } = useGhoulsStats();
   const { data: drawings } = useGhoulsDrawings();
@@ -143,7 +143,7 @@ const BuyTickets = () => {
   const canBuy = eligible && simulation.isSuccess;
 
   const status = drawings.ticketsBought
-    ? `${drawings.purchaseBought} tickets bought for drawing #${drawings.currentDrawingId}.`
+    ? `${plural(drawings.purchaseBought, "ticket")} bought for drawing #${drawings.currentDrawingId}.`
     : resuming
       ? `${drawings.purchaseBought}/${drawings.purchaseTarget} tickets bought for drawing #${drawings.currentDrawingId}; buy the rest.`
       : !daysLeft
@@ -196,7 +196,8 @@ const ClaimRow = ({ drawing }: { drawing: ClaimableDrawing }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="text-sm text-gray-600">
-        Drawing #{drawing.drawingId.toString()}: {drawing.ticketCount} tickets,{" "}
+        Drawing #{drawing.drawingId.toString()}:{" "}
+        {plural(drawing.ticketCount, "ticket")},{" "}
         {drawing.winningTickets > 0 ? (
           <span className="text-[#303730] font-semibold">
             {drawing.winningTickets} winning
@@ -215,7 +216,7 @@ const ClaimRow = ({ drawing }: { drawing: ClaimableDrawing }) => {
   );
 };
 
-const ClaimWinnings = () => {
+export const ClaimWinnings = () => {
   const { data: drawings } = useGhoulsDrawings();
 
   return (
@@ -236,16 +237,6 @@ const ClaimWinnings = () => {
           <ClaimRow key={drawing.drawingId.toString()} drawing={drawing} />
         ))
       )}
-    </div>
-  );
-};
-
-export const GhoulsTreasury = () => {
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="text-2xl font-semibold">Treasury</div>
-      <BuyTickets />
-      <ClaimWinnings />
     </div>
   );
 };
