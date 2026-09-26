@@ -54,20 +54,6 @@ const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
     !!stats && (stats.redeemEth > BigInt(0) || stats.redeemUsdc > BigInt(0));
   const busy = isPending || isConfirming;
 
-  const onBurn = () => {
-    if (!stats) return;
-    const payout = `${formatEth(stats.redeemEth)}${
-      stats.redeemUsdc > BigInt(0) ? ` + ${formatUsdc(stats.redeemUsdc)}` : ""
-    }`;
-    if (
-      window.confirm(
-        `Burn Ghoul #${nft.tokenId} for ~${payout}? This cannot be undone.`,
-      )
-    ) {
-      burn(BigInt(nft.tokenId));
-    }
-  };
-
   return (
     <div className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center w-full">
       <div
@@ -79,14 +65,14 @@ const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
         <div className="text-white/60 text-xs pb-1">#{nft.tokenId}</div>
         <button
           className="cursor-pointer w-full hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-50"
-          onClick={onBurn}
+          onClick={() => burn(BigInt(nft.tokenId))}
           disabled={!hasPayout || busy || isSuccess}
         >
           <div>
             {isSuccess
               ? "Redeemed!"
               : isPending
-                ? "Confirm in Wallet..."
+                ? "Confirming..."
                 : isConfirming
                   ? "Burning..."
                   : hasPayout

@@ -22,7 +22,6 @@ export interface GhoulsStats {
   dailyEthBudget: bigint;
   completedPurchaseDays: bigint;
   totalPurchaseDays: bigint;
-  jackpot: bigint;
   nextDrawingTime: bigint;
   treasuryEth: bigint;
 }
@@ -45,7 +44,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       { ...contract, functionName: "getDailyEthBudget" },
       { ...contract, functionName: "completedPurchaseDays" },
       { ...contract, functionName: "totalPurchaseDays" },
-      { ...contract, functionName: "getMegapotJackpot" },
       { ...contract, functionName: "getNextDrawingTime" },
     ],
     query: { enabled, refetchInterval: 30_000 },
@@ -75,7 +73,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       dailyEthBudget,
       completedPurchaseDays,
       totalPurchaseDays,
-      jackpot,
       nextDrawingTime,
     ] = reads.data;
     data = {
@@ -90,7 +87,6 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
       dailyEthBudget,
       completedPurchaseDays,
       totalPurchaseDays,
-      jackpot,
       nextDrawingTime,
       treasuryEth: balance.data.value,
     };

@@ -1,4 +1,5 @@
 import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
 import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -8,9 +9,13 @@ const NFT_REINDEX_DELAY_MS = 6_000;
 export const useRefreshGhouls = () => {
   const queryClient = useQueryClient();
   const { invalidate: invalidateStats } = useGhoulsStats({ enabled: false });
+  const { invalidate: invalidateDrawings } = useGhoulsDrawings({
+    enabled: false,
+  });
 
   return () => {
     invalidateStats();
+    invalidateDrawings();
     const invalidateNFTs = () =>
       queryClient.invalidateQueries({
         queryKey: ["getNFTsForOwner", LUCKY_GHOULS_ADDRESS],

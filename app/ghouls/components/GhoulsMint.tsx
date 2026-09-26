@@ -146,7 +146,7 @@ const MintButton = () => {
   const busy = isPending || isConfirming;
   const cost = formatUnits(stats.mintPrice * BigInt(quantity), 18);
   const label = isPending
-    ? "Confirm in Wallet..."
+    ? "Confirming..."
     : isConfirming
       ? "Minting..."
       : `Mint ${quantity} for ${Number(cost).toFixed(6)}Ξ`;

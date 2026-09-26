@@ -1,6 +1,7 @@
 "use client";
 
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
 import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
 import { formatUnits } from "viem";
 
@@ -31,6 +32,7 @@ const Stat = ({
 
 export const GhoulsStats = () => {
   const { data: stats, isError } = useGhoulsStats();
+  const { data: drawings } = useGhoulsDrawings();
 
   if (isError) {
     return <div>Unable to load Ghouls stats. Try again shortly.</div>;
@@ -67,7 +69,12 @@ export const GhoulsStats = () => {
         {stats.completedPurchaseDays.toString()}/
         {stats.totalPurchaseDays.toString()}
       </Stat>
-      <Stat label="Megapot jackpot">{formatUsdc(stats.jackpot, 0)}</Stat>
+      <Stat
+        label="Megapot jackpot"
+        sub={drawings && `drawing #${drawings.currentDrawingId}`}
+      >
+        {drawings ? formatUsdc(drawings.topPrize, 0) : "..."}
+      </Stat>
       <Stat label="Next drawing">
         <CountDownToDate
           targetDate={Number(stats.nextDrawingTime)}
