@@ -15,10 +15,6 @@ export const formatUsdc = (amount: bigint, digits = 2) =>
     maximumFractionDigits: digits,
   })} USDC`;
 
-// "1 ticket" / "2 tickets"
-export const plural = (count: bigint | number, noun: string) =>
-  `${count} ${noun}${count.toString() === "1" ? "" : "s"}`;
-
 export const Stat = ({
   label,
   children,

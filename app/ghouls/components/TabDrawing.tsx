@@ -1,7 +1,6 @@
 "use client";
 
 import { formatUsd, Stat } from "@/app/ghouls/components/GhoulsStats";
-import { BuyTickets } from "@/app/ghouls/components/GhoulsTreasury";
 import { TicketTable } from "@/app/ghouls/components/TicketTable";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
@@ -52,8 +51,6 @@ export const TabDrawing = () => {
           {stats ? stats.totalSupply.toString() : "..."}
         </Stat>
       </div>
-
-      <BuyTickets />
 
       <div className="flex flex-col gap-3">
         <div className="text-lg font-semibold">Treasury tickets</div>

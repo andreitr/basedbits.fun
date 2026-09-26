@@ -1,7 +1,6 @@
 "use client";
 
 import { Stat } from "@/app/ghouls/components/GhoulsStats";
-import { ClaimWinnings } from "@/app/ghouls/components/GhoulsTreasury";
 import {
   formatMegapotAmount,
   TicketTable,
@@ -72,8 +71,6 @@ export const TabStats = () => {
           </Stat>
         </div>
       )}
-
-      <ClaimWinnings />
 
       <div className="flex flex-col gap-3">
         <div className="text-lg font-semibold">All tickets</div>
