@@ -1,7 +1,8 @@
 "use client";
 
+import { formatEth } from "@/app/ghouls/components/GhoulsStats";
 import { Button } from "@/app/lib/components/Button";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
 import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
 import { useGhoulsMint } from "@/app/lib/hooks/luckyghouls/useGhoulsWrite";
 import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
@@ -18,7 +19,10 @@ const buttonClass =
   "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular w-full";
 
 export const GhoulsMint = () => {
-  const { data: stats } = useGhoulsStats();
+  const { data: drawings } = useGhoulsDrawings();
+  const jackpot = drawings
+    ? `$${Math.round(Number(formatUnits(drawings.topPrize, 6))).toLocaleString()}`
+    : undefined;
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
@@ -41,13 +45,9 @@ export const GhoulsMint = () => {
               Test contract
             </div>
           </div>
-          <div className="text-sm text-[#E24B4B]">
-            {stats
-              ? `${stats.totalMinted}/${stats.maxSupply} minted · ${stats.totalPurchaseDays} purchase days · Base`
-              : "Loading..."}
-          </div>
           <div className="text-sm text-gray-400 pt-2">
-            Mint proceeds flow into a shared treasury that buys{" "}
+            Ghouls summon cursed numbers every drawing, chasing a{" "}
+            {jackpot ? `${jackpot} ` : ""}
             <Link
               href="https://megapot.io"
               className="underline hover:text-white"
@@ -55,30 +55,45 @@ export const GhoulsMint = () => {
             >
               Megapot
             </Link>{" "}
-            tickets every drawing. Burn a Ghoul at any time to redeem its share
-            of the treasury in ETH (plus any unspent USDC).
+            jackpot. Burn a Ghoul to get your share of the treasury.
           </div>
-          <div className="mt-auto pt-4">
+          <div className="mt-auto pt-4 flex flex-col gap-4">
+            <MintStats />
             <MintButton />
-          </div>
-          <div className="flex flex-row gap-4 text-xs text-gray-400 pt-2">
-            <Link
-              href={`https://basescan.org/address/${LUCKY_GHOULS_ADDRESS}`}
-              className="underline hover:text-white"
-              target="_blank"
-            >
-              Basescan
-            </Link>
-            <Link
-              href="https://megapot.io"
-              className="underline hover:text-white"
-              target="_blank"
-            >
-              Megapot
-            </Link>
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const MintStat = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <div className="flex flex-col gap-1">
+    <div className="uppercase text-xs text-gray-400">{label}</div>
+    <div className="text-base sm:text-xl">{children}</div>
+  </div>
+);
+
+const MintStats = () => {
+  const { data: stats } = useGhoulsStats();
+
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      <MintStat label="Treasury">
+        {stats ? formatEth(stats.treasuryEth, 5) : "..."}
+      </MintStat>
+      <MintStat label="Minted">
+        {stats ? `${stats.totalMinted}/${stats.maxSupply}` : "..."}
+      </MintStat>
+      <MintStat label="Mint price">
+        {stats ? formatEth(stats.mintPrice) : "..."}
+      </MintStat>
     </div>
   );
 };

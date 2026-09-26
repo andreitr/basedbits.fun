@@ -14,7 +14,7 @@ enum TABS {
 const TAB_LABELS: Record<TABS, string> = {
   [TABS.MY_GHOULS]: "My Ghouls",
   [TABS.DRAWING]: "Drawing",
-  [TABS.STATS]: "Stats",
+  [TABS.STATS]: "History",
 };
 
 export const GhoulsTabs = () => {

@@ -20,11 +20,6 @@ const Ball = ({ n, bonus }: { n: number; bonus?: boolean }) => (
   </div>
 );
 
-const result = (ticket: MegapotTicket) => {
-  if (ticket.matched_normals === null) return "Pending";
-  return `${ticket.matched_normals}${ticket.bonusball_match ? " + bonus" : ""}`;
-};
-
 export const TicketTable = ({
   tickets,
   showDrawing = true,
@@ -39,7 +34,6 @@ export const TicketTable = ({
           <tr>
             {showDrawing && <th className="py-2 pr-4">Drawing</th>}
             <th className="py-2 pr-4">Numbers</th>
-            <th className="py-2 pr-4">Matched</th>
             <th className="py-2 pr-4">Won</th>
             <th className="py-2 pr-4">Claimed</th>
             <th className="py-2">Tx</th>
@@ -63,7 +57,6 @@ export const TicketTable = ({
                     <Ball n={ticket.bonusball} bonus />
                   </div>
                 </td>
-                <td className="py-2 pr-4">{result(ticket)}</td>
                 <td className={`py-2 pr-4 ${won ? "font-semibold" : ""}`}>
                   {won ? formatAmount(ticket.winnings_amount!) : "–"}
                 </td>

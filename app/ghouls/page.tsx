@@ -1,7 +1,6 @@
 "use server";
 
 import { GhoulsMint } from "@/app/ghouls/components/GhoulsMint";
-import { GhoulsStats } from "@/app/ghouls/components/GhoulsStats";
 import { GhoulsTabs } from "@/app/ghouls/components/GhoulsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
@@ -28,10 +27,6 @@ export default async function Page() {
 
           <div className="flex flex-col gap-4">
             <GhoulsMint />
-
-            <div className="mt-4 flex flex-col gap-4 px-4 sm:px-0">
-              <GhoulsStats />
-            </div>
 
             <div className="mt-6 mb-12 flex flex-col gap-4 px-4 sm:px-0">
               <GhoulsTabs />

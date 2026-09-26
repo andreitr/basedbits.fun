@@ -1,6 +1,6 @@
 "use client";
 
-import { formatEth, plural, Stat } from "@/app/ghouls/components/GhoulsStats";
+import { Stat } from "@/app/ghouls/components/GhoulsStats";
 import { ClaimWinnings } from "@/app/ghouls/components/GhoulsTreasury";
 import {
   formatMegapotAmount,
@@ -60,25 +60,13 @@ export const TabStats = () => {
         <div className="animate-pulse">Loading stats...</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <Stat
-            label="Tickets bought"
-            sub={`over ${plural(megapot.rounds_played, "drawing")}`}
-          >
+          <Stat label="Tickets bought">
             {megapot.total_tickets.toLocaleString()}
           </Stat>
-          <Stat
-            label="Amount won"
-            sub={`${plural(megapot.total_wins, "winning ticket")}`}
-          >
+          <Stat label="Amount won">
             {formatMegapotAmount(megapot.total_winnings)}
           </Stat>
-          <Stat label="Spent on tickets">
-            {formatMegapotAmount(megapot.total_spent)}
-          </Stat>
-          <Stat
-            label="Purchase days"
-            sub={`${formatEth(stats.dailyEthBudget, 5)} next daily budget`}
-          >
+          <Stat label="Purchase days">
             {stats.completedPurchaseDays.toString()}/
             {stats.totalPurchaseDays.toString()}
           </Stat>

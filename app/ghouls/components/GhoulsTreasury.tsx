@@ -1,6 +1,6 @@
 "use client";
 
-import { formatEth, plural } from "@/app/ghouls/components/GhoulsStats";
+import { plural } from "@/app/ghouls/components/GhoulsStats";
 import { Button } from "@/app/lib/components/Button";
 import {
   ClaimableDrawing,
@@ -14,10 +14,11 @@ import {
 import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
 import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
 import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { revertName } from "@/app/lib/luckyghouls/revertName";
 import clsx from "clsx";
 import { useModal } from "connectkit";
 import toast from "react-hot-toast";
-import { BaseError, ContractFunctionRevertedError, zeroAddress } from "viem";
+import { zeroAddress } from "viem";
 import {
   useAccount,
   useChainId,
@@ -86,14 +87,7 @@ const REVERT_MESSAGES: Record<string, string> = {
 };
 
 const revertMessage = (error: Error) => {
-  const reverted =
-    error instanceof BaseError
-      ? error.walk((e) => e instanceof ContractFunctionRevertedError)
-      : undefined;
-  const name =
-    reverted instanceof ContractFunctionRevertedError
-      ? reverted.data?.errorName
-      : undefined;
+  const name = revertName(error);
   return (
     (name && REVERT_MESSAGES[name]) ??
     `Buying tickets would fail${name ? ` (${name})` : ""}.`
@@ -142,16 +136,6 @@ export const BuyTickets = () => {
 
   const canBuy = eligible && simulation.isSuccess;
 
-  const status = drawings.ticketsBought
-    ? `${plural(drawings.purchaseBought, "ticket")} bought for drawing #${drawings.currentDrawingId}.`
-    : resuming
-      ? `${drawings.purchaseBought}/${drawings.purchaseTarget} tickets bought for drawing #${drawings.currentDrawingId}; buy the rest.`
-      : !daysLeft
-        ? "All purchase days are complete."
-        : stats.dailyEthBudget > BigInt(0)
-          ? `Spends ${formatEth(stats.dailyEthBudget)} of the treasury on drawing #${drawings.currentDrawingId}.`
-          : "The treasury is empty.";
-
   const busy = isPending || isConfirming;
   const label = isPending
     ? "Confirming..."
@@ -164,8 +148,6 @@ export const BuyTickets = () => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex flex-col gap-1">
-        <div className="text-lg font-semibold">Today&apos;s tickets</div>
-        <div className="text-sm text-gray-600">{status}</div>
         {eligible && revertReason && (
           <div className="text-sm text-[#E24B4B]">{revertReason}</div>
         )}
@@ -216,27 +198,17 @@ const ClaimRow = ({ drawing }: { drawing: ClaimableDrawing }) => {
   );
 };
 
+// Claim rows for settled drawings with unclaimed tickets; renders nothing when there are none
 export const ClaimWinnings = () => {
   const { data: drawings } = useGhoulsDrawings();
 
+  if (!drawings?.claimable.length) return null;
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <div className="text-lg font-semibold">Winnings</div>
-        <div className="text-sm text-gray-600">
-          Claiming settles a drawing&apos;s tickets and swaps any USDC won back
-          to ETH for the treasury.
-        </div>
-      </div>
-      {!drawings ? (
-        <div className="animate-pulse">Loading...</div>
-      ) : drawings.claimable.length === 0 ? (
-        <div className="text-sm text-gray-600">No unclaimed tickets.</div>
-      ) : (
-        drawings.claimable.map((drawing) => (
-          <ClaimRow key={drawing.drawingId.toString()} drawing={drawing} />
-        ))
-      )}
+      {drawings.claimable.map((drawing) => (
+        <ClaimRow key={drawing.drawingId.toString()} drawing={drawing} />
+      ))}
     </div>
   );
 };
