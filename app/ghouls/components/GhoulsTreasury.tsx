@@ -12,10 +12,18 @@ import {
   useGhoulsClaimWinnings,
 } from "@/app/lib/hooks/luckyghouls/useGhoulsWrite";
 import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
+import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
+import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
 import clsx from "clsx";
 import { useModal } from "connectkit";
 import toast from "react-hot-toast";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { BaseError, ContractFunctionRevertedError, zeroAddress } from "viem";
+import {
+  useAccount,
+  useChainId,
+  useSimulateContract,
+  useSwitchChain,
+} from "wagmi";
 import { base } from "wagmi/chains";
 
 const buttonClass = "w-full sm:w-auto sm:min-w-[220px] text-base";
@@ -69,7 +77,31 @@ const ActionButton = ({
   );
 };
 
+const REVERT_MESSAGES: Record<string, string> = {
+  InsufficientUSDCForTicket:
+    "Today's budget buys less than one Megapot ticket. The treasury needs more mints.",
+  InsufficientTreasury: "The treasury is empty.",
+  TicketsAlreadyPurchased: "Today's tickets are already bought.",
+  EnforcedPause: "The contract is paused.",
+};
+
+const revertMessage = (error: Error) => {
+  const reverted =
+    error instanceof BaseError
+      ? error.walk((e) => e instanceof ContractFunctionRevertedError)
+      : undefined;
+  const name =
+    reverted instanceof ContractFunctionRevertedError
+      ? reverted.data?.errorName
+      : undefined;
+  return (
+    (name && REVERT_MESSAGES[name]) ??
+    `Buying tickets would fail${name ? ` (${name})` : ""}.`
+  );
+};
+
 const BuyTickets = () => {
+  const { address } = useAccount();
   const { data: stats } = useGhoulsStats();
   const { data: drawings } = useGhoulsDrawings();
   const refresh = useRefreshGhouls();
@@ -78,16 +110,37 @@ const BuyTickets = () => {
     refresh();
   });
 
+  const resuming = !!drawings && drawings.purchaseTarget > BigInt(0);
+  const daysLeft =
+    !!stats && stats.completedPurchaseDays < stats.totalPurchaseDays;
+  const eligible =
+    !!stats &&
+    !!drawings &&
+    !stats.paused &&
+    !drawings.ticketsBought &&
+    (resuming || (daysLeft && stats.dailyEthBudget > BigInt(0)));
+
+  // Dry-run buyTickets so a call that would revert (e.g. today's budget buys less than one ticket) is caught
+  // before the wallet prompt
+  const simulation = useSimulateContract({
+    abi: LuckyGhoulsABI,
+    address: LUCKY_GHOULS_ADDRESS,
+    functionName: "buyTickets",
+    chainId: base.id,
+    // buyTickets does not depend on the caller, so the page can dry-run it before a wallet is connected
+    account: address ?? zeroAddress,
+    // A revert is deterministic, so retrying only delays showing the reason
+    query: { enabled: eligible, refetchInterval: 30_000, retry: false },
+  });
+  const revertReason = simulation.error
+    ? revertMessage(simulation.error)
+    : undefined;
+
   if (!stats || !drawings) {
     return <div className="animate-pulse">Loading...</div>;
   }
 
-  const resuming = drawings.purchaseTarget > BigInt(0);
-  const daysLeft = stats.completedPurchaseDays < stats.totalPurchaseDays;
-  const canBuy =
-    !stats.paused &&
-    !drawings.ticketsBought &&
-    (resuming || (daysLeft && stats.dailyEthBudget > BigInt(0)));
+  const canBuy = eligible && simulation.isSuccess;
 
   const status = drawings.ticketsBought
     ? `${drawings.purchaseBought} tickets bought for drawing #${drawings.currentDrawingId}.`
@@ -113,6 +166,9 @@ const BuyTickets = () => {
       <div className="flex flex-col gap-1">
         <div className="text-lg font-semibold">Today&apos;s tickets</div>
         <div className="text-sm text-gray-600">{status}</div>
+        {eligible && revertReason && (
+          <div className="text-sm text-[#E24B4B]">{revertReason}</div>
+        )}
       </div>
       <ActionButton onClick={buyTickets} disabled={!canBuy} busy={busy}>
         {label}
