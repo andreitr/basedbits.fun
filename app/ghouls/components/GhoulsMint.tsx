@@ -25,7 +25,21 @@ export const GhoulsMint = () => {
     : undefined;
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
+    <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
+      <Link
+        href="https://megapot.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-8 right-8 sm:top-5 sm:right-5"
+      >
+        <Image
+          src="/images/powered-by-megapot.svg"
+          alt="Powered by Megapot"
+          width={125}
+          height={34}
+          className="h-[39px] w-auto"
+        />
+      </Link>
       <div className="flex flex-col sm:flex-row w-full gap-5">
         <div>
           <Image
@@ -41,9 +55,6 @@ export const GhoulsMint = () => {
             <div className="sm:text-5xl text-4xl text-[#FEC94F]">
               Test Ghouls
             </div>
-            <div className="text-xs uppercase border border-[#E24B4B] text-[#E24B4B] rounded px-2 py-0.5">
-              Test contract
-            </div>
           </div>
           <div className="text-sm text-gray-400 pt-2">
             Ghouls summon cursed numbers every drawing, chasing a{" "}
@@ -52,6 +63,7 @@ export const GhoulsMint = () => {
               href="https://megapot.io"
               className="underline hover:text-white"
               target="_blank"
+              rel="noopener noreferrer"
             >
               Megapot
             </Link>{" "}
