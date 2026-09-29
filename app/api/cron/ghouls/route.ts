@@ -1,6 +1,11 @@
 import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
 import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
 import {
+  KEEPER_HOUR,
+  KEEPER_TIME_ZONE,
+  zonedTime,
+} from "@/app/lib/luckyghouls/keeperSchedule";
+import {
   ghoulsPublicClient,
   readGhoulsDrawings,
 } from "@/app/lib/luckyghouls/readGhoulsDrawings";
@@ -18,8 +23,6 @@ export const maxDuration = 300;
 // on 10:05 in Los Angeles (PDT in summer, PST in winter). A retry at :10 catches a late Megapot settlement or a
 // failed first run; the keeper is idempotent, so a retry after a good run does nothing. Pass ?force=1 to run
 // outside that hour and ?dry=1 to simulate without sending transactions.
-const KEEPER_TIME_ZONE = "America/Los_Angeles";
-const KEEPER_HOUR = 10;
 
 // buyTickets stops cleanly when it nears its gas reserve and resumes on the next call
 const MAX_BUY_CALLS = 5;
@@ -35,15 +38,6 @@ const EXPECTED_BUY_REVERTS = new Set([
 ]);
 
 const ghouls = { abi: LuckyGhoulsABI, address: LUCKY_GHOULS_ADDRESS } as const;
-
-const hourIn = (timeZone: string) =>
-  Number(
-    new Intl.DateTimeFormat("en-US", {
-      timeZone,
-      hour: "numeric",
-      hourCycle: "h23",
-    }).format(new Date()),
-  );
 
 const describe = (error: unknown) =>
   revertName(error) ??
@@ -62,7 +56,7 @@ export async function GET(req: NextRequest) {
   const force = req.nextUrl.searchParams.get("force") === "1";
   // Simulate every call without sending, for checking the keeper against live state
   const dryRun = req.nextUrl.searchParams.get("dry") === "1";
-  if (!force && hourIn(KEEPER_TIME_ZONE) !== KEEPER_HOUR) {
+  if (!force && zonedTime(KEEPER_TIME_ZONE).hour !== KEEPER_HOUR) {
     return Response.json({
       skipped: `Not ${KEEPER_HOUR}:00 in ${KEEPER_TIME_ZONE}`,
     });

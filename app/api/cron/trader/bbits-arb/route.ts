@@ -11,17 +11,32 @@ import {
   quoteWethForBbits,
 } from "@/app/lib/contracts/bbitsVault";
 import {
+  type ArbCollection,
+  type Floor,
+  type RestingOffer,
+  BID_INCREMENT_WEI,
+  collectHeldNfts,
+  confirmCancelled,
+  effectiveGasBuffer,
+  findBestFloor,
+  findRestingOffers,
+  getOpenSeaClient,
+  hardCancel,
+  min,
+  offchainCancel,
+  postOffer,
+  restingOfferPriceWei,
+} from "@/app/lib/trader/openseaArb";
+import {
   Contract,
   ContractRunner,
   EventLog,
   MaxUint256,
-  Wallet,
   ZeroAddress,
   formatEther,
   getAddress,
 } from "ethers";
 import { NextRequest } from "next/server";
-import { Chain, OpenSeaSDK, type OrderV2, type ProtocolData } from "opensea-js";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -62,23 +77,16 @@ const SANITY_BAND_BPS = BigInt(5_000); // accept +/- 50%
 // Short expiry so a dead cron leaves no stale bid resting at a price that has drifted.
 const OFFER_DURATION_SECONDS = 60 * 60;
 
-// OpenSea rejects offers that aren't a whole multiple of 0.0001 ETH per unit, so the
-// bid is rounded down to this grid. Rounding down keeps it under the profit ceiling.
-const BID_INCREMENT_WEI = BigInt("100000000000000"); // 0.0001 ETH
-
-// Pages of the OpenSea account index to walk when looking for held Based Bits.
-// Spam NFTs are routine on Base, so a real holding can sit well past page one.
-const MAX_NFT_PAGES = 10;
-
 // Blocks to look back for a deposit that no sale has followed. ~67 minutes on Base's
 // 2s blocks — a crash last tick plus a few failed retries — and within the
 // eth_getLogs range Alchemy accepts. A deposit older than this simply isn't
 // recovered: its mint stays in the wallet mislabelled as margin. Safe, just unpaid.
 const UNSETTLED_LOOKBACK_BLOCKS = 2000;
 
-const SEAPORT_ABI = [
-  "function getOrderStatus(bytes32 orderHash) view returns (bool isValidated, bool isCancelled, uint256 totalFilled, uint256 totalSize)",
-] as const;
+const BBITS: ArbCollection = {
+  slug: COLLECTION_SLUG,
+  address: BBITS_COLLECTION,
+};
 
 type Provider = ContractRunner & {
   getBalance: (a: string) => Promise<bigint>;
@@ -94,224 +102,6 @@ type Keeper = {
   quoter: Contract;
   provider: Provider;
   bot: string;
-};
-
-const getOpenSeaClient = (signer: Wallet) =>
-  new OpenSeaSDK(signer, {
-    chain: Chain.Base,
-    apiKey: process.env.OPENSEA_API_KEY,
-  });
-
-const parameters = (protocolData: ProtocolData | undefined) =>
-  protocolData?.parameters;
-
-const min = (a: bigint, b: bigint) => (a < b ? a : b);
-
-const effectiveGasBuffer = async (provider: Provider): Promise<bigint> => {
-  try {
-    const { maxFeePerGas } = await provider.getFeeData();
-    const dynamic = (maxFeePerGas ?? BigInt(0)) * ESTIMATED_GAS;
-    return dynamic > GAS_BUFFER_WEI ? dynamic : GAS_BUFFER_WEI;
-  } catch {
-    return GAS_BUFFER_WEI;
-  }
-};
-
-// Pages of the collection offer book to walk when looking for the bot's own bids.
-const MAX_OFFER_PAGES = 20;
-
-// Seaport ItemType for an ERC721 consideration resolved by merkle criteria — the
-// shape of every collection offer.
-const ERC721_WITH_CRITERIA = 4;
-
-/**
- * The subset of an OpenSea order the run needs: enough to price it, cancel it on- or
- * off-chain, and confirm the cancel. Built from the collection offer feed rather than
- * the SDK's `OrderV2`, whose backing endpoint (`/orders/{chain}/{protocol}/offers`)
- * OpenSea has removed (it now answers 405).
- */
-type RestingOffer = Pick<
-  OrderV2,
-  "orderHash" | "protocolAddress" | "protocolData"
->;
-
-/**
- * The bot's resting collection offers, newest first.
- *
- * The offer feed only returns active, valid orders, so cancelled, filled and expired
- * bids are already gone; expiry is still re-checked in code because the feed's view
- * can lag. The feed is collection-wide with no maker filter, so every page is walked
- * and filtered by offerer, and the consideration item is checked against the
- * collection rather than trusting the slug.
- */
-const findRestingOffers = async (
-  client: OpenSeaSDK,
-  maker: string,
-): Promise<RestingOffer[]> => {
-  const nowSec = BigInt(Math.floor(Date.now() / 1000));
-  const makerAddress = getAddress(maker);
-  const found: { offer: RestingOffer; startTime: bigint }[] = [];
-
-  let next: string | undefined;
-  for (let page = 0; page < MAX_OFFER_PAGES; page++) {
-    const response = await client.api.getAllOffers(COLLECTION_SLUG, 100, next);
-    for (const offer of response.offers) {
-      const params = offer.protocol_data?.parameters;
-      if (!params) continue;
-      if (getAddress(params.offerer) !== makerAddress) continue;
-      if (BigInt(params.endTime) <= nowSec) continue;
-
-      // Collection (criteria) offers only — the bot never bids on a single token.
-      // Read off the signed Seaport item rather than the API's optional `criteria`
-      // field: an ERC721_WITH_CRITERIA consideration is what a collection offer is.
-      const item = params.consideration?.[0];
-      if (!item || Number(item.itemType) !== ERC721_WITH_CRITERIA) continue;
-      if (getAddress(item.token) !== getAddress(BBITS_COLLECTION)) continue;
-
-      found.push({
-        offer: {
-          orderHash: offer.order_hash,
-          protocolAddress: offer.protocol_address,
-          protocolData: offer.protocol_data,
-        },
-        startTime: BigInt(params.startTime),
-      });
-    }
-    next = response.next;
-    if (!next) break;
-  }
-
-  return found
-    .sort((a, b) =>
-      a.startTime > b.startTime ? -1 : a.startTime < b.startTime ? 1 : 0,
-    )
-    .map(({ offer }) => offer);
-};
-
-// The exact WETH the bot has committed, read off the Seaport offer item rather than
-// `currentPrice`, which is a derived display value.
-const restingOfferPriceWei = (order: RestingOffer): bigint =>
-  BigInt(parameters(order.protocolData)?.offer?.[0]?.startAmount ?? 0);
-
-type Floor = {
-  listing: Awaited<
-    ReturnType<OpenSeaSDK["api"]["getBestListings"]>
-  >["listings"][number];
-  totalCostWei: bigint;
-  // Which balance the purchase draws from. Seaport pays ERC20 listings from WETH.
-  currency: "native" | "weth";
-  tokenId: string;
-};
-
-/**
- * Cheapest genuinely fulfillable listing, priced by summing the Seaport consideration —
- * that sum, not the headline `price`, is what the buyer actually pays.
- */
-const findBestFloor = async (client: OpenSeaSDK): Promise<Floor | null> => {
-  const { listings } = await client.api.getBestListings(COLLECTION_SLUG, 20);
-  const nowSec = Math.floor(Date.now() / 1000);
-
-  const priced = (listings ?? []).flatMap((listing): Floor[] => {
-    const params = parameters(listing.protocol_data);
-    if (!params) return [];
-    const consideration = params?.consideration ?? [];
-    const tokenId: string | undefined =
-      params?.offer?.[0]?.identifierOrCriteria;
-    if (!consideration.length || !tokenId) return [];
-
-    // Expiring imminently — would likely revert between decision and fulfilment.
-    if (Number(params.endTime ?? 0) <= nowSec + 120) return [];
-
-    let total = BigInt(0);
-    let currency: Floor["currency"] | null = null;
-    for (const item of consideration) {
-      // Only NATIVE (0) and ERC20 (1) are payment items; anything else means this is
-      // not a plain sale and the cost calculation would be wrong.
-      const itemType = Number(item.itemType);
-      let itemCurrency: Floor["currency"];
-      if (itemType === 0) {
-        itemCurrency = "native";
-      } else if (
-        itemType === 1 &&
-        getAddress(item.token) === getAddress(WETH_ADDRESS)
-      ) {
-        itemCurrency = "weth";
-      } else {
-        return [];
-      }
-      // A listing paid in two currencies at once can't be affordability-checked
-      // against a single balance.
-      if (currency && currency !== itemCurrency) return [];
-      currency = itemCurrency;
-
-      // Dutch auction: price is time-dependent, so a static total is meaningless.
-      if (item.startAmount !== item.endAmount) return [];
-      total += BigInt(item.startAmount);
-    }
-
-    if (total <= BigInt(0) || !currency) return [];
-    return [{ listing, totalCostWei: total, currency, tokenId }];
-  });
-
-  priced.sort((a, b) => (a.totalCostWei < b.totalCostWei ? -1 : 1));
-  return priced[0] ?? null;
-};
-
-/**
- * Token ids the bot holds but hasn't deposited yet — i.e. a bid filled, or a previous
- * run died between buying and depositing.
- *
- * The collection is an EIP-1167 proxy with no ERC721Enumerable, so ids come from
- * OpenSea's account index. That index lags and paginates, so every page is walked
- * and every candidate is re-confirmed on-chain with ownerOf.
- */
-const collectStrayNfts = async (
-  client: OpenSeaSDK,
-  collection: Contract,
-  bot: string,
-  heldCount: bigint,
-): Promise<string[]> => {
-  if (heldCount <= BigInt(0)) return [];
-
-  const owned: string[] = [];
-  let next: string | undefined;
-  for (let page = 0; page < MAX_NFT_PAGES; page++) {
-    const response = await client.api.getNFTsByAccount(
-      bot,
-      50,
-      next,
-      Chain.Base,
-    );
-    const candidates = (response?.nfts ?? [])
-      .filter(
-        (nft) => getAddress(nft.contract) === getAddress(BBITS_COLLECTION),
-      )
-      .map((nft) => nft.identifier);
-
-    // Confirm each page on-chain before deciding whether to keep walking. The index
-    // can still list a token the bot already deposited, so counting raw candidates
-    // would stop pagination early while the token actually held sits on a later page.
-    const owners = await Promise.allSettled(
-      candidates.map((id) => collection.ownerOf(id)),
-    );
-    candidates.forEach((id, i) => {
-      const r = owners[i];
-      if (r.status === "fulfilled" && getAddress(r.value) === getAddress(bot)) {
-        owned.push(id);
-      }
-    });
-
-    // Stop once every held token is confirmed, or the index runs out.
-    if (owned.length >= Number(heldCount) || !response?.next) break;
-    next = response.next;
-  }
-
-  if (owned.length < Number(heldCount)) {
-    console.log(
-      `Holding ${heldCount} Based Bits but resolved ${owned.length} ids — OpenSea index lag, retrying next run`,
-    );
-  }
-  return owned;
 };
 
 /**
@@ -511,79 +301,6 @@ const settle = async (
   return done;
 };
 
-/**
- * Gasless cancel via OpenSea's SignedZone. Returns whether the order is now certainly
- * unfillable. The zone cannot revoke a fulfilment signature it has already handed to
- * a seller; the API reports how long such a signature stays valid, and until then the
- * old order can still fill.
- */
-const offchainCancel = async (
-  client: OpenSeaSDK,
-  order: RestingOffer,
-): Promise<boolean> => {
-  // No hash means no cancel was even attempted: the signed Seaport order is still
-  // usable from its protocol data. Report it live so callers escalate on-chain.
-  if (!order.orderHash) return false;
-  const response = await client.offchainCancelOrder(
-    order.protocolAddress,
-    order.orderHash,
-    Chain.Base,
-    undefined,
-    true, // derive the offerer signature from the bot's signer
-  );
-  const validUntil = response?.last_signature_issued_valid_until;
-  if (!validUntil) return true;
-  // Accept either an ISO timestamp or unix seconds. Anything unparseable is treated
-  // as still live: fail closed rather than risk the old and new offers both filling.
-  const untilMs = /^\d+$/.test(validUntil)
-    ? Number(validUntil) * 1000
-    : Date.parse(validUntil);
-  return Number.isFinite(untilMs) && untilMs <= Date.now();
-};
-
-/**
- * `amount` here is in ETH UNITS, not wei: the SDK runs it through parseUnits(amount, 18)
- * internally. Passing wei would post an offer 1e18x too large.
- */
-const postOffer = async (client: OpenSeaSDK, bot: string, priceWei: bigint) => {
-  await client.createCollectionOffer({
-    collectionSlug: COLLECTION_SLUG,
-    accountAddress: bot,
-    amount: formatEther(priceWei),
-    quantity: 1,
-    paymentTokenAddress: WETH_ADDRESS,
-    expirationTime: Math.floor(Date.now() / 1000) + OFFER_DURATION_SECONDS,
-    offerProtectionEnabled: true, // SignedZone — the precondition for gasless cancel
-    // OpenSea rejects offers that carry optional creator fees; the fulfiller decides.
-    excludeOptionalCreatorFees: true,
-  });
-};
-
-/**
- * On-chain Seaport cancel. The SDK types this against `OrderV2` but only reads the
- * protocol address and the signed order parameters, both of which a RestingOffer
- * carries, hence the cast.
- */
-const hardCancel = async (
-  client: OpenSeaSDK,
-  order: RestingOffer,
-  accountAddress: string,
-) => {
-  await client.cancelOrder({ order: order as OrderV2, accountAddress });
-};
-
-// The SDK awaits its own confirmation, but that wrapper is soft. Read the canonical
-// on-chain status before spending, using the order's own protocol address.
-const confirmCancelled = async (
-  provider: ContractRunner,
-  order: RestingOffer,
-): Promise<boolean> => {
-  if (!order.orderHash) return false;
-  const seaport = new Contract(order.protocolAddress, SEAPORT_ABI, provider);
-  const [, isCancelled] = await seaport.getOrderStatus(order.orderHash);
-  return isCancelled === true;
-};
-
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -624,9 +341,9 @@ export async function GET(req: NextRequest) {
       RestingOffer[],
     ] = await Promise.all([
       vault.conversionRate(),
-      effectiveGasBuffer(provider),
+      effectiveGasBuffer(provider, ESTIMATED_GAS, GAS_BUFFER_WEI),
       collection.balanceOf(bot),
-      findRestingOffers(client, bot),
+      findRestingOffers(client, BBITS, bot),
     ]);
     let parityWei = await quoteParityWei(quoter, conversionRate);
 
@@ -739,7 +456,14 @@ export async function GET(req: NextRequest) {
 
     // Every check below derives from live on-chain balances, so a crash at any point
     // re-derives the same state on the next run.
-    const strayNfts = await collectStrayNfts(client, collection, bot, heldNfts);
+    const strayNfts = await collectHeldNfts(
+      client,
+      collection,
+      BBITS_COLLECTION,
+      bot,
+      heldNfts,
+      "Based Bits",
+    );
     if (strayNfts.length) {
       actions.push(`recover:deposit:${strayNfts.length}`);
       await depositNfts(k, strayNfts);
@@ -816,7 +540,7 @@ export async function GET(req: NextRequest) {
       bigint,
       bigint,
     ] = await Promise.all([
-      findBestFloor(client),
+      findBestFloor(client, BBITS),
       weth.balanceOf(bot),
       provider.getBalance(bot),
     ]);
@@ -971,7 +695,14 @@ export async function GET(req: NextRequest) {
         // Listing raced away or the fill reverted. The hard cancel already happened,
         // so re-post a bid rather than leaving the bot with no order at all.
         if (canFundBid) {
-          await postOffer(client, bot, maxPayWei);
+          await postOffer(
+            client,
+            BBITS,
+            bot,
+            maxPayWei,
+            1,
+            OFFER_DURATION_SECONDS,
+          );
           return Response.json({ ...result, executed: "SWEEP_FAILED_REBID" });
         }
         console.error("Insufficient WETH to re-post a bid after failed sweep");
@@ -990,7 +721,7 @@ export async function GET(req: NextRequest) {
         console.error("Insufficient WETH to post bid");
         return Response.json({ ...result, executed: "SKIP_INSUFFICIENT_WETH" });
       }
-      await postOffer(client, bot, maxPayWei);
+      await postOffer(client, BBITS, bot, maxPayWei, 1, OFFER_DURATION_SECONDS);
       actions.push("bid:posted");
     } else if (action === "REPRICE_DOWN" || action === "REPRICE_UP") {
       if (openOrder) {
@@ -1014,7 +745,14 @@ export async function GET(req: NextRequest) {
           actions.push("reprice:deferred-vended-signature");
           return Response.json({ ...result, executed: "REPRICE_DEFERRED" });
         }
-        await postOffer(client, bot, maxPayWei);
+        await postOffer(
+          client,
+          BBITS,
+          bot,
+          maxPayWei,
+          1,
+          OFFER_DURATION_SECONDS,
+        );
         actions.push("reprice:done");
       }
     }

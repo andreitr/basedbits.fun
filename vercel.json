@@ -33,6 +33,10 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/trader/ghouls-arb",
+      "schedule": "5,20,35,50 * * * *"
+    },
+    {
       "path": "/api/cron/ghouls",
       "schedule": "5,10 17,18 * * *"
     }
