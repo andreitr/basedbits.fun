@@ -36,11 +36,12 @@ export const GhoulsMint = ({ initialTopPrize }: Props) => {
 
   return (
     <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
+      {/* Only on wide screens; narrower cards have no room for it beside the title */}
       <Link
         href="https://megapot.io/r/U57WDQ"
         target="_blank"
         rel="noopener noreferrer"
-        className="absolute top-8 right-8 sm:top-5 sm:right-5"
+        className="hidden lg:block absolute top-5 right-5"
       >
         <Image
           src="/images/powered-by-megapot.svg"

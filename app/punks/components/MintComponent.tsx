@@ -1,45 +1,49 @@
 import Image from "next/image";
 import Link from "next/link";
 
+// Same card layout as the Lucky Ghouls mint card
 export const MintComponent = () => {
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6 sm:gap-10 md:gap-20 justify-between bg-black bg-opacity-90 text-white rounded-lg p-5 sm:p-6">
-      <div className="md:w-1/2 lg:w-[540px] shrink-0">
-        <Image
-          className="rounded-lg w-full h-auto"
-          src={"/images/punkalot.png"}
-          alt="Preview"
-          width={540}
-          height={540}
-          sizes="(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw"
-          priority
-        />
-      </div>
-      <div>
-        <div className="text-4xl sm:text-5xl mb-2 text-[#DBAEB4]">Punkalot</div>
-        <div className="">
-          Every minted punk can be endlessly remixed to create a unique
-          combination of traits. The art is fully onchain, with a total supply
-          of 1K.
+    <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
+      <div className="flex flex-col sm:flex-row w-full gap-5">
+        <div className="shrink-0">
+          <Image
+            src="/images/punkalot.png"
+            alt="Punkalot"
+            width={300}
+            height={300}
+            sizes="(min-width: 640px) 300px, 100vw"
+            className="w-full sm:w-[300px] h-auto rounded-lg"
+            priority
+          />
         </div>
-        <div className="mt-10 mb-5">
-          <Link
-            className="inline-block text-center bg-[#53A3FC] hover:bg-[#3B7AFF] text-xl font-bold py-3 px-4 rounded-lg w-full sm:w-auto"
-            href="/punks"
-          >
-            Sold Out!
-          </Link>
-        </div>
-        <div className="text-sm text-[#82BCFC]">
-          The mint proceeds are split between{" "}
-          <a
-            className="underline"
-            href="https://warpcast.com/gretagremplin"
-            target="_blank"
-          >
-            gretagremplin.eth
-          </a>{" "}
-          and Based Bits burn!
+        <div className="flex flex-col gap-2 w-full">
+          <div className="sm:text-5xl text-4xl text-[#DBAEB4]">Punkalot</div>
+          <div className="text-sm text-gray-400 pt-2">
+            Every minted punk can be endlessly remixed to create a unique
+            combination of traits. The art is fully onchain, with a total supply
+            of 1K.
+          </div>
+          <div className="text-sm text-[#82BCFC]">
+            The mint proceeds are split between{" "}
+            <a
+              className="underline hover:text-white"
+              href="https://warpcast.com/gretagremplin"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              gretagremplin.eth
+            </a>{" "}
+            and Based Bits burn!
+          </div>
+          <div className="mt-auto pt-4">
+            <Link
+              className="flex w-full h-[50px] items-center justify-center bg-[#53A3FC] hover:bg-[#3B7AFF] text-xl font-bold px-4 rounded-lg"
+              href="/punks"
+            >
+              Sold Out!
+            </Link>
+          </div>
         </div>
       </div>
     </div>

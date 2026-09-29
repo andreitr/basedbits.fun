@@ -33,11 +33,13 @@ export async function generateMetadata() {
 export default async function Page() {
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-5 sm:px-10 pb-8 sm:pb-0">
+      <div className="flex justify-center items-center w-full bg-[#DDF5DD] sm:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
-          <Header />
+          <div className="px-5 sm:px-0">
+            <Header />
+          </div>
           <MintComponent />
-          <div className="mt-10 mb-10">
+          <div className="mt-10 mb-10 px-5 sm:px-0">
             <Tabs />
           </div>
         </div>
