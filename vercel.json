@@ -34,7 +34,7 @@
     },
     {
       "path": "/api/cron/ghouls",
-      "schedule": "5,10 18,19 * * *"
+      "schedule": "0,5 17,18 * * *"
     }
   ]
 }
