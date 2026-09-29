@@ -3,7 +3,7 @@
 import { useAccount, useReadContract } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
-import { BigNumberish, formatUnits } from "ethers";
+import { formatUnits } from "viem";
 import { ApproveTokenButton } from "@/app/token/components/ApproveTokenButton";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 
@@ -29,7 +29,7 @@ export const ApproveToken = () => {
     queryClient.invalidateQueries({ queryKey });
   };
 
-  const hasSpendingAllowance = Number(formatUnits(data as any)) > 0;
+  const hasSpendingAllowance = Number(formatUnits(data as bigint, 18)) > 0;
 
   const styles = hasSpendingAllowance
     ? "bg-[#ABBEAC]"
@@ -42,7 +42,7 @@ export const ApproveToken = () => {
           You can swap{" "}
           <span className="font-bold">
             {humanizeNumber(
-              Math.round(Number(formatUnits(data as BigNumberish))),
+              Math.round(Number(formatUnits(data as bigint, 18))),
             )}
           </span>{" "}
           BBITS for NFTs.{" "}

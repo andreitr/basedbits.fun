@@ -1,4 +1,4 @@
-import { baseProvider } from "@/app/lib/Web3Configs";
+import { baseProvider } from "@/app/lib/ethersProviders";
 import { MegapotABI } from "@/app/lib/abi/Megapot.abi";
 import { Contract, Wallet } from "ethers";
 

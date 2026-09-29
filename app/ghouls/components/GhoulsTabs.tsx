@@ -22,7 +22,7 @@ export const GhoulsTabs = () => {
 
   return (
     <div>
-      <div className="flex justify-start gap-3">
+      <div className="flex flex-wrap justify-start gap-3">
         {[TABS.MY_GHOULS, TABS.DRAWING, TABS.STATS].map((t) => (
           <button
             key={t}
@@ -33,7 +33,8 @@ export const GhoulsTabs = () => {
           </button>
         ))}
       </div>
-      <div className="mt-5">
+      {/* Reserve room so switching tabs or loading data doesn't yank the footer around */}
+      <div className="mt-5 min-h-[320px]">
         {tab === TABS.MY_GHOULS ? (
           <GhoulsNFTList />
         ) : tab === TABS.DRAWING ? (

@@ -1,4 +1,4 @@
-import { baseProvider } from "@/app/lib/Web3Configs";
+import { baseProvider } from "@/app/lib/ethersProviders";
 import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { QuoterV2Abi } from "@/app/lib/abi/QuoterV2.abi";
 import {

@@ -5,6 +5,14 @@ import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { RedeemNFT } from "@/app/token/components/RedeemNFT";
+import {
+  NFTGridSkeleton,
+  NFTImage,
+  NFTTile,
+  nftGridClass,
+} from "@/app/lib/components/NFTGrid";
+
+const tileClass = "bg-[#ABBEAC]";
 
 interface Props {
   action: "SWAP" | "REDEEM";
@@ -36,8 +44,13 @@ export const TokenList = ({ action, address, label }: Props) => {
     }
   }, [data, pageKey]);
 
-  if (isLoading) {
-    return "Loading...";
+  if (isLoading || (tokens.length === 0 && !!data?.ownedNfts?.length)) {
+    return (
+      <div>
+        <div className="h-7 w-64 my-4 rounded bg-[#ABBEAC] animate-pulse" />
+        <NFTGridSkeleton count={5} tileClassName={tileClass} />
+      </div>
+    );
   }
 
   return (
@@ -47,20 +60,17 @@ export const TokenList = ({ action, address, label }: Props) => {
           {data?.totalCount} Based Bits {label}
         </div>
 
-        <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+        <div className={nftGridClass}>
           {tokens.map((nft, index) => {
             return (
-              <div
-                key={index}
-                className="flex flex-col bg-[#ABBEAC] p-2 rounded-md items-center justify-center"
-              >
-                <div
-                  className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
-                ></div>
+              <NFTTile key={index} className={tileClass}>
+                <NFTImage
+                  src={nft.image.originalUrl}
+                  alt={`Based Bit #${nft.tokenId}`}
+                />
                 {action === "SWAP" && <DepositNFT tokenId={nft.tokenId} />}
                 {action === "REDEEM" && <RedeemNFT tokenId={nft.tokenId} />}
-              </div>
+              </NFTTile>
             );
           })}
         </div>

@@ -2,7 +2,7 @@
 
 import { Contract } from "ethers";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
-import { baseProvider } from "@/app/lib/Web3Configs";
+import { baseProvider } from "@/app/lib/ethersProviders";
 
 const minter = new Contract(
   process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,

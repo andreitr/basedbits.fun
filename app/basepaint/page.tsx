@@ -6,6 +6,9 @@ import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import Link from "next/link";
 
+// Reads live onchain/DB data on every request
+export const dynamic = "force-dynamic";
+
 const BASEPAINT_CONTRACT_ADDRESS = "0xBa5e05cb26b78eDa3A2f8e3b3814726305dcAc83";
 
 async function getTokenId() {

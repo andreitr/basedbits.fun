@@ -25,7 +25,7 @@ export const FeatureCard = ({
       target={target}
       className="flex flex-row gap-4 rounded-lg bg-white bg-opacity-20 w-full"
     >
-      <div className="rounded-lg w-[80px] h-[80px]">
+      <div className="rounded-lg w-[80px] h-[80px] shrink-0">
         <Image
           className={`${defaultStyle}`}
           src={image}

@@ -1,4 +1,17 @@
+const path = require("path");
+
 module.exports = {
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            // wagmi and its connectors ship a nested viem 2.37 next to the app's viem 2.52; resolve every client
+            // import to the app's copy so browsers download viem once (all of them declare viem 2.x as a peer)
+            config.resolve.alias = {
+                ...config.resolve.alias,
+                viem: path.resolve(__dirname, "node_modules/viem"),
+            };
+        }
+        return config;
+    },
     images: {
         remotePatterns: [
             {

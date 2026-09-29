@@ -3,13 +3,22 @@
 import { Tooltip } from "@/app/lib/components/client/Tooltip";
 import { UserAvatar } from "@/app/lib/components/client/UserAvatar";
 import { UserName } from "@/app/lib/components/client/UserName";
-import { useCheckins } from "@/app/lib/hooks/useCheckins";
+import { CheckinWithUser, useCheckins } from "@/app/lib/hooks/useCheckins";
 import { formatTimeAgo } from "@/app/lib/utils/timeUtils";
-import { getAddress } from "ethers";
+import { getAddress } from "viem";
 import Link from "next/link";
 
-export const UserList = () => {
-  const { data: users, isError } = useCheckins({ enabled: true });
+interface Props {
+  initialData?: CheckinWithUser[];
+  initialDataUpdatedAt?: number;
+}
+
+export const UserList = ({ initialData, initialDataUpdatedAt }: Props) => {
+  const { data: users, isError } = useCheckins({
+    enabled: true,
+    initialData,
+    initialDataUpdatedAt,
+  });
 
   if (isError) {
     return null;
@@ -37,7 +46,7 @@ export const UserList = () => {
             <Tooltip content={tooltipContent}>
               <Link
                 href={`/users/${getAddress(checkin.user.address)}`}
-                prefetch={true}
+                prefetch={false}
               >
                 <div className="flex rounded-full p-0.5 bg-black bg-opacity-80 transition-all duration-300 hover:bg-opacity-100">
                   <UserAvatar user={checkin.user} size={36} />

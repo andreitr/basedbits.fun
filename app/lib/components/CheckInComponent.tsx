@@ -1,27 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import { MyStreak } from "@/app/lib/components/MyStreak";
-import { useAccount } from "wagmi";
+import { MyStreak, MyStreakSkeleton } from "@/app/lib/components/MyStreak";
+import { Button } from "@/app/lib/components/Button";
+import { useModal } from "connectkit";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
+import { useWallet } from "@/app/lib/Web3Provider";
 import Link from "next/link";
 
 export const CheckInComponent = () => {
-  const { isConnected, address } = useAccount();
+  const { isReady, isConnected, address } = useWallet();
+  const { setOpen } = useModal();
 
   return (
-    <div className="flex flex-col justify-between mt-8 gap-20 sm:flex-row">
+    <div className="flex flex-col justify-between sm:mt-8 gap-6 sm:gap-20 sm:flex-row">
+      {/* developer.png is 500x925; explicit dimensions let the browser reserve its box before it loads */}
       <Image
-        className="w-auto max-w-72 m-auto sm:m-0"
+        className="w-[140px] sm:w-[250px] h-auto mx-auto sm:m-0 shrink-0"
         src="/images/developer.png"
         alt="Are you here?"
         width={250}
-        height={250}
+        height={463}
+        sizes="(min-width: 640px) 250px, 140px"
         priority={true}
       />
 
-      <div className="flex flex-col justify-center mt-8 sm:mt-0 sm:ml-4">
-        <div className="text-4xl font-semibold text-[#363E36] mb-2">
+      <div className="flex flex-col justify-center sm:ml-4">
+        <div className="text-3xl sm:text-4xl font-semibold text-[#363E36] mb-2">
           Hold Based Bits? Check in!
         </div>
         <div className="text-[#677467]">
@@ -53,11 +58,22 @@ export const CheckInComponent = () => {
           NFT.
         </div>
 
-        <div className="mt-6 md:mt-10 md:h-[200px]">
-          {isConnected && address ? (
+        {/* Same reserved height whether the wallet is restoring, connected or not, so nothing below jumps */}
+        <div className="mt-6 md:mt-10 min-h-[200px] md:h-[200px]">
+          {!isReady ? (
+            <MyStreakSkeleton />
+          ) : isConnected && address ? (
             <MyStreak address={address} />
           ) : (
-            <ConnectAction action={"to check-in"} />
+            <div className="flex flex-col gap-4">
+              <ConnectAction action={"to check-in"} />
+              <Button
+                className="sm:w-auto sm:self-start"
+                onClick={() => setOpen(true)}
+              >
+                Connect Wallet
+              </Button>
+            </div>
           )}
         </div>
       </div>

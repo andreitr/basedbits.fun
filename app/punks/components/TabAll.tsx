@@ -2,6 +2,14 @@ import Link from "next/link";
 import { useGetNFTs } from "@/app/lib/hooks/useGetNFT";
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
+import {
+  NFTGridSkeleton,
+  NFTImage,
+  NFTTile,
+  nftGridClass,
+} from "@/app/lib/components/NFTGrid";
+
+const tileClass = "bg-black bg-opacity-90";
 
 interface Props {
   contract: string;
@@ -31,25 +39,20 @@ export const TabAll = ({ contract }: Props) => {
     }
   }, [data, pageKey]);
 
-  if (isLoading) {
-    return "Loading ...";
+  // Tokens are appended in an effect, so the first render with data still has none; keep the skeleton up until then
+  if (isLoading || (tokens.length === 0 && !!data?.nfts?.length)) {
+    return <NFTGridSkeleton tileClassName={tileClass} />;
   }
 
   return (
     <>
       <div>
-        <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+        <div className={nftGridClass}>
           {tokens.map((nft, index) => {
             return (
-              <div
-                key={index}
-                className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center"
-              >
-                <div
-                  className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{ backgroundImage: `url(${nft.image.originalUrl})` }}
-                ></div>
-                <div className="mt-2 hover:underline text-white">
+              <NFTTile key={index} className={tileClass}>
+                <NFTImage src={nft.image.originalUrl} alt={nft.name} />
+                <div className="mt-2 hover:underline text-white truncate max-w-full">
                   <Link
                     href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
                     target="_blank"
@@ -57,7 +60,7 @@ export const TabAll = ({ contract }: Props) => {
                     {nft.name}
                   </Link>
                 </div>
-              </div>
+              </NFTTile>
             );
           })}
         </div>

@@ -1,7 +1,7 @@
 "use server";
 
 import { Contract, parseUnits } from "ethers";
-import { baseProvider } from "@/app/lib/Web3Configs";
+import { baseProvider } from "@/app/lib/ethersProviders";
 import { QuoterV2Abi } from "@/app/lib/abi/QuoterV2.abi";
 
 const quoterContract = new Contract(

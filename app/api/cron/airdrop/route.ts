@@ -2,7 +2,7 @@ import { BBitsTokenAbi } from "@/app/lib/abi/BBitsToken.abi";
 import { getCheckinsBetween } from "@/app/lib/api/getCheckinsBetween";
 import { postToFarcaster } from "@/app/lib/external/farcaster";
 import { getAirdropWindow } from "@/app/lib/utils/airdropWindow";
-import { createBaseProvider } from "@/app/lib/Web3Configs";
+import { createBaseProvider } from "@/app/lib/ethersProviders";
 import {
   Contract,
   formatUnits,

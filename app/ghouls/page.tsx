@@ -1,9 +1,11 @@
-"use server";
-
 import { GhoulsMint } from "@/app/ghouls/components/GhoulsMint";
 import { GhoulsTabs } from "@/app/ghouls/components/GhoulsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+import { readGhoulsDrawings } from "@/app/lib/luckyghouls/readGhoulsDrawings";
+
+// Static page regenerated in the background; live stats load on the client
+export const revalidate = 60;
 
 // Unlisted test page for the Test Ghouls contract: nothing links here and it is kept out of search indexes
 export async function generateMetadata() {
@@ -19,23 +21,30 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
+  const drawings = await readGhoulsDrawings().catch((error) => {
+    console.error("Failed to prefetch ghouls drawings", error);
+    return undefined;
+  });
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-0 lg:px-10 pb-8 sm:pb-0">
+      <div className="flex justify-center items-center w-full bg-[#DDF5DD] sm:px-10 pb-8 sm:pb-0">
         <div className="container max-w-screen-lg">
-          <Header />
+          <div className="px-5 sm:px-0">
+            <Header />
+          </div>
 
           <div className="flex flex-col gap-4">
-            <GhoulsMint />
+            <GhoulsMint initialTopPrize={drawings?.topPrize.toString()} />
 
-            <div className="mt-6 mb-12 flex flex-col gap-4 px-4 sm:px-0">
+            <div className="mt-6 mb-12 flex flex-col gap-4 px-5 sm:px-0">
               <GhoulsTabs />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
+      <div className="flex justify-center items-center w-full px-5 sm:px-10 mt-16 mb-24">
         <Footer />
       </div>
     </div>

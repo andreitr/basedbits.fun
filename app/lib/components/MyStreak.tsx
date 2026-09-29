@@ -127,7 +127,7 @@ export const MyStreak = ({ address }: Props) => {
   return <MyStreakSkeleton />;
 };
 
-const MyStreakSkeleton = () => (
+export const MyStreakSkeleton = () => (
   <div className="flex flex-col gap-3 animate-pulse">
     <div className="h-6 w-64 rounded bg-black bg-opacity-10" />
     <div className="h-[72px] rounded-lg bg-white bg-opacity-60 mb-6" />

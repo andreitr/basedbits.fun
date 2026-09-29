@@ -8,22 +8,39 @@ import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
+import {
+  NFTGridSkeleton,
+  NFTImage,
+  NFTTile,
+  nftGridClass,
+} from "@/app/lib/components/NFTGrid";
+import { useWallet } from "@/app/lib/Web3Provider";
 import toast from "react-hot-toast";
-import { useAccount } from "wagmi";
+
+const tileClass = "bg-black bg-opacity-90";
 
 export const GhoulsNFTList = () => {
-  const { isConnected, address } = useAccount();
+  const { isReady, isConnected, address } = useWallet();
   const { data: list, isLoading } = useGetOwnerNFTs({
     address,
     contract: LUCKY_GHOULS_ADDRESS,
   });
+
+  // Clipped to the tab panel's reserved height so it doesn't collapse if the wallet turns out to be disconnected
+  if (!isReady) {
+    return (
+      <div className="h-[320px] overflow-hidden">
+        <NFTGridSkeleton count={5} tileClassName={tileClass} />
+      </div>
+    );
+  }
 
   if (!isConnected || !address) {
     return <div>Connect wallet to view your Ghouls 👻</div>;
   }
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading your Ghouls...</div>;
+    return <NFTGridSkeleton count={5} tileClassName={tileClass} />;
   }
 
   if (!list?.ownedNfts?.length) {
@@ -32,7 +49,7 @@ export const GhoulsNFTList = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+      <div className={nftGridClass}>
         {list.ownedNfts.map((nft) => (
           <NFTCard key={nft.tokenId} nft={nft} />
         ))}
@@ -54,12 +71,8 @@ const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
   const busy = isPending || isConfirming;
 
   return (
-    <div className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center w-full">
-      <div
-        className="bg-cover bg-center bg-no-repeat w-full aspect-square rounded-lg"
-        style={{ backgroundImage: `url(${nft.image?.originalUrl})` }}
-        title={nft.name}
-      ></div>
+    <NFTTile className={tileClass}>
+      <NFTImage src={nft.image?.originalUrl} alt={nft.name} />
       <div className="mt-2 w-full text-[#FFE29E] text-sm text-center">
         <div className="text-white/60 text-xs pb-1">#{nft.tokenId}</div>
         <button
@@ -88,6 +101,6 @@ const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
           )}
         </button>
       </div>
-    </div>
+    </NFTTile>
   );
 };

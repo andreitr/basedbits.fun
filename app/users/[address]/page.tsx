@@ -11,6 +11,9 @@ import { UserInfo } from "@/app/users/[address]/components/UserInfo";
 import { getAddress } from "ethers";
 import { Suspense } from "react";
 
+// Reads live onchain/DB data on every request
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{
     address: string;

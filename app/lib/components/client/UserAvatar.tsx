@@ -16,7 +16,11 @@ export const UserAvatar = ({ user, size = 36 }: UserAvatarProps) => {
       <img
         src={user.farcaster_avatar}
         alt={user.farcaster_name || "Farcaster avatar"}
-        className={avatarClasses}
+        className={`${avatarClasses} object-cover`}
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
         style={{ width: size, height: size }}
       />
     );
@@ -27,7 +31,11 @@ export const UserAvatar = ({ user, size = 36 }: UserAvatarProps) => {
       <img
         src={user.ens_avatar}
         alt={user.ens_name || "ENS avatar"}
-        className={avatarClasses}
+        className={`${avatarClasses} object-cover`}
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
         style={{ width: size, height: size }}
       />
     );

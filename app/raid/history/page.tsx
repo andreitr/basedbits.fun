@@ -1,5 +1,3 @@
-"use server";
-
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
@@ -7,6 +5,9 @@ import { potraiderContract } from "@/app/lib/contracts/potraider";
 import { ArrowLeft } from "@/app/lib/icons/remix";
 import { formatUnits } from "ethers";
 import Link from "next/link";
+
+// Reads live onchain/DB data on every request
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const contract = potraiderContract();

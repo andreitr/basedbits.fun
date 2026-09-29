@@ -50,4 +50,9 @@ export const ApproveNFT = () => {
       </div>
     );
   }
+
+  // Hold the notice's space while the approval status loads so the list below doesn't drop into place later
+  return (
+    <div className="p-6 rounded-md bg-[#303730] bg-opacity-20 animate-pulse h-[92px]" />
+  );
 };

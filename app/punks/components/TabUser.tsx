@@ -8,6 +8,14 @@ import toast from "react-hot-toast";
 import { getNFTRawMetadata } from "@/app/lib/api/getNFTRawMetadata";
 import { RawMetadata } from "@/app/lib/types/types";
 import { PunkalotABI } from "@/app/lib/abi/Punkalot.abi";
+import {
+  NFTGridSkeleton,
+  NFTImage,
+  NFTTile,
+  nftGridClass,
+} from "@/app/lib/components/NFTGrid";
+
+const tileClass = "bg-black bg-opacity-90";
 
 interface Props {
   contract: string;
@@ -84,8 +92,8 @@ export const TabUser = ({ contract }: Props) => {
     return <ConnectAction action={"to see your NFTs"} />;
   }
 
-  if (isLoading) {
-    return "Loading ...";
+  if (isLoading || (tokens.length === 0 && !!data?.ownedNfts?.length)) {
+    return <NFTGridSkeleton tileClassName={tileClass} />;
   }
 
   if (data?.totalCount === 0) {
@@ -99,19 +107,18 @@ export const TabUser = ({ contract }: Props) => {
   return (
     <>
       <div>
-        <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+        <div className={nftGridClass}>
           {tokens.map((nft, index) => {
             return (
-              <div
-                key={index}
-                className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center"
-              >
-                <div
-                  className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{
-                    backgroundImage: `url(${isSameToken(nft.tokenId) && newMeta ? newMeta.image : nft.image.originalUrl})`,
-                  }}
-                ></div>
+              <NFTTile key={index} className={tileClass}>
+                <NFTImage
+                  src={
+                    isSameToken(nft.tokenId) && newMeta
+                      ? newMeta.image
+                      : nft.image.originalUrl
+                  }
+                  alt={`Punk #${nft.tokenId}`}
+                />
                 <div className="mt-2 hover:underline text-white">
                   <button
                     className="hover:underline"
@@ -122,7 +129,7 @@ export const TabUser = ({ contract }: Props) => {
                       : `Shuffle #${nft.tokenId}`}
                   </button>
                 </div>
-              </div>
+              </NFTTile>
             );
           })}
         </div>

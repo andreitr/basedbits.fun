@@ -5,28 +5,57 @@ import rightArrow from "@/app/lib/icons/arrow-right.svg";
 import { ApproveNFT } from "@/app/token/components/ApproveNFT";
 import { TokenList } from "@/app/token/components/TokenList";
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useModal } from "connectkit";
+import { Button } from "@/app/lib/components/Button";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
+import { NFTGridSkeleton } from "@/app/lib/components/NFTGrid";
+import { useWallet } from "@/app/lib/Web3Provider";
+
+// Every state is at least this tall and the wallet-restoring placeholder is exactly this tall, so the footer stays
+// put whether the visitor turns out to be connected or not
+const sectionClass =
+  "flex flex-col items-center w-full bg-[#DDF5DD] px-5 sm:px-10 py-8 min-h-[300px]";
 
 const REDEEM = "redeem";
 const DEPOSIT = "deposit";
 
 export const TokenSwap = () => {
   const [tab, setTab] = useState(DEPOSIT);
-  const { isConnected, address } = useAccount();
+  const { isReady, isConnected, address } = useWallet();
+  const { setOpen } = useModal();
+
+  if (!isReady) {
+    return (
+      <div className={`${sectionClass} h-[300px] overflow-hidden`}>
+        <div className="flex flex-col gap-6 container max-w-screen-lg">
+          <div className="flex flex-row gap-2 animate-pulse">
+            <div className="w-full h-[112px] rounded-lg bg-[#ABBEAC]" />
+            <div className="w-full h-[112px] rounded-lg bg-[#ABBEAC] bg-opacity-20" />
+          </div>
+          <NFTGridSkeleton count={5} tileClassName="bg-[#ABBEAC]" />
+        </div>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
-      <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 py-8">
-        <div className="flex flex-col gap-6 container max-w-screen-lg">
+      <div className={sectionClass}>
+        <div className="flex flex-col gap-4 container max-w-screen-lg">
           <ConnectAction action={"swap tokens"} />
+          <Button
+            className="sm:w-auto sm:self-start"
+            onClick={() => setOpen(true)}
+          >
+            Connect Wallet
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center w-full bg-[#DDF5DD] px-10 lg:px-0 py-8">
+    <div className={sectionClass}>
       <div className="flex flex-col gap-6 container max-w-screen-lg">
         <div className="flex flex-row gap-2 justify-center">
           <div

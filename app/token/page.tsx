@@ -9,23 +9,26 @@ import { TokenSwap } from "@/app/token/components/TokenSwap";
 import { TokenPrice } from "@/app/lib/components/TokenPrice";
 import { fetchTokenPrice } from "@/app/lib/utils/uniswap";
 
+// Static page regenerated in the background so visitors don't wait on three RPC reads per request
+export const revalidate = 60;
+
 export default async function Page() {
-  const tokens = await getTokenTotalSupply();
-  const burned = await getUserTokenBalance(
-    "0x000000000000000000000000000000000000dEaD",
-  );
+  const [tokens, burned, price] = await Promise.all([
+    getTokenTotalSupply(),
+    getUserTokenBalance("0x000000000000000000000000000000000000dEaD"),
+    fetchTokenPrice(),
+  ]);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-10">
+      <div className="flex justify-center items-center w-full bg-[#DDF5DD] px-5 sm:px-10">
         <div className="container max-w-screen-lg">
           <Header />
           <div className="flex flex-col gap-6">
-            <div className="text-4xl py-0 my-0">
+            <div className="text-3xl sm:text-4xl py-0 my-0">
               {humanizeNumber(Number(formatUnits(tokens)))} BBITS
-              <span className="hidden md:inline">
-                {" "}
-                Issued 🔥{" "}
+              <span className="block md:inline text-xl sm:text-2xl md:text-4xl mt-1 md:mt-0">
+                <span className="hidden md:inline"> Issued</span> 🔥{" "}
                 {humanizeNumber(Math.round(Number(formatUnits(burned))))} Burned
               </span>
             </div>
@@ -52,7 +55,7 @@ export default async function Page() {
             <div className="text-gray-600">
               Exchange Rate:{" "}
               <span className="font-semibold">
-                <TokenPrice />
+                <TokenPrice initialAmount={price} />
               </span>{" "}
               for 1024 BBITS
             </div>
@@ -62,7 +65,7 @@ export default async function Page() {
 
       <TokenSwap />
 
-      <div className="flex justify-center items-center w-full px-10 lg:px-0 mt-16 mb-24">
+      <div className="flex justify-center items-center w-full px-5 sm:px-10 mt-16 mb-24">
         <Footer />
       </div>
     </div>

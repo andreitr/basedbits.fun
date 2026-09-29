@@ -1,5 +1,3 @@
-"use server";
-
 import { MintComponent } from "@/app/aeye/components/MintComponent";
 import NFTList from "@/app/aeye/components/NFTList";
 import { UserComponent } from "@/app/aeye/components/UserComponent";
@@ -8,6 +6,9 @@ import { getAeyeById } from "@/app/lib/api/aeye/getAeyeById";
 import { getCurrentMint } from "@/app/lib/api/aeye/getCurrentMint";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
+
+// Reads live onchain/DB data on every request
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const title = "AEYE: Genesis";

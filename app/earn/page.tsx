@@ -1,5 +1,3 @@
-"use server";
-
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { getSocialRewardsRoundCount } from "@/app/lib/api/getSocialRewardsRoundCount";
@@ -7,6 +5,9 @@ import { getSocialRewardsRound } from "@/app/lib/api/getSocialRewardsRound";
 import { SocialRound } from "@/app/earn/components/SocialRound";
 import { getSocialRewardsAmount } from "@/app/lib/api/getSocialRewardsAmount";
 import { getSocialRewardsRoundDuration } from "@/app/lib/api/getSocialRewardsRoundDuration";
+
+// Reads live onchain/DB data on every request
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const id = await getSocialRewardsRoundCount();

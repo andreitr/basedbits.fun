@@ -6,7 +6,7 @@ import {
   sendEthForBbitsSwap,
 } from "@/app/lib/contracts/bbitsVault";
 import { TimeoutError, withTimeout } from "@/app/lib/utils/asyncUtils";
-import { createBaseProvider } from "@/app/lib/Web3Configs";
+import { createBaseProvider } from "@/app/lib/ethersProviders";
 import {
   Contract,
   ContractTransactionResponse,

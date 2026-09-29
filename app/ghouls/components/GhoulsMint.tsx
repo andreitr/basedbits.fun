@@ -12,17 +12,27 @@ import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { formatUnits } from "viem";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useWallet } from "@/app/lib/Web3Provider";
+import { useChainId, useSwitchChain } from "wagmi";
 import { base } from "wagmi/chains";
 
 const buttonClass =
   "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular w-full";
 
-export const GhoulsMint = () => {
+interface Props {
+  // Server-read jackpot (USDC base units) so the sentence below renders complete and doesn't reflow once data loads
+  initialTopPrize?: string;
+}
+
+export const GhoulsMint = ({ initialTopPrize }: Props) => {
   const { data: drawings } = useGhoulsDrawings();
-  const jackpot = drawings
-    ? `$${Math.round(Number(formatUnits(drawings.topPrize, 6))).toLocaleString()}`
-    : undefined;
+  const topPrize =
+    drawings?.topPrize ??
+    (initialTopPrize ? BigInt(initialTopPrize) : undefined);
+  const jackpot =
+    topPrize !== undefined
+      ? `$${Math.round(Number(formatUnits(topPrize, 6))).toLocaleString("en-US")}`
+      : undefined;
 
   return (
     <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
@@ -41,13 +51,14 @@ export const GhoulsMint = () => {
         />
       </Link>
       <div className="flex flex-col sm:flex-row w-full gap-5">
-        <div>
+        <div className="shrink-0">
           <Image
             src="/images/lucky_ghoul.svg"
             alt="Lucky Ghoul"
-            width={100}
-            height={100}
-            className="w-full sm:w-[300px] rounded-lg"
+            width={300}
+            height={300}
+            className="w-full sm:w-[300px] h-auto rounded-lg"
+            priority
           />
         </div>
         <div className="flex flex-col gap-2 w-full">
@@ -114,7 +125,7 @@ const MintButton = () => {
   const { setOpen } = useModal();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
-  const { isConnected } = useAccount();
+  const { isReady, isConnected } = useWallet();
   const { data: stats } = useGhoulsStats();
   const refresh = useRefreshGhouls();
   const [quantity, setQuantity] = useState(1);
@@ -123,6 +134,15 @@ const MintButton = () => {
     toast.success("Ghoul minted!");
     refresh();
   });
+
+  // Every state renders one 50px row so the card never changes height as the wallet and stats load
+  if (!isReady) {
+    return (
+      <Button className={buttonClass} loading>
+        Loading...
+      </Button>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -179,8 +199,8 @@ const MintButton = () => {
       : `Mint ${quantity} for ${Number(cost).toFixed(6)}Ξ`;
 
   return (
-    <div className="flex sm:flex-row flex-col gap-4 items-center w-full">
-      <div className="flex items-center border border-[#FEC94F]/30 rounded-lg h-[50px] w-full sm:w-auto justify-center">
+    <div className="flex flex-row gap-3 sm:gap-4 items-center w-full">
+      <div className="flex shrink-0 items-center border border-[#FEC94F]/30 rounded-lg h-[50px] justify-center">
         <button
           className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
           onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -200,8 +220,8 @@ const MintButton = () => {
       <Button
         className={
           busy
-            ? "bg-[#FEC94F]/10 font-regular w-full sm:w-auto flex-1 animate-pulse cursor-wait"
-            : "bg-[#FEC94F]/10 font-regular w-full sm:w-auto flex-1"
+            ? "bg-[#FEC94F]/10 font-regular flex-1 min-w-0 max-sm:px-2 max-sm:text-base animate-pulse cursor-wait"
+            : "bg-[#FEC94F]/10 font-regular flex-1 min-w-0 max-sm:px-2 max-sm:text-base"
         }
         onClick={() => mint(Math.min(quantity, maxQuantity), stats.mintPrice)}
         loading={busy}
