@@ -14,8 +14,8 @@ import { base } from "viem/chains";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-// Vercel crons run on UTC, so the job is scheduled at 17:00 and 18:00 UTC and only acts on the run that lands
-// on 10:00 in Los Angeles (PDT in summer, PST in winter). A retry at :05 catches a late Megapot settlement or a
+// Vercel crons run on UTC, so the job is scheduled at 17:05 and 18:05 UTC and only acts on the run that lands
+// on 10:05 in Los Angeles (PDT in summer, PST in winter). A retry at :10 catches a late Megapot settlement or a
 // failed first run; the keeper is idempotent, so a retry after a good run does nothing. Pass ?force=1 to run
 // outside that hour and ?dry=1 to simulate without sending transactions.
 const KEEPER_TIME_ZONE = "America/Los_Angeles";
