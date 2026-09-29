@@ -27,7 +27,7 @@ export const GhoulsMint = () => {
   return (
     <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">
       <Link
-        href="https://megapot.io"
+        href="https://megapot.io/r/U57WDQ"
         target="_blank"
         rel="noopener noreferrer"
         className="absolute top-8 right-8 sm:top-5 sm:right-5"
@@ -60,7 +60,7 @@ export const GhoulsMint = () => {
             Ghouls summon cursed numbers every drawing, chasing a{" "}
             {jackpot ? `${jackpot} ` : ""}
             <Link
-              href="https://megapot.io"
+              href="https://megapot.io/r/U57WDQ"
               className="underline hover:text-white"
               target="_blank"
               rel="noopener noreferrer"

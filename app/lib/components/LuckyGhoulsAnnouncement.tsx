@@ -27,7 +27,7 @@ export const LuckyGhoulsAnnouncement = () => {
           <div className="text-sm text-gray-400 pt-2">
             Mint proceeds flow into a shared treasury that chases the{" "}
             <Link
-              href="https://megapot.io"
+              href="https://megapot.io/r/U57WDQ"
               className="underline hover:text-white"
               target="_blank"
             >
