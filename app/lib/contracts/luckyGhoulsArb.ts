@@ -1,4 +1,4 @@
-import { baseProvider } from "@/app/lib/Web3Configs";
+import { baseProvider } from "@/app/lib/ethersProviders";
 import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
 import { WETH_ADDRESS } from "@/app/lib/contracts/bbitsVault";
 import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
