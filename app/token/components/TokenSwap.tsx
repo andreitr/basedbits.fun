@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import rightArrow from "@/app/lib/icons/arrow-right.svg";
 import { ApproveNFT } from "@/app/token/components/ApproveNFT";
 import { TokenList } from "@/app/token/components/TokenList";
 import { useState } from "react";
@@ -19,6 +17,11 @@ const sectionClass =
 const REDEEM = "redeem";
 const DEPOSIT = "deposit";
 
+const TAB_LABELS: Record<string, string> = {
+  [DEPOSIT]: "Swap NFT to BBITS",
+  [REDEEM]: "Swap BBITS to NFT",
+};
+
 export const TokenSwap = () => {
   const [tab, setTab] = useState(DEPOSIT);
   const { isReady, isConnected, address } = useWallet();
@@ -28,9 +31,9 @@ export const TokenSwap = () => {
     return (
       <div className={`${sectionClass} h-[300px] overflow-hidden`}>
         <div className="flex flex-col gap-6 container max-w-screen-lg">
-          <div className="flex flex-row gap-2 animate-pulse">
-            <div className="w-full h-[112px] rounded-lg bg-[#ABBEAC]" />
-            <div className="w-full h-[112px] rounded-lg bg-[#ABBEAC] bg-opacity-20" />
+          <div className="flex flex-row gap-3 animate-pulse">
+            <div className="w-40 h-10 rounded-md bg-black bg-opacity-30" />
+            <div className="w-40 h-10 rounded-md bg-black bg-opacity-10" />
           </div>
           <NFTGridSkeleton count={5} tileClassName="bg-[#ABBEAC]" />
         </div>
@@ -57,59 +60,16 @@ export const TokenSwap = () => {
   return (
     <div className={sectionClass}>
       <div className="flex flex-col gap-6 container max-w-screen-lg">
-        <div className="flex flex-row gap-2 justify-center">
-          <div
-            className={`w-full cursor-pointer bg-[#ABBEAC] rounded-lg p-4 items-center ${tab === REDEEM ? "bg-opacity-20" : ""}`}
-            onClick={() => setTab(DEPOSIT)}
-          >
-            <div className="flex flex-row justify-center items-center gap-4">
-              <Image
-                className={`w-[70px] h-[70px] rounded-full border-4 z-10 ${tab === REDEEM ? "border-white" : "border-black"}`}
-                src="https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/base-mainnet/9dc7b7770bb8c29a9135fcab38ff39e5"
-                width={80}
-                height={80}
-                alt="Token"
-              />
-              <Image
-                src={rightArrow}
-                alt="Arrow"
-                className={`lg:block hidden ${tab === REDEEM ? "invert" : ""}`}
-              />
-              <Image
-                className={`w-[70px] h-[70px] rounded-full border-4 lg:ml-0 ml-[-30px] z-0 ${tab === REDEEM ? "border-white" : "border-black"}`}
-                src="/images/icon.png"
-                width={80}
-                height={80}
-                alt="Token"
-              />
-            </div>
-          </div>
-          <div
-            className={`w-full cursor-pointer bg-[#ABBEAC] rounded-lg p-4 items-center ${tab === DEPOSIT ? "bg-opacity-20" : ""}`}
-            onClick={() => setTab(REDEEM)}
-          >
-            <div className="flex flex-row justify-center items-center gap-4">
-              <Image
-                className={`w-[70px] h-[70px] rounded-full border-4 z-10 ${tab === DEPOSIT ? "border-white" : "border-black"}`}
-                src="/images/icon.png"
-                width={80}
-                height={80}
-                alt="Token"
-              />
-              <Image
-                src={rightArrow}
-                alt="Arrow"
-                className={`lg:block hidden ${tab === DEPOSIT ? "invert" : ""}`}
-              />
-              <Image
-                className={`w-[70px] h-[70px] rounded-full border-4 lg:ml-0 ml-[-30px] z-0 ${tab === DEPOSIT ? "border-white" : "border-black"}`}
-                src="https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/base-mainnet/9dc7b7770bb8c29a9135fcab38ff39e5"
-                width={80}
-                height={80}
-                alt="Token"
-              />
-            </div>
-          </div>
+        <div className="flex flex-wrap justify-start gap-3">
+          {[DEPOSIT, REDEEM].map((t) => (
+            <button
+              key={t}
+              className={`text-white bg-black py-2 px-4 rounded-md ${tab === t ? "bg-opacity-70" : "bg-opacity-30"}`}
+              onClick={() => setTab(t)}
+            >
+              {TAB_LABELS[t]}
+            </button>
+          ))}
         </div>
 
         {tab === REDEEM && (

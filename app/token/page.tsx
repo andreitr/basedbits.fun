@@ -6,17 +6,17 @@ import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import Link from "next/link";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { TokenSwap } from "@/app/token/components/TokenSwap";
-import { TokenPrice } from "@/app/lib/components/TokenPrice";
-import { fetchTokenPrice } from "@/app/lib/utils/uniswap";
+import { getTokenPriceHistory } from "@/app/lib/api/getTokenPriceHistory";
+import { TokenPriceChart } from "@/app/token/components/TokenPriceChart";
 
-// Static page regenerated in the background so visitors don't wait on three RPC reads per request
+// Static page regenerated in the background so visitors don't wait on the RPC and price-history reads per request
 export const revalidate = 60;
 
 export default async function Page() {
-  const [tokens, burned, price] = await Promise.all([
+  const [tokens, burned, history] = await Promise.all([
     getTokenTotalSupply(),
     getUserTokenBalance("0x000000000000000000000000000000000000dEaD"),
-    fetchTokenPrice(),
+    getTokenPriceHistory(),
   ]);
 
   return (
@@ -32,6 +32,8 @@ export default async function Page() {
                 {humanizeNumber(Math.round(Number(formatUnits(burned))))} Burned
               </span>
             </div>
+
+            <TokenPriceChart history={history} />
 
             <div className="text-gray-600 items-center">
               Each Based Bit NFT can be exchanged for 1024 BBITS tokens, and
@@ -51,13 +53,6 @@ export default async function Page() {
               >
                 traded on Uniswap.
               </Link>
-            </div>
-            <div className="text-gray-600">
-              Exchange Rate:{" "}
-              <span className="font-semibold">
-                <TokenPrice initialAmount={price} />
-              </span>{" "}
-              for 1024 BBITS
             </div>
           </div>
         </div>
