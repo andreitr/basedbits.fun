@@ -49,21 +49,21 @@ export const maxDuration = 300;
 // All figures are wei of ETH/WETH.
 
 const MARGIN_BPS = BigInt(800); // 8% of the redeem price
-const MIN_MARGIN_WEI = BigInt("50000000000000"); // 0.00005 ETH
-const GAS_BUFFER_WEI = BigInt("40000000000000"); // 0.00004 ETH — floor; see effectiveGasBuffer()
+const MIN_MARGIN_WEI = BigInt("10000000000000"); // 0.00001 ETH
+const GAS_BUFFER_WEI = BigInt("5000000000000"); // 0.000005 ETH — floor; see effectiveGasBuffer()
 const ESTIMATED_GAS = BigInt(300_000); // fulfil a listing + burn
 
 // Ceiling on what the bot pays for one Ghoul, whatever the redeem price reads.
-const MAX_SPEND_WEI = BigInt("10000000000000000"); // 0.01 ETH
+const MAX_SPEND_WEI = BigInt("1000000000000000"); // 0.001 ETH — ~6x redeem at launch
 
 // The WETH the bot keeps on hand to fund its offer. The offer is sized to it: seed more
 // WETH to bid on more Ghouls. Whatever a burn pays beyond restoring it is banked margin,
 // held as native ETH. Set this to the amount actually seeded.
-const TARGET_WETH_FLOAT_WEI = BigInt("20000000000000000"); // 0.02 ETH
+const TARGET_WETH_FLOAT_WEI = BigInt("5000000000000000"); // 0.005 ETH — seeded 2026-09-30 (0.005 WETH + 0.002 native)
 
 // Native ETH kept on hand for gas. Topped up by unwrapping WETH, never below what a bid
 // needs.
-const NATIVE_GAS_RESERVE_WEI = BigInt("3000000000000000"); // 0.003 ETH
+const NATIVE_GAS_RESERVE_WEI = BigInt("1000000000000000"); // 0.001 ETH
 
 // Below this, a wrap or unwrap costs more gas than it moves.
 const MIN_WORTHWHILE_WEI = GAS_BUFFER_WEI;
