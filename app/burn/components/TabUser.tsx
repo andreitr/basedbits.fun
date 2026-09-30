@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
-import { useAccount } from "wagmi";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { ConnectAction } from "@/app/lib/components/ConnectAction";
 import Link from "next/link";
+import {
+  NFTGridSkeleton,
+  NFTImage,
+  NFTTile,
+  nftGridClass,
+} from "@/app/lib/components/NFTGrid";
+import { useWallet } from "@/app/lib/Web3Provider";
+
+const tileClass = "bg-black bg-opacity-90";
 
 interface Props {
   contract: string;
@@ -12,7 +20,7 @@ interface Props {
 export const TabUser = ({ contract }: Props) => {
   const [pageKey, setPageKey] = useState<string>("");
   const [tokens, setTokens] = useState<AlchemyToken[]>([]);
-  const { isConnected, address } = useAccount();
+  const { isReady, isConnected, address } = useWallet();
 
   const { data, isPlaceholderData, isLoading } = useGetOwnerNFTs({
     address: address,
@@ -35,18 +43,23 @@ export const TabUser = ({ contract }: Props) => {
     }
   }, [data, pageKey]);
 
+  if (!isReady) {
+    return <NFTGridSkeleton count={5} tileClassName={tileClass} />;
+  }
+
   if (!isConnected) {
     return <ConnectAction action={"to see your NFTs"} />;
   }
 
-  if (isLoading) {
-    return "Loading ...";
+  // Tokens are appended in an effect, so the first render with data still has none; keep the skeleton up until then
+  if (isLoading || (tokens.length === 0 && !!data?.ownedNfts?.length)) {
+    return <NFTGridSkeleton tileClassName={tileClass} />;
   }
 
   if (data?.totalCount === 0) {
     return (
       <div className="text-[#677467] text-sm">
-        There are no Punks in your wallet! Mint one now 👆
+        There are no Burned Bits in your wallet! Mint one now 👆
       </div>
     );
   }
@@ -54,20 +67,12 @@ export const TabUser = ({ contract }: Props) => {
   return (
     <>
       <div>
-        <div className="grid justify-items-stretch gap-4 lg:grid-cols-5 grid-cols-2">
+        <div className={nftGridClass}>
           {tokens.map((nft, index) => {
             return (
-              <div
-                key={index}
-                className="flex flex-col bg-black bg-opacity-90 p-2 rounded-md items-center justify-center"
-              >
-                <div
-                  className="bg-cover bg-center bg-no-repeat lg:w-[175px] lg:h-[175px] w-[115px] h-[115px] rounded-lg"
-                  style={{
-                    backgroundImage: `url(${nft.image.originalUrl})`,
-                  }}
-                ></div>
-                <div className="mt-2 hover:underline text-white">
+              <NFTTile key={index} className={tileClass}>
+                <NFTImage src={nft.image.originalUrl} alt={nft.name} />
+                <div className="mt-2 hover:underline text-white truncate max-w-full">
                   <Link
                     href={`https://opensea.io/assets/base/${contract}/${nft.tokenId}`}
                     target="_blank"
@@ -75,7 +80,7 @@ export const TabUser = ({ contract }: Props) => {
                     {nft.name}
                   </Link>
                 </div>
-              </div>
+              </NFTTile>
             );
           })}
         </div>

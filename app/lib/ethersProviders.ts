@@ -1,5 +1,5 @@
 import { FetchRequest, JsonRpcProvider, Network } from "ethers";
-import { BASE_CHAIN_ID, baseRpcUrl } from "@/app/lib/Web3Configs";
+import { BASE_CHAIN_ID, baseRpcUrl } from "@/app/lib/rpcUrls";
 
 // ethers lives here, not in Web3Configs, so client bundles that only need RPC URLs or wagmi configs don't pull it in
 

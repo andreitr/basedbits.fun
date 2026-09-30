@@ -10,10 +10,12 @@ const minter = new Contract(
   baseProvider,
 );
 
-export const fetchMintPrice = async () => {
+// Price in wei as a string so it passes cleanly from the server page and the action to client props/state
+export const fetchMintPrice = async (): Promise<string | undefined> => {
   try {
     const mintPriceFn = minter.getFunction("mintPriceInWETH");
-    return await mintPriceFn.staticCall();
+    const price: bigint = await mintPriceFn.staticCall();
+    return price.toString();
   } catch (error) {
     console.error("Error fetching price:", error);
   }

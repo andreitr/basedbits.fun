@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
-import { formatUnits } from "ethers";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { formatUnits } from "viem";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BurnedBitsABI } from "@/app/lib/abi/BurnedBits.abi";
@@ -13,12 +9,17 @@ import { fetchMintPrice } from "@/app/burn/api/fetchMintPrice";
 import { useRevalidateTags } from "@/app/lib/hooks/useRevalidateTags";
 import { useSocialDisplay } from "@/app/lib/hooks/useSocialDisplay";
 import { Button } from "@/app/lib/components/Button";
+import { useWallet } from "@/app/lib/Web3Provider";
 import { useModal } from "connectkit";
 
-export const MintButton = () => {
+interface Props {
+  initialMintPrice?: string;
+}
+
+export const MintButton = ({ initialMintPrice }: Props) => {
   const { setOpen } = useModal();
   const [refresh, setRefresh] = useState(false);
-  const { isConnected, address } = useAccount();
+  const { isReady, isConnected, address } = useWallet();
   const { data, writeContract } = useWriteContract();
 
   const { isFetching, isSuccess } = useWaitForTransactionReceipt({
@@ -33,23 +34,27 @@ export const MintButton = () => {
 
   const { call: revalidateTags } = useRevalidateTags();
 
-  const [mintPrice, setMintPrice] = useState<string>();
+  const [mintPrice, setMintPrice] = useState<string | undefined>(
+    initialMintPrice,
+  );
 
   useEffect(() => {
     const fetchPrice = async () => {
       try {
         const amount = await fetchMintPrice();
-        setMintPrice(amount);
+        if (amount) setMintPrice(amount);
       } catch (error) {
         console.error("Error fetching price:", error);
       }
     };
-    fetchPrice().then();
+
+    // The server already supplied a fresh price; only poll from here on
+    if (!initialMintPrice) fetchPrice().then();
     const interval = setInterval(fetchPrice, 60000);
 
     // Clean up interval on component unmount
     return () => clearInterval(interval);
-  }, []);
+  }, [initialMintPrice]);
 
   const mint = () => {
     if (!mintPrice) {
@@ -60,7 +65,7 @@ export const MintButton = () => {
       abi: BurnedBitsABI,
       address: process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS as `0x${string}`,
       functionName: "mint",
-      value: mintPrice as any,
+      value: BigInt(mintPrice),
     });
   };
 
@@ -74,8 +79,17 @@ export const MintButton = () => {
   }, [isSuccess, refresh]);
 
   const label = mintPrice
-    ? `Mint for ${formatUnits(mintPrice, 18).slice(0, 7)}Ξ`
+    ? `Mint for ${formatUnits(BigInt(mintPrice), 18).slice(0, 7)}Ξ`
     : `Calculating mint price...`;
+
+  // Same 50px button in every state so the card never changes height while the wallet restores
+  if (!isReady) {
+    return (
+      <Button className={"bg-black/20 text-white/60 font-regular"} loading>
+        Loading...
+      </Button>
+    );
+  }
 
   if (!isConnected) {
     return (

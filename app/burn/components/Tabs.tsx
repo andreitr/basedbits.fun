@@ -14,7 +14,7 @@ export const Tabs = () => {
 
   return (
     <div>
-      <div className="flex justify-start gap-3">
+      <div className="flex flex-wrap justify-start gap-3">
         <button
           className={`text-white bg-black py-2 px-4 rounded-md ${tab === TABS.USER ? "bg-opacity-30" : "bg-opacity-70"}`}
           onClick={() => setTab(TABS.COLLECTION)}
