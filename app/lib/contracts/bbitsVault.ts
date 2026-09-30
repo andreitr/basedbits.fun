@@ -42,7 +42,9 @@ const WETH_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function allowance(address owner, address spender) view returns (uint256)",
   "function approve(address spender, uint256 amount) returns (bool)",
-  // Unwrap back to native ETH, to repay what a sweep spent in native currency.
+  // Wrap native ETH above the gas reserve into the WETH that funds bids.
+  "function deposit() payable",
+  // Unwrap to native ETH, for gas or to pay a listing priced in native currency.
   "function withdraw(uint256 amount)",
 ] as const;
 

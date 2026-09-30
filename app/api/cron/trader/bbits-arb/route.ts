@@ -54,9 +54,10 @@ const MAX_SPEND_WEI = BigInt("3000000000000000"); // 0.003 ETH — one NFT
 // Set this to the amount actually seeded.
 const TARGET_ETH_FLOAT_WEI = BigInt("10000000000000000"); // 0.010 ETH — reset 2026-09-30 after a manual WETH withdrawal (0.008 WETH + 0.002 native)
 
-// Native ETH kept on hand for gas. Topped up by unwrapping WETH, never by selling
-// BBITS directly, and never below what a bid needs.
-const NATIVE_GAS_RESERVE_WEI = BigInt("1000000000000000"); // 0.001 ETH
+// Native ETH kept on hand for gas — about $1 at ~$2,700/ETH, hundreds of Base
+// transactions. Anything above it is wrapped into WETH to fund bids; below it, topped up
+// by unwrapping WETH, never by selling BBITS directly, and never below what a bid needs.
+const NATIVE_GAS_RESERVE_WEI = BigInt("400000000000000"); // 0.0004 ETH
 
 // Below this, a swap or unwrap costs more gas than it moves. Used as the reprice
 // threshold, the float-deficit floor, and the gas top-up floor.
@@ -254,10 +255,12 @@ const restoreFloat = async (
 };
 
 /**
- * Keep enough native ETH for gas by unwrapping WETH — the only direction the bot ever
- * converts. Never unwraps below what a bid needs, so a gas top-up can't defeat bidding.
+ * Hold native ETH at the gas reserve. The excess is wrapped into WETH, since bids can
+ * only be funded from WETH; a shortfall is unwrapped, but never below what a bid needs,
+ * so a gas top-up can't defeat bidding. A sweep of a native-priced listing unwraps what
+ * it needs at the time (see unwrapForSweep).
  */
-const ensureGasReserve = async (
+const balanceNative = async (
   k: Keeper,
   maxPayWei: bigint,
 ): Promise<string | null> => {
@@ -265,6 +268,13 @@ const ensureGasReserve = async (
     k.weth.balanceOf(k.bot),
     k.provider.getBalance(k.bot),
   ]);
+  const excess = nativeBalance - NATIVE_GAS_RESERVE_WEI;
+  if (excess >= MIN_WORTHWHILE_WEI) {
+    const tx = await k.weth.deposit({ value: excess });
+    await tx.wait();
+    return `settle:wrapped:${formatEther(excess)}-eth`;
+  }
+
   const deficit = NATIVE_GAS_RESERVE_WEI - nativeBalance;
   if (deficit < MIN_WORTHWHILE_WEI) return null;
 
@@ -296,9 +306,26 @@ const settle = async (
   const done: string[] = [];
   const restored = await restoreFloat(k, maxSellBbits, allowPartial);
   if (restored) done.push(restored);
-  const topped = await ensureGasReserve(k, maxPayWei);
-  if (topped) done.push(topped);
+  const balanced = await balanceNative(k, maxPayWei);
+  if (balanced) done.push(balanced);
   return done;
+};
+
+/**
+ * Unwrap enough WETH to pay a native-priced listing plus gas. Bids keep the float in
+ * WETH, so native ETH is normally just the gas reserve; whatever a failed sweep leaves
+ * unwrapped is wrapped back by the next tick's balanceNative.
+ */
+const unwrapForSweep = async (
+  k: Keeper,
+  neededNativeWei: bigint,
+): Promise<string | null> => {
+  const nativeBalance = await k.provider.getBalance(k.bot);
+  if (nativeBalance >= neededNativeWei) return null;
+  const amount = neededNativeWei - nativeBalance;
+  const tx = await k.weth.withdraw(amount);
+  await tx.wait();
+  return `sweep:unwrapped:${formatEther(amount)}-eth`;
 };
 
 export async function GET(req: NextRequest) {
@@ -534,6 +561,12 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Idle native ETH above the gas reserve can't back a bid, so it is wrapped into the
+    // WETH float every tick. Placed after the unprofitable cancel: a write that throws
+    // must not reach the outer catch while an unjustified offer is still live.
+    const balanced = await balanceNative(k, maxPayWei);
+    if (balanced) actions.push(balanced);
+
     // --- Step 1: market state -----------------------------------------------
     const [floor, wethAvailable, nativeAvailable]: [
       Floor | null,
@@ -630,12 +663,15 @@ export async function GET(req: NextRequest) {
       // and BEFORE the resting bid is touched: cancelling first and then discovering
       // the sweep is unfundable would destroy a healthy offer for nothing.
       // Gas is always paid in native ETH, so it is charged against the native balance
-      // regardless of which currency the listing itself is priced in.
+      // regardless of which currency the listing itself is priced in. A native-priced
+      // listing can draw on WETH too: the shortfall is unwrapped just before buying.
       const affordable =
         floor.currency === "weth"
           ? wethAvailable >= floor.totalCostWei &&
             nativeAvailable >= gasBufferWei
-          : nativeAvailable >= floor.totalCostWei + gasBufferWei;
+          : nativeAvailable >= gasBufferWei &&
+            wethAvailable + nativeAvailable >=
+              floor.totalCostWei + gasBufferWei;
       if (!affordable) {
         console.error(`Insufficient ${floor.currency} balance to sweep`);
         return Response.json({
@@ -656,6 +692,14 @@ export async function GET(req: NextRequest) {
             executed: "ABORT_CANCEL_UNCONFIRMED",
           });
         }
+      }
+
+      if (floor.currency === "native") {
+        const unwrapped = await unwrapForSweep(
+          k,
+          floor.totalCostWei + gasBufferWei,
+        );
+        if (unwrapped) actions.push(unwrapped);
       }
 
       // Only the purchase itself is caught here. Everything after it is post-purchase
@@ -693,8 +737,9 @@ export async function GET(req: NextRequest) {
 
       if (!owned) {
         // Listing raced away or the fill reverted. The hard cancel already happened,
-        // so re-post a bid rather than leaving the bot with no order at all.
-        if (canFundBid) {
+        // so re-post a bid rather than leaving the bot with no order at all. WETH is
+        // re-read: an unwrap for the sweep may have spent what canFundBid counted.
+        if ((await weth.balanceOf(bot)) >= maxPayWei) {
           await postOffer(
             client,
             BBITS,

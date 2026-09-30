@@ -38,7 +38,9 @@ export const maxDuration = 300;
 // doesn't move the per-token payout, so the bot can bid for several Ghouls at once. The
 // payout only moves when the daily keeper (/api/cron/ghouls) buys tickets or claims
 // winnings, so the bid is repriced once a day, right after it. The ticks in between
-// burn fills, sweep, re-wrap the float and top the offer back up at the same price.
+// burn fills, sweep, wrap the proceeds into WETH and top the offer back up at the same
+// price. Every wei above the gas reserve is kept as WETH, so profit compounds straight
+// into offer size.
 //
 // Pricing uses the ETH share only. The USDC share a burn also pays stays in the wallet
 // as extra margin.
@@ -56,20 +58,17 @@ const ESTIMATED_GAS = BigInt(300_000); // fulfil a listing + burn
 // Ceiling on what the bot pays for one Ghoul, whatever the redeem price reads.
 const MAX_SPEND_WEI = BigInt("1000000000000000"); // 0.001 ETH — ~6x redeem at launch
 
-// The WETH the bot keeps on hand to fund its offer. The offer is sized to it: seed more
-// WETH to bid on more Ghouls. Whatever a burn pays beyond restoring it is banked margin,
-// held as native ETH. Set this to the amount actually seeded.
-const TARGET_WETH_FLOAT_WEI = BigInt("5000000000000000"); // 0.005 ETH — seeded 2026-09-30 (0.005 WETH + 0.002 native)
-
-// Native ETH kept on hand for gas. Topped up by unwrapping WETH, never below what a bid
-// needs.
-const NATIVE_GAS_RESERVE_WEI = BigInt("1000000000000000"); // 0.001 ETH
+// Native ETH kept on hand for gas — about $1 at ~$2,700/ETH, hundreds of Base
+// transactions. Everything above it is wrapped into the WETH that funds the offer, so
+// the offer is sized by the whole balance: seed more to bid on more Ghouls. Topped up by
+// unwrapping WETH, never below what a bid needs.
+const NATIVE_GAS_RESERVE_WEI = BigInt("400000000000000"); // 0.0004 ETH
 
 // Below this, a wrap or unwrap costs more gas than it moves.
 const MIN_WORTHWHILE_WEI = GAS_BUFFER_WEI;
 
-// Safety ceiling on units per offer, against a bad price read. The float is what sizes
-// the offer in practice.
+// Safety ceiling on units per offer, against a bad price read. The WETH balance is what
+// sizes the offer in practice.
 const MAX_UNITS = BigInt(20);
 
 // Cheapest listings to buy in one run.
@@ -141,10 +140,10 @@ const burnAll = async (k: Keeper, ids: string[]): Promise<string[]> => {
 };
 
 /**
- * Bring the balances back to their targets after burns and fills: fills pull WETH, burns
- * pay native ETH. Wrap native ETH above the gas reserve back into the WETH float; if gas
- * is short instead, unwrap WETH, but never below what one bid needs. Native ETH beyond
- * both targets is banked margin and stays put.
+ * Hold native ETH at the gas reserve after burns and fills: fills pull WETH, burns pay
+ * native ETH. Everything above the reserve — the bid cost a burn repays and the margin on
+ * top — is wrapped into WETH to fund more bids. If gas is short instead, unwrap WETH, but
+ * never below what one bid needs.
  */
 const settle = async (k: Keeper, maxPayWei: bigint): Promise<string[]> => {
   const [wethBalance, nativeBalance]: bigint[] = await Promise.all([
@@ -152,11 +151,7 @@ const settle = async (k: Keeper, maxPayWei: bigint): Promise<string[]> => {
     k.provider.getBalance(k.bot),
   ]);
 
-  const spareNative =
-    nativeBalance > NATIVE_GAS_RESERVE_WEI
-      ? nativeBalance - NATIVE_GAS_RESERVE_WEI
-      : BigInt(0);
-  const wrap = min(TARGET_WETH_FLOAT_WEI - wethBalance, spareNative);
+  const wrap = nativeBalance - NATIVE_GAS_RESERVE_WEI;
   if (wrap >= MIN_WORTHWHILE_WEI) {
     const tx = await k.weth.deposit({ value: wrap });
     await tx.wait();
@@ -363,14 +358,26 @@ export async function GET(req: NextRequest) {
         provider.getBalance(bot),
       ]);
       // Gas is always paid in native ETH, whichever currency the listing is priced in.
+      // A native-priced listing can draw on WETH too, since that is where the balance
+      // is kept: the shortfall is unwrapped just before buying, and whatever a missed
+      // sweep leaves unwrapped is wrapped back by the next settle.
       const affordable =
         floor.currency === "weth"
           ? wethAvailable >= floor.totalCostWei &&
             nativeAvailable >= gasBufferWei
-          : nativeAvailable >= floor.totalCostWei + gasBufferWei;
+          : nativeAvailable >= gasBufferWei &&
+            wethAvailable + nativeAvailable >=
+              floor.totalCostWei + gasBufferWei;
       if (!affordable) {
         actions.push(`sweep:unaffordable:${floor.tokenId}`);
         break;
+      }
+      const neededNative = floor.totalCostWei + gasBufferWei;
+      if (floor.currency === "native" && nativeAvailable < neededNative) {
+        const unwrap = neededNative - nativeAvailable;
+        const tx = await weth.withdraw(unwrap);
+        await tx.wait();
+        actions.push(`sweep:unwrapped:${formatEther(unwrap)}-eth`);
       }
 
       try {
