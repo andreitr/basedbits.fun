@@ -42,7 +42,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 // --- Strategy constants -----------------------------------------------------
-// All figures are wei of ETH/WETH. Parity is ~0.00248 ETH per NFT at time of writing.
+// All figures are wei of ETH/WETH. Parity is ~0.00338 ETH per NFT at time of writing.
 
 const TARGET_MARGIN_WEI = BigInt("200000000000000"); // 0.0002 ETH — ~8% of parity
 const GAS_BUFFER_WEI = BigInt("40000000000000"); // 0.00004 ETH — floor; see effectiveGasBuffer()
@@ -56,7 +56,7 @@ const TARGET_ETH_FLOAT_WEI = BigInt("10000000000000000"); // 0.010 ETH — reset
 
 // Native ETH kept on hand for gas. Topped up by unwrapping WETH, never by selling
 // BBITS directly, and never below what a bid needs.
-const NATIVE_GAS_RESERVE_WEI = BigInt("5000000000000000"); // 0.005 ETH
+const NATIVE_GAS_RESERVE_WEI = BigInt("1000000000000000"); // 0.001 ETH
 
 // Below this, a swap or unwrap costs more gas than it moves. Used as the reprice
 // threshold, the float-deficit floor, and the gas top-up floor.
@@ -71,7 +71,7 @@ const SLIPPAGE_BPS = BigInt(100); // 1% on the exit swap
 const ESTIMATED_GAS = BigInt(600_000); // fulfill + approve + exchange + swap
 
 // Guard against a corrupted price read — the one failure that can overbid real money.
-const SANITY_PARITY_WEI = BigInt("2481770469241832"); // observed parity
+const SANITY_PARITY_WEI = BigInt("3380382623026833"); // observed parity 2026-09-30
 const SANITY_BAND_BPS = BigInt(5_000); // accept +/- 50%
 
 // Short expiry so a dead cron leaves no stale bid resting at a price that has drifted.
