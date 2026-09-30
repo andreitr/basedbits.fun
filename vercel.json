@@ -17,10 +17,6 @@
       "schedule": "30 * * * *"
     },
     {
-      "path": "/api/cron/megapot",
-      "schedule": "30 21 * * *"
-    },
-    {
       "path": "/api/cron/trader/mint",
       "schedule": "0 20 * * *"
     },

@@ -1,4 +1,8 @@
 import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
+import {
+  MEGAPOT_V2_JACKPOT_ADDRESS,
+  MegapotV2JackpotABI,
+} from "@/app/lib/abi/MegapotV2.abi";
 import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
 import {
   KEEPER_HOUR,
@@ -12,7 +16,7 @@ import {
 import { revertName } from "@/app/lib/luckyghouls/revertName";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { NextRequest } from "next/server";
-import { createWalletClient, Hex, http } from "viem";
+import { createWalletClient, formatUnits, Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
 
@@ -23,6 +27,9 @@ export const maxDuration = 300;
 // on 10:05 in Los Angeles (PDT in summer, PST in winter). A retry at :10 catches a late Megapot settlement or a
 // failed first run; the keeper is idempotent, so a retry after a good run does nothing. Pass ?force=1 to run
 // outside that hour and ?dry=1 to simulate without sending transactions.
+//
+// Each run: claims settled drawings, buys the current drawing's tickets, then claims the Megapot referral fees
+// that the burner wallet (LuckyGhouls' megapotReferrer) earns on those tickets.
 
 // buyTickets stops cleanly when it nears its gas reserve and resumes on the next call
 const MAX_BUY_CALLS = 5;
@@ -38,6 +45,17 @@ const EXPECTED_BUY_REVERTS = new Set([
 ]);
 
 const ghouls = { abi: LuckyGhoulsABI, address: LUCKY_GHOULS_ADDRESS } as const;
+const jackpot = {
+  abi: MegapotV2JackpotABI,
+  address: MEGAPOT_V2_JACKPOT_ADDRESS,
+} as const;
+
+const walletFor = (pk: string) =>
+  createWalletClient({
+    account: privateKeyToAccount((pk.startsWith("0x") ? pk : `0x${pk}`) as Hex),
+    chain: base,
+    transport: http(baseRpcUrl),
+  });
 
 const describe = (error: unknown) =>
   revertName(error) ??
@@ -66,22 +84,16 @@ export async function GET(req: NextRequest) {
   let failed = false;
 
   try {
-    const pk = process.env.EXECUTER_BOT_PK as string;
-    const account = privateKeyToAccount(
-      (pk.startsWith("0x") ? pk : `0x${pk}`) as Hex,
-    );
-    const wallet = createWalletClient({
-      account,
-      chain: base,
-      transport: http(baseRpcUrl),
-    });
+    const wallet = walletFor(process.env.EXECUTER_BOT_PK as string);
+    const { account } = wallet;
     const client = ghoulsPublicClient;
 
     const send = async (
       request: Parameters<typeof wallet.writeContract>[0],
+      from = wallet,
     ) => {
       if (dryRun) return "dry run, not sent";
-      const hash = await wallet.writeContract(request);
+      const hash = await from.writeContract(request);
       const receipt = await client.waitForTransactionReceipt({
         hash,
         timeout: RECEIPT_TIMEOUT_MS,
@@ -148,6 +160,30 @@ export async function GET(req: NextRequest) {
         log.push(`buyTickets skipped: ${describe(error)}`);
         break;
       }
+    }
+
+    // 3. Claim the burner wallet's Megapot referral fees; claimReferralFees pays msg.sender, so the burner signs
+    try {
+      const burner = walletFor(process.env.BURNER_BOT_PK as string);
+      const fees = await client.readContract({
+        ...jackpot,
+        functionName: "referralFees",
+        args: [burner.account.address],
+      });
+      if (fees === BigInt(0)) {
+        log.push("No referral fees to claim");
+      } else {
+        const { request } = await client.simulateContract({
+          ...jackpot,
+          account: burner.account,
+          functionName: "claimReferralFees",
+        });
+        const hash = await send(request, burner);
+        log.push(`Claimed ${formatUnits(fees, 6)} USDC referral fees: ${hash}`);
+      }
+    } catch (error) {
+      failed = true;
+      log.push(`Referral fee claim failed: ${describe(error)}`);
     }
   } catch (error) {
     failed = true;

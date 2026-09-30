@@ -8,6 +8,9 @@ export const MegapotV2JackpotABI = parseAbi([
   "function currentDrawingId() view returns (uint256)",
   "function getDrawingState(uint256 _drawingId) view returns ((uint256 prizePool, uint256 ticketPrice, uint256 edgePerTicket, uint256 referralWinShare, uint256 referralFee, uint256 globalTicketsBought, uint256 lpEarnings, uint256 drawingTime, uint256 winningTicket, uint8 ballMax, uint8 bonusballMax, address payoutCalculator, bool jackpotLock))",
   "function getTicketTierIds(uint256[] _ticketIds) view returns (uint256[] tierIds)",
+  "function referralFees(address) view returns (uint256)",
+  "function claimReferralFees()",
+  "error NoReferralFeesToClaim()",
 ]);
 
 export const MegapotV2PayoutCalculatorABI = parseAbi([
