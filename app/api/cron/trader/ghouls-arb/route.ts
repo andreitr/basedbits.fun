@@ -23,9 +23,10 @@ import {
   restingOfferQuantity,
   restingOfferUnitPriceWei,
 } from "@/app/lib/trader/openseaArb";
-import { Contract, formatEther, getAddress } from "ethers";
+import { Contract, MaxUint256, formatEther, getAddress } from "ethers";
 import { NextRequest } from "next/server";
 import { Chain, OpenSeaSDK } from "opensea-js";
+import { OPENSEA_CONDUIT_ADDRESS } from "opensea-js/lib/constants";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -166,6 +167,20 @@ const settle = async (k: Keeper, maxPayWei: bigint): Promise<string[]> => {
   const tx = await k.weth.withdraw(unwrap);
   await tx.wait();
   return [`settle:unwrapped:${formatEther(unwrap)}-eth`];
+};
+
+// Seaport pulls an offer's WETH through OpenSea's conduit, and OpenSea validates that
+// allowance when the offer is posted — without it the API rejects the order with "ERC20
+// insufficient allowance to conduit". Granted once, uncapped, like the BBITS bot's swap
+// allowance.
+const ensureConduitAllowance = async (k: Keeper, needed: bigint) => {
+  const allowance: bigint = await k.weth.allowance(
+    k.bot,
+    OPENSEA_CONDUIT_ADDRESS,
+  );
+  if (allowance >= needed) return;
+  const tx = await k.weth.approve(OPENSEA_CONDUIT_ADDRESS, MaxUint256);
+  await tx.wait();
 };
 
 // Hard-cancel and confirm on-chain. Returns whether the order is certainly dead.
@@ -523,6 +538,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await ensureConduitAllowance(k, postUnitPriceWei * postUnits);
     await postOffer(
       client,
       collection,

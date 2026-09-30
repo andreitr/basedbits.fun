@@ -6,6 +6,9 @@ import { Contract, Wallet } from "ethers";
 
 const WETH_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
+  // Seaport pulls offer fills through OpenSea's conduit; see ensureConduitAllowance.
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 amount) returns (bool)",
   // Wrap the native ETH a burn pays out back into the WETH the bid is funded from.
   "function deposit() payable",
   // Unwrap to native ETH when the gas reserve runs low.
