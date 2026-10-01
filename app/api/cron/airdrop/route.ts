@@ -6,8 +6,9 @@ import { createBaseProvider } from "@/app/lib/ethersProviders";
 import {
   Contract,
   formatUnits,
+  isError,
   parseUnits,
-  TransactionResponse,
+  Transaction,
   Wallet,
 } from "ethers";
 import { NextRequest } from "next/server";
@@ -24,6 +25,80 @@ const DAILY_AIRDROP_WEI = parseUnits(DAILY_AIRDROP_AMOUNT.toString(), 18);
 const RPC_TIMEOUT_MS = 20_000;
 const CONFIRMATION_TIMEOUT_MS = 90_000;
 
+// Sent back to back, only ~4 transfers per burst were accepted and every later
+// one was rejected until a block (2 s on Base) had included the queue, which
+// left most of each day's recipients unpaid. Pace the sends and retry
+// rejections with a growing pause, long enough for the queue to drain.
+const PACE_MS = 1_000;
+const RETRY_DELAYS_MS = [2_000, 5_000, 15_000];
+// Stop starting new transfers in time to confirm the last one inside
+// `maxDuration`. Anything unsent is reported and left to scripts/backfill-airdrop.ts.
+const SEND_DEADLINE_MS = 180_000;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** A failure the chain itself reported: retrying cannot change the outcome. */
+const isRevert = (error: unknown) =>
+  isError(error, "CALL_EXCEPTION") || isError(error, "INSUFFICIENT_FUNDS");
+
+/** Another transaction from this wallet (e.g. the mention webhook) took the nonce. */
+const isNonceTaken = (error: unknown) =>
+  isError(error, "NONCE_EXPIRED") || isError(error, "REPLACEMENT_UNDERPRICED");
+
+/**
+ * Send one share and return the hash and nonce it went out under.
+ *
+ * The transfer is signed once and the same bytes are rebroadcast on every
+ * retry, so a retry can never pay a wallet twice: a copy that already reached
+ * the mempool is rejected as known instead of executing again. It is re-signed
+ * only when a different transaction has taken its nonce.
+ */
+async function sendShare(
+  signer: Wallet,
+  contract: Contract,
+  to: string,
+  amountWei: bigint,
+  startNonce: number,
+): Promise<{ hash: string; nonce: number }> {
+  const provider = signer.provider!;
+  const call = await contract.transfer.populateTransaction(to, amountWei);
+  let nonce = startNonce;
+  let signed: string | null = null;
+
+  for (let attempt = 0; ; attempt++) {
+    try {
+      signed ??= await signer.signTransaction(
+        await signer.populateTransaction({ ...call, nonce }),
+      );
+      await provider.broadcastTransaction(signed);
+      return { hash: Transaction.from(signed).hash!, nonce };
+    } catch (error) {
+      if (signed) {
+        const hash = Transaction.from(signed).hash!;
+        const message = error instanceof Error ? error.message : String(error);
+        // Reached the mempool even though the call failed: it is sent.
+        if (
+          /already known/i.test(message) ||
+          (await provider.getTransaction(hash).catch(() => null))
+        ) {
+          return { hash, nonce };
+        }
+        if (isNonceTaken(error)) {
+          nonce = await provider.getTransactionCount(signer.address, "pending");
+          signed = null;
+        }
+      }
+      if (isRevert(error) || attempt >= RETRY_DELAYS_MS.length) throw error;
+      console.warn("Airdrop: transfer rejected, retrying", {
+        to,
+        attempt: attempt + 1,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      await sleep(RETRY_DELAYS_MS[attempt]);
+    }
+  }
+}
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -32,6 +107,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  const startedAt = Date.now();
   const provider = createBaseProvider({ requestTimeoutMs: RPC_TIMEOUT_MS });
 
   try {
@@ -101,20 +177,32 @@ export async function GET(req: NextRequest) {
     // (the mention webhook signs with the same key) instead of colliding with it.
     let nonce = await provider.getTransactionCount(signer.address, "pending");
     const failed: string[] = [];
-    let lastTx: TransactionResponse | null = null;
+    let lastTx: string | null = null;
 
     for (const address of recipients.values()) {
+      if (Date.now() - startedAt > SEND_DEADLINE_MS) {
+        failed.push(address);
+        console.error("Airdrop: out of time, not sent", { address });
+        continue;
+      }
       try {
-        lastTx = await contract.transfer(address, rewardWei, { nonce });
-        nonce++;
+        const sent = await sendShare(
+          signer,
+          contract,
+          address,
+          rewardWei,
+          nonce,
+        );
+        lastTx = sent.hash;
+        nonce = sent.nonce + 1;
       } catch (error) {
         failed.push(address);
         console.error("Airdrop: transfer failed", { address, error });
         // Resync rather than guess: a transfer that never reached the mempool
-        // must not leave a nonce gap (which would strand every later transfer),
-        // and one that did reach it must not be re-sent under the same nonce.
+        // must not leave a nonce gap (which would strand every later transfer).
         nonce = await provider.getTransactionCount(signer.address, "pending");
       }
+      await sleep(PACE_MS);
     }
 
     const sent = recipients.size - failed.length;
@@ -124,16 +212,18 @@ export async function GET(req: NextRequest) {
     let confirmed = false;
     if (lastTx) {
       try {
-        const receipt = await lastTx.wait(1, CONFIRMATION_TIMEOUT_MS);
+        const receipt = await provider.waitForTransaction(
+          lastTx,
+          1,
+          CONFIRMATION_TIMEOUT_MS,
+        );
         confirmed = receipt?.status === 1;
         if (!confirmed) {
-          console.error("Airdrop: final transfer reverted", {
-            hash: lastTx.hash,
-          });
+          console.error("Airdrop: final transfer reverted", { hash: lastTx });
         }
       } catch (error) {
         console.error("Airdrop: final transfer not confirmed in time", {
-          hash: lastTx.hash,
+          hash: lastTx,
           error,
         });
       }
@@ -146,7 +236,7 @@ export async function GET(req: NextRequest) {
       reward,
       sent,
       failed,
-      lastTx: lastTx?.hash,
+      lastTx,
       confirmed,
     });
 
