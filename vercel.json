@@ -26,7 +26,7 @@
     },
     {
       "path": "/api/cron/trader/bbits-arb",
-      "schedule": "*/15 * * * *"
+      "schedule": "2-59/5 * * * *"
     },
     {
       "path": "/api/cron/trader/ghouls-arb",
