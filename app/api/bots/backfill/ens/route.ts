@@ -1,5 +1,6 @@
 import { getENSData } from "@/app/lib/api/getENSData";
 import { supabase } from "@/app/lib/supabase/client";
+import { DBUser } from "@/app/lib/types/types";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Get users that haven't been updated in 30 days, limited to 50
+    // Get the 50 stalest users that haven't been updated in 30 days
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
       .from("users")
       .select("*")
       .lt("updated_at", thirtyDaysAgo.toISOString())
+      .order("updated_at", { ascending: true })
       .limit(50);
 
     if (error) {
@@ -26,79 +28,54 @@ export async function GET(req: NextRequest) {
     }
 
     if (!users || users.length === 0) {
-      return new Response(
-        JSON.stringify({
-          message: "No users need ENS data update",
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      return Response.json({ message: "No users need ENS data update" });
     }
 
-    let processedCount = 0;
-    let updatedCount = 0;
+    const results = { processed: 0, updated: 0, failed: 0, dbErrors: 0 };
 
-    // Process each user
     for (const user of users) {
-      try {
-        processedCount++;
+      results.processed++;
 
-        // Get ENS data
-        const { ensName, ensAvatar } = await getENSData(user.address);
+      const { ensName, ensAvatar, failed } = await getENSData(user.address);
 
-        const updates: any = {};
+      // Every processed user must produce a real UPDATE so the trigger bumps
+      // updated_at; otherwise users without ENS are re-checked on every run.
+      // On a failed lookup keep the existing ENS data and only touch the row.
+      const updates: Partial<DBUser> = failed
+        ? { updated_at: new Date().toISOString() }
+        : { ens_name: ensName, ens_avatar: ensAvatar };
 
-        if (ensName) {
-          updates.ens_name = ensName;
-        }
-
-        if (ensAvatar) {
-          updates.ens_avatar = ensAvatar;
-        }
-
-        // Update user in database
-        const { error: updateError } = await supabase
-          .from("users")
-          .update(updates)
-          .eq("address", user.address);
-
-        if (!updateError) {
-          updatedCount++;
-        }
-
-        // Add a small delay to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      } catch (error) {
-        continue;
+      if (failed) {
+        results.failed++;
       }
+
+      const { error: updateError } = await supabase
+        .from("users")
+        .update(updates)
+        .eq("address", user.address);
+
+      if (updateError) {
+        results.dbErrors++;
+        console.error(
+          `Failed to update ENS data for ${user.address}:`,
+          updateError.message,
+        );
+      } else if (!failed) {
+        results.updated++;
+      }
+
+      // Add a small delay to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    console.log("Backfill ENS Results:", {
-      processed: processedCount,
-      updated: updatedCount,
-    });
+    console.log("Backfill ENS Results:", results);
 
-    return new Response("Backfill ENS completed", {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return Response.json(results);
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        error: "Failed to backfill ENS data",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
+    console.error("Failed to backfill ENS data:", error);
+    return Response.json(
+      { error: "Failed to backfill ENS data" },
+      { status: 500 },
     );
   }
 }
