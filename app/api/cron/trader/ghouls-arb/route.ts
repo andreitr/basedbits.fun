@@ -97,19 +97,17 @@ const describe = (error: unknown) =>
   String(error);
 
 // OpenSea keys the offer book by slug; resolved from the contract so it follows
-// LUCKY_GHOULS_ADDRESS. Cached for the life of the function instance.
+// LUCKY_GHOULS_ADDRESS. Read from the contract endpoint rather than from an NFT, which
+// finds nothing once every Ghoul has been burned. Cached for the life of the function
+// instance.
 let cachedSlug: string | null = null;
 const resolveCollection = async (
   client: OpenSeaSDK,
 ): Promise<ArbCollection> => {
   if (!cachedSlug) {
-    const { nfts } = await client.api.getNFTsByContract(
-      LUCKY_GHOULS_ADDRESS,
-      1,
-      undefined,
-      Chain.Base,
-    );
-    const slug = nfts?.[0]?.collection;
+    const { collection: slug } = await client.api.get<{
+      collection?: string | null;
+    }>(`/api/v2/chain/${Chain.Base}/contract/${LUCKY_GHOULS_ADDRESS}`);
     if (!slug) {
       throw new Error(
         `No OpenSea collection found for ${LUCKY_GHOULS_ADDRESS}`,
@@ -259,6 +257,25 @@ export async function GET(req: NextRequest) {
       ghouls.balanceOf(bot),
       findRestingOffers(client, collection, bot),
     ]);
+
+    // Every Ghoul has been burned: there is nothing to buy and the payout reads zero.
+    // Not a bad read, so it holds quietly instead of tripping the sanity abort. An offer
+    // left over could only fill against a fresh mint at a price set for the old
+    // treasury, so it is cancelled on-chain.
+    if (totalSupply === BigInt(0)) {
+      let cancelled = 0;
+      for (const order of restingOffers) {
+        if (await cancelOnChain(client, k, order)) cancelled++;
+        else console.error("On-chain cancel unconfirmed with no supply");
+      }
+      return Response.json({
+        ok: true,
+        action: "HOLD",
+        reason: "no Ghouls in circulation",
+        restingOffers: restingOffers.length,
+        cancelled,
+      });
+    }
 
     // Guard against a corrupted price read — the one failure that can overbid real
     // money. The payout per Ghoul can't be zero, and every Ghoul burning at it can't
