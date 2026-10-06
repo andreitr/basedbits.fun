@@ -87,12 +87,16 @@ const runSweep = async (
   signer: Wallet,
   provider: JsonRpcProvider,
   bot: string,
+  mintBlock: number,
   progress: SweepProgress,
 ): Promise<SwapResult> => {
   progress.stage = "read-balance";
-  // Two reads in one JSON-RPC batch, so a single RPC_TIMEOUT_MS covers both.
+  // Two reads in one JSON-RPC batch, so a single RPC_TIMEOUT_MS covers both. The balance
+  // is pinned to the mint's block: a plain "latest" read can land on a load-balanced
+  // node that hasn't seen the mint yet and still count its 0.0156 ETH as profit, which
+  // produces a swap the wallet can't fund. A node that's behind errors out instead.
   const [balance, feeData] = await Promise.all([
-    provider.getBalance(bot),
+    provider.getBalance(bot, mintBlock),
     provider.getFeeData(),
   ]);
   const maxFeePerGas = feeData.maxFeePerGas ?? BigInt(0);
@@ -196,11 +200,12 @@ const sweepProfitIntoBbits = async (
   signer: Wallet,
   provider: JsonRpcProvider,
   bot: string,
+  mintBlock: number,
 ): Promise<SwapResult> => {
   const progress: SweepProgress = { stage: "read-balance" };
   try {
     return await withTimeout(
-      runSweep(signer, provider, bot, progress),
+      runSweep(signer, provider, bot, mintBlock, progress),
       SWEEP_BUDGET_MS,
       "sweep",
     );
@@ -271,8 +276,9 @@ export async function GET(req: NextRequest) {
     );
     console.log(`Mint tx sent: ${tx.hash} (nonce ${tx.nonce})`);
 
+    let mintReceipt;
     try {
-      await tx.wait(1, MINT_WAIT_TIMEOUT_MS);
+      mintReceipt = await tx.wait(1, MINT_WAIT_TIMEOUT_MS);
     } catch (error) {
       if (isError(error, "TIMEOUT")) {
         // Don't sweep on an unconfirmed mint: a balance read before it lands would
@@ -291,11 +297,21 @@ export async function GET(req: NextRequest) {
       }
       throw error;
     }
-    console.log(`Minted ${MINT_COUNT} BasePaint NFTs in ${tx.hash}`);
+    if (!mintReceipt) {
+      throw new Error(`No receipt returned for mint ${tx.hash}`);
+    }
+    console.log(
+      `Minted ${MINT_COUNT} BasePaint NFTs in ${tx.hash} (block ${mintReceipt.blockNumber})`,
+    );
 
     // Same signer, strictly after the mint confirmed: no nonce race, and the swap only
     // ever runs once the day's spend has already left the wallet.
-    const swap = await sweepProfitIntoBbits(signer, provider, recipient);
+    const swap = await sweepProfitIntoBbits(
+      signer,
+      provider,
+      recipient,
+      mintReceipt.blockNumber,
+    );
 
     return Response.json({
       ok: true,

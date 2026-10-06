@@ -91,6 +91,16 @@ const listAllBasePaintNftsForSale = async (
       console.log(`Successfully listed token ${nft.identifier} (quantity: ${quantityOwned})`);
       listedCount++;
     } catch (error) {
+      // opensea-js 7.x throws on any non-2xx response, then parses the body's `order`
+      // field, which OpenSea no longer returns. A TypeError on it therefore means the
+      // listing was accepted and only the SDK's read-back failed.
+      if (error instanceof TypeError && error.message.includes("created_date")) {
+        console.log(
+          `Listed token ${nft.identifier} (quantity: ${quantityOwned}); OpenSea accepted it but the SDK could not parse the response`,
+        );
+        listedCount++;
+        continue;
+      }
       console.error(`Failed to list token ${nft.identifier}:`, error);
     }
   }
