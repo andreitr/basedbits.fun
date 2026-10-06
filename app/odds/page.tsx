@@ -1,5 +1,5 @@
-import { GhoulsMint } from "@/app/ghouls/components/GhoulsMint";
-import { GhoulsTabs } from "@/app/ghouls/components/GhoulsTabs";
+import { GhoulsMint } from "@/app/odds/components/GhoulsMint";
+import { GhoulsTabs } from "@/app/odds/components/GhoulsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
 import { readGhoulsDrawings } from "@/app/lib/evilodds/readGhoulsDrawings";

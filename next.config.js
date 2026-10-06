@@ -91,6 +91,11 @@ module.exports = {
             },
         ],
     },
+    async redirects() {
+        return [
+            { source: '/ghouls', destination: '/odds', permanent: true },
+        ];
+    },
     async headers() {
         return [
             {

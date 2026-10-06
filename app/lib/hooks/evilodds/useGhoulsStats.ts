@@ -25,7 +25,7 @@ export interface GhoulsStats {
   treasuryEth: bigint;
 }
 
-// Everything the /ghouls page shows, refreshed every 30s so the redeem value stays current
+// Everything the /odds page shows, refreshed every 30s so the redeem value stays current
 export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();

@@ -46,7 +46,7 @@ export interface GhoulsDrawings {
   claimable: ClaimableDrawing[];
 }
 
-// Megapot drawing state plus the treasury's ticket purchases and unclaimed tickets. Shared by the /ghouls
+// Megapot drawing state plus the treasury's ticket purchases and unclaimed tickets. Shared by the /odds
 // page and the daily keeper cron.
 export const readGhoulsDrawings = async (
   client = ghoulsPublicClient,

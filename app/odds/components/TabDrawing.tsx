@@ -1,7 +1,7 @@
 "use client";
 
-import { formatUsd, Stat } from "@/app/ghouls/components/GhoulsStats";
-import { TicketTable } from "@/app/ghouls/components/TicketTable";
+import { formatUsd, Stat } from "@/app/odds/components/GhoulsStats";
+import { TicketTable } from "@/app/odds/components/TicketTable";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
 import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";

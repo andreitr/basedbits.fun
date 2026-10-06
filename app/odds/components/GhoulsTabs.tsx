@@ -1,8 +1,8 @@
 "use client";
 
-import { GhoulsNFTList } from "@/app/ghouls/components/GhoulsNFTList";
-import { TabDrawing } from "@/app/ghouls/components/TabDrawing";
-import { TabStats } from "@/app/ghouls/components/TabStats";
+import { GhoulsNFTList } from "@/app/odds/components/GhoulsNFTList";
+import { TabDrawing } from "@/app/odds/components/TabDrawing";
+import { TabStats } from "@/app/odds/components/TabStats";
 import { useState } from "react";
 
 enum TABS {

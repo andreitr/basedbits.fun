@@ -1,6 +1,6 @@
 "use client";
 
-import { formatEth } from "@/app/ghouls/components/GhoulsStats";
+import { formatEth } from "@/app/odds/components/GhoulsStats";
 import { Button } from "@/app/lib/components/Button";
 import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
 import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";

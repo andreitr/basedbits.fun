@@ -1,10 +1,10 @@
 "use client";
 
-import { Stat } from "@/app/ghouls/components/GhoulsStats";
+import { Stat } from "@/app/odds/components/GhoulsStats";
 import {
   formatMegapotAmount,
   TicketTable,
-} from "@/app/ghouls/components/TicketTable";
+} from "@/app/odds/components/TicketTable";
 import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
 import {
   useGhoulsMegapotStats,

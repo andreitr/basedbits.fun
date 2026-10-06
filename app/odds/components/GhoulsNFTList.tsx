@@ -1,6 +1,6 @@
 "use client";
 
-import { formatEth, formatUsdc } from "@/app/ghouls/components/GhoulsStats";
+import { formatEth, formatUsdc } from "@/app/odds/components/GhoulsStats";
 import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
 import { useGhoulsBurn } from "@/app/lib/hooks/evilodds/useGhoulsWrite";
