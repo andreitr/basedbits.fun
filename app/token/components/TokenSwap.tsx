@@ -18,8 +18,8 @@ const REDEEM = "redeem";
 const DEPOSIT = "deposit";
 
 const TAB_LABELS: Record<string, string> = {
-  [DEPOSIT]: "Swap NFT to BBITS",
-  [REDEEM]: "Swap BBITS to NFT",
+  [DEPOSIT]: "NFT to BBITS",
+  [REDEEM]: "BBITS to NFT",
 };
 
 export const TokenSwap = () => {
