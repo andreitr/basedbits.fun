@@ -1,4 +1,4 @@
-export const LuckyGhoulsABI = [
+export const EvilOddsABI = [
   {
     type: "constructor",
     inputs: [

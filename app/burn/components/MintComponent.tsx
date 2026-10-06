@@ -6,7 +6,7 @@ interface Props {
   initialMintPrice?: string;
 }
 
-// Same card layout as the Punkalot and Lucky Ghouls mint cards
+// Same card layout as the Punkalot and Evil Odds mint cards
 export const MintComponent = ({ initialMintPrice }: Props) => {
   return (
     <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">

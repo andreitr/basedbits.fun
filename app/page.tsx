@@ -5,7 +5,7 @@ import { UserList } from "@/app/lib/components/client/UserList";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { LuckyGhoulsAnnouncement } from "@/app/lib/components/LuckyGhoulsAnnouncement";
+import { EvilOddsAnnouncement } from "@/app/lib/components/EvilOddsAnnouncement";
 import { getCheckins } from "@/app/lib/api/getCheckins";
 
 // Static page regenerated in the background; the check-in list refreshes on the client after load
@@ -31,10 +31,10 @@ export default async function Home() {
         <div className="container max-w-screen-lg">
           <div className="flex md:flex-row flex-col md:py-2 py-4 justify-between items-center w-full gap-4">
             <FeatureCard
-              title="Lucky Ghouls"
-              description="Minting soon"
-              image={"/images/lucky_ghoul.svg"}
-              link="/#lucky-ghouls"
+              title="Evil Odds"
+              description="Minting Oct 13, 11:05 AM PT"
+              image={"/images/evil_odds.svg"}
+              link="/#evil-odds"
             />
             <FeatureCard
               title="Burned Bits"
@@ -60,7 +60,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full sm:px-10 pt-10 pb-3 md:mt-0">
         <div className="container max-w-screen-lg mb-8">
-          <LuckyGhoulsAnnouncement />
+          <EvilOddsAnnouncement />
         </div>
       </div>
 

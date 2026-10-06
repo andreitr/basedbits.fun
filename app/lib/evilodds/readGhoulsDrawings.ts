@@ -1,16 +1,16 @@
-import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
+import { EvilOddsABI } from "@/app/lib/abi/EvilOdds.abi";
 import {
   MEGAPOT_TOP_TIER,
   MEGAPOT_V2_JACKPOT_ADDRESS,
   MegapotV2JackpotABI,
   MegapotV2PayoutCalculatorABI,
 } from "@/app/lib/abi/MegapotV2.abi";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { createPublicClient, http } from "viem";
 import { base } from "viem/chains";
 
-const ghouls = { abi: LuckyGhoulsABI, address: LUCKY_GHOULS_ADDRESS } as const;
+const ghouls = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
 const jackpot = {
   abi: MegapotV2JackpotABI,
   address: MEGAPOT_V2_JACKPOT_ADDRESS,

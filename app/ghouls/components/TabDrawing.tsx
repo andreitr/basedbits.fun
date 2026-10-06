@@ -3,9 +3,9 @@
 import { formatUsd, Stat } from "@/app/ghouls/components/GhoulsStats";
 import { TicketTable } from "@/app/ghouls/components/TicketTable";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
-import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
-import { useGhoulsTickets } from "@/app/lib/hooks/luckyghouls/useGhoulsTickets";
+import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
+import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
+import { useGhoulsTickets } from "@/app/lib/hooks/evilodds/useGhoulsTickets";
 
 const DrawingTickets = ({ drawingId }: { drawingId: bigint }) => {
   const { data, isLoading, isError } = useGhoulsTickets(drawingId);

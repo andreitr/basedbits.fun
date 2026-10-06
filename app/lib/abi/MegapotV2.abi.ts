@@ -1,6 +1,6 @@
 import { parseAbi } from "viem";
 
-// Megapot V2 on Base, the Jackpot LuckyGhouls buys tickets from
+// Megapot V2 on Base, the Jackpot EvilOdds buys tickets from
 export const MEGAPOT_V2_JACKPOT_ADDRESS =
   "0x3bAe643002069dBCbcd62B1A4eb4C4A397d042a2" as const;
 

@@ -5,11 +5,11 @@ import {
   formatMegapotAmount,
   TicketTable,
 } from "@/app/ghouls/components/TicketTable";
-import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
+import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
 import {
   useGhoulsMegapotStats,
   useGhoulsTickets,
-} from "@/app/lib/hooks/luckyghouls/useGhoulsTickets";
+} from "@/app/lib/hooks/evilodds/useGhoulsTickets";
 
 const TicketHistory = () => {
   const {

@@ -1,7 +1,7 @@
 import { baseProvider } from "@/app/lib/ethersProviders";
-import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
+import { EvilOddsABI } from "@/app/lib/abi/EvilOdds.abi";
 import { WETH_ADDRESS } from "@/app/lib/contracts/bbitsVault";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { Contract, Wallet } from "ethers";
 
 const WETH_ABI = [
@@ -26,7 +26,7 @@ export const getGhoulsArbKeeper = () => {
   return {
     signer,
     provider: baseProvider,
-    ghouls: new Contract(LUCKY_GHOULS_ADDRESS, LuckyGhoulsABI, signer),
+    ghouls: new Contract(EVIL_ODDS_ADDRESS, EvilOddsABI, signer),
     weth: new Contract(WETH_ADDRESS, WETH_ABI, signer),
   };
 };

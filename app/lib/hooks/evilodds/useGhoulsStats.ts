@@ -1,12 +1,12 @@
-import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EvilOddsABI } from "@/app/lib/abi/EvilOdds.abi";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBalance, useReadContracts } from "wagmi";
 import { base } from "wagmi/chains";
 
 const contract = {
-  abi: LuckyGhoulsABI,
-  address: LUCKY_GHOULS_ADDRESS,
+  abi: EvilOddsABI,
+  address: EVIL_ODDS_ADDRESS,
   chainId: base.id,
 } as const;
 
@@ -48,7 +48,7 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
   });
 
   const balance = useBalance({
-    address: LUCKY_GHOULS_ADDRESS,
+    address: EVIL_ODDS_ADDRESS,
     chainId: base.id,
     query: { enabled, refetchInterval: 30_000 },
   });

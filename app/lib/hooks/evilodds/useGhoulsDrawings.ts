@@ -1,13 +1,13 @@
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
-import { readGhoulsDrawings } from "@/app/lib/luckyghouls/readGhoulsDrawings";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
+import { readGhoulsDrawings } from "@/app/lib/evilodds/readGhoulsDrawings";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type {
   ClaimableDrawing,
   GhoulsDrawings,
-} from "@/app/lib/luckyghouls/readGhoulsDrawings";
+} from "@/app/lib/evilodds/readGhoulsDrawings";
 
-const queryKey = ["ghoulsDrawings", LUCKY_GHOULS_ADDRESS];
+const queryKey = ["ghoulsDrawings", EVIL_ODDS_ADDRESS];
 
 // Megapot drawing state plus the treasury's ticket purchases and unclaimed tickets
 export const useGhoulsDrawings = (options: { enabled?: boolean } = {}) => {

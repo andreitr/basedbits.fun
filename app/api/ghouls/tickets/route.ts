@@ -3,9 +3,9 @@ import {
   MegapotPage,
   MegapotTicket,
 } from "@/app/lib/api/megapot";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 
-// Megapot tickets owned by the Lucky Ghouls treasury, for one drawing (?round=) or all of them
+// Megapot tickets owned by the Evil Odds treasury, for one drawing (?round=) or all of them
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const round = searchParams.get("round");
@@ -19,8 +19,8 @@ export async function GET(req: Request) {
   if (cursor) params.set("cursor", cursor);
 
   const path = round
-    ? `/wallets/${LUCKY_GHOULS_ADDRESS}/tickets/rounds/${round}`
-    : `/wallets/${LUCKY_GHOULS_ADDRESS}/tickets`;
+    ? `/wallets/${EVIL_ODDS_ADDRESS}/tickets/rounds/${round}`
+    : `/wallets/${EVIL_ODDS_ADDRESS}/tickets`;
 
   try {
     const page = await megapotFetch<MegapotPage<MegapotTicket>>(

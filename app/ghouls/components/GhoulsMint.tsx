@@ -2,10 +2,10 @@
 
 import { formatEth } from "@/app/ghouls/components/GhoulsStats";
 import { Button } from "@/app/lib/components/Button";
-import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
-import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
-import { useGhoulsMint } from "@/app/lib/hooks/luckyghouls/useGhoulsWrite";
-import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
+import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
+import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
+import { useGhoulsMint } from "@/app/lib/hooks/evilodds/useGhoulsWrite";
+import { useRefreshGhouls } from "@/app/lib/hooks/evilodds/useRefreshGhouls";
 import { useModal } from "connectkit";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,8 +54,8 @@ export const GhoulsMint = ({ initialTopPrize }: Props) => {
       <div className="flex flex-col sm:flex-row w-full gap-5">
         <div className="shrink-0">
           <Image
-            src="/images/lucky_ghoul.svg"
-            alt="Lucky Ghoul"
+            src="/images/evil_odds.svg"
+            alt="Evil Odds"
             width={300}
             height={300}
             className="w-full sm:w-[300px] h-auto rounded-lg"

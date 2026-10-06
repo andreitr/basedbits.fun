@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-// Same card layout as the Lucky Ghouls mint card
+// Same card layout as the Evil Odds mint card
 export const MintComponent = () => {
   return (
     <div className="relative w-full flex flex-col md:flex-row gap-10 sm:gap-20 justify-between bg-black/90 sm:rounded-lg rounded-none text-white p-5">

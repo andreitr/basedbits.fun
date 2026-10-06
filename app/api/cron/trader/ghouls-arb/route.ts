@@ -1,10 +1,10 @@
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
-import { getGhoulsArbKeeper } from "@/app/lib/contracts/luckyGhoulsArb";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
+import { getGhoulsArbKeeper } from "@/app/lib/contracts/evilOddsArb";
 import {
   KEEPER_HOUR,
   KEEPER_TIME_ZONE,
   zonedTime,
-} from "@/app/lib/luckyghouls/keeperSchedule";
+} from "@/app/lib/evilodds/keeperSchedule";
 import {
   type ArbCollection,
   type RestingOffer,
@@ -31,7 +31,7 @@ import { OPENSEA_CONDUIT_ADDRESS } from "opensea-js/lib/constants";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-// Lucky Ghouls redeem arbitrage. Every Ghoul can be burned for an equal share of the
+// Evil Odds redeem arbitrage. Every Ghoul can be burned for an equal share of the
 // treasury (getBurnPayoutPerToken). The bot keeps a WETH collection offer below that
 // share, sweeps listings under it, and burns whatever it acquires for the spread.
 //
@@ -97,7 +97,7 @@ const describe = (error: unknown) =>
   String(error);
 
 // OpenSea keys the offer book by slug; resolved from the contract so it follows
-// LUCKY_GHOULS_ADDRESS. Read from the contract endpoint rather than from an NFT, which
+// EVIL_ODDS_ADDRESS. Read from the contract endpoint rather than from an NFT, which
 // finds nothing once every Ghoul has been burned. Cached for the life of the function
 // instance.
 let cachedSlug: string | null = null;
@@ -107,15 +107,13 @@ const resolveCollection = async (
   if (!cachedSlug) {
     const { collection: slug } = await client.api.get<{
       collection?: string | null;
-    }>(`/api/v2/chain/${Chain.Base}/contract/${LUCKY_GHOULS_ADDRESS}`);
+    }>(`/api/v2/chain/${Chain.Base}/contract/${EVIL_ODDS_ADDRESS}`);
     if (!slug) {
-      throw new Error(
-        `No OpenSea collection found for ${LUCKY_GHOULS_ADDRESS}`,
-      );
+      throw new Error(`No OpenSea collection found for ${EVIL_ODDS_ADDRESS}`);
     }
     cachedSlug = slug;
   }
-  return { slug: cachedSlug, address: LUCKY_GHOULS_ADDRESS };
+  return { slug: cachedSlug, address: EVIL_ODDS_ADDRESS };
 };
 
 /**
@@ -252,7 +250,7 @@ export async function GET(req: NextRequest) {
       ghouls.getBurnPayoutPerToken(),
       ghouls.totalSupply(),
       ghouls.paused(),
-      provider.getBalance(LUCKY_GHOULS_ADDRESS),
+      provider.getBalance(EVIL_ODDS_ADDRESS),
       effectiveGasBuffer(provider, ESTIMATED_GAS, GAS_BUFFER_WEI),
       ghouls.balanceOf(bot),
       findRestingOffers(client, collection, bot),
@@ -351,7 +349,7 @@ export async function GET(req: NextRequest) {
     const held = await collectHeldNfts(
       client,
       ghouls,
-      LUCKY_GHOULS_ADDRESS,
+      EVIL_ODDS_ADDRESS,
       bot,
       heldNfts,
       "Ghouls",
@@ -570,7 +568,7 @@ export async function GET(req: NextRequest) {
 
     return Response.json({ ...result, executed: action });
   } catch (error) {
-    console.error("Error running Lucky Ghouls arbitrage:", error);
+    console.error("Error running Evil Odds arbitrage:", error);
     return new Response("Internal Server Error", { status: 500 });
   }
 }

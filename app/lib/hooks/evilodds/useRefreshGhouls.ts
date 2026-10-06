@@ -1,10 +1,10 @@
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
-import { useGhoulsDrawings } from "@/app/lib/hooks/luckyghouls/useGhoulsDrawings";
-import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
+import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
+import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
 import {
   GHOULS_MEGAPOT_STATS_KEY,
   GHOULS_TICKETS_KEY,
-} from "@/app/lib/hooks/luckyghouls/useGhoulsTickets";
+} from "@/app/lib/hooks/evilodds/useGhoulsTickets";
 import { useQueryClient } from "@tanstack/react-query";
 
 // Alchemy can take a few seconds to index a mint or burn, so the owner list is refetched again after a delay
@@ -24,7 +24,7 @@ export const useRefreshGhouls = () => {
     queryClient.invalidateQueries({ queryKey: [GHOULS_MEGAPOT_STATS_KEY] });
     const invalidateNFTs = () =>
       queryClient.invalidateQueries({
-        queryKey: ["getNFTsForOwner", LUCKY_GHOULS_ADDRESS],
+        queryKey: ["getNFTsForOwner", EVIL_ODDS_ADDRESS],
       });
     invalidateNFTs();
     setTimeout(invalidateNFTs, NFT_REINDEX_DELAY_MS);

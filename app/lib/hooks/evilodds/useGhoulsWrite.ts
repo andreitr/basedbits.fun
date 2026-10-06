@@ -1,5 +1,5 @@
-import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EvilOddsABI } from "@/app/lib/abi/EvilOdds.abi";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
@@ -55,8 +55,8 @@ export const useGhoulsMint = (onSuccess?: () => void) => {
   const mint = (quantity: number, mintPrice: bigint) =>
     writeContract(
       {
-        abi: LuckyGhoulsABI,
-        address: LUCKY_GHOULS_ADDRESS,
+        abi: EvilOddsABI,
+        address: EVIL_ODDS_ADDRESS,
         functionName: "mint",
         args: [BigInt(quantity)],
         value: mintPrice * BigInt(quantity),
@@ -77,8 +77,8 @@ export const useGhoulsBurn = (onSuccess?: () => void) => {
   const burn = (tokenId: bigint) =>
     writeContract(
       {
-        abi: LuckyGhoulsABI,
-        address: LUCKY_GHOULS_ADDRESS,
+        abi: EvilOddsABI,
+        address: EVIL_ODDS_ADDRESS,
         functionName: "burn",
         args: [tokenId],
         chainId: base.id,

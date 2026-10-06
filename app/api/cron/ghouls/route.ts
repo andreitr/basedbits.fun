@@ -1,19 +1,19 @@
-import { LuckyGhoulsABI } from "@/app/lib/abi/LuckyGhouls.abi";
+import { EvilOddsABI } from "@/app/lib/abi/EvilOdds.abi";
 import {
   MEGAPOT_V2_JACKPOT_ADDRESS,
   MegapotV2JackpotABI,
 } from "@/app/lib/abi/MegapotV2.abi";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import {
   KEEPER_HOUR,
   KEEPER_TIME_ZONE,
   zonedTime,
-} from "@/app/lib/luckyghouls/keeperSchedule";
+} from "@/app/lib/evilodds/keeperSchedule";
 import {
   ghoulsPublicClient,
   readGhoulsDrawings,
-} from "@/app/lib/luckyghouls/readGhoulsDrawings";
-import { revertName } from "@/app/lib/luckyghouls/revertName";
+} from "@/app/lib/evilodds/readGhoulsDrawings";
+import { revertName } from "@/app/lib/evilodds/revertName";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { NextRequest } from "next/server";
 import { createWalletClient, formatUnits, Hex, http } from "viem";
@@ -29,7 +29,7 @@ export const maxDuration = 300;
 // outside that hour and ?dry=1 to simulate without sending transactions.
 //
 // Each run: claims settled drawings, buys the current drawing's tickets, then claims the Megapot referral fees
-// that the burner wallet (LuckyGhouls' megapotReferrer) earns on those tickets.
+// that the burner wallet (EvilOdds' megapotReferrer) earns on those tickets.
 
 // buyTickets stops cleanly when it nears its gas reserve and resumes on the next call
 const MAX_BUY_CALLS = 5;
@@ -44,7 +44,7 @@ const EXPECTED_BUY_REVERTS = new Set([
   "EnforcedPause",
 ]);
 
-const ghouls = { abi: LuckyGhoulsABI, address: LUCKY_GHOULS_ADDRESS } as const;
+const ghouls = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
 const jackpot = {
   abi: MegapotV2JackpotABI,
   address: MEGAPOT_V2_JACKPOT_ADDRESS,

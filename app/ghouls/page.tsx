@@ -2,7 +2,7 @@ import { GhoulsMint } from "@/app/ghouls/components/GhoulsMint";
 import { GhoulsTabs } from "@/app/ghouls/components/GhoulsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { readGhoulsDrawings } from "@/app/lib/luckyghouls/readGhoulsDrawings";
+import { readGhoulsDrawings } from "@/app/lib/evilodds/readGhoulsDrawings";
 
 // Static page regenerated in the background; live stats load on the client
 export const revalidate = 60;

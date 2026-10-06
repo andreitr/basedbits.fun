@@ -1,10 +1,10 @@
 "use client";
 
 import { formatEth, formatUsdc } from "@/app/ghouls/components/GhoulsStats";
-import { LUCKY_GHOULS_ADDRESS } from "@/app/lib/contracts/luckyghouls";
-import { useGhoulsStats } from "@/app/lib/hooks/luckyghouls/useGhoulsStats";
-import { useGhoulsBurn } from "@/app/lib/hooks/luckyghouls/useGhoulsWrite";
-import { useRefreshGhouls } from "@/app/lib/hooks/luckyghouls/useRefreshGhouls";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
+import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
+import { useGhoulsBurn } from "@/app/lib/hooks/evilodds/useGhoulsWrite";
+import { useRefreshGhouls } from "@/app/lib/hooks/evilodds/useRefreshGhouls";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
@@ -23,7 +23,7 @@ export const GhoulsNFTList = () => {
   const { isReady, isConnected, address } = useWallet();
   const { data: list, isLoading } = useGetOwnerNFTs({
     address,
-    contract: LUCKY_GHOULS_ADDRESS,
+    contract: EVIL_ODDS_ADDRESS,
   });
 
   // Clipped to the tab panel's reserved height so it doesn't collapse if the wallet turns out to be disconnected
