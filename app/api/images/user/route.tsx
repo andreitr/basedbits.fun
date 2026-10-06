@@ -2,6 +2,7 @@ import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
+import { loadOGImage } from "@/app/lib/utils/ogImageUtils";
 import { formatUnits } from "ethers";
 import { ImageResponse } from "next/og";
 
@@ -36,9 +37,15 @@ export async function GET(request: Request) {
     const nfts = `${contractNFTs.totalCount} Based Bits NFTs`;
     const tokens = `${humanizeNumber(Math.round(Number(formatUnits(balance))))} BBITS Tokens`;
 
-    const preview = token
-      ? token.image.originalUrl
-      : `${process.env.NEXT_PUBLIC_URL}/images/burnedbit.svg`;
+    // Prefer Alchemy's CDN copy; the original IPFS gateway URL is slow and
+    // sometimes returns non-image responses
+    const fallback = `${process.env.NEXT_PUBLIC_URL}/images/burnedbit.svg`;
+    const preview =
+      (await loadOGImage([
+        token?.image.cachedUrl,
+        token?.image.pngUrl,
+        token?.image.originalUrl,
+      ])) ?? fallback;
 
     const interBoldFont = await fetch(
       new URL("../assets/Inter-Bold.ttf", import.meta.url),

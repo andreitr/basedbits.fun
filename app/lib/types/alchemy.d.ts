@@ -20,6 +20,7 @@ export type AlchemyToken = {
     address: string;
   };
   image: {
+    cachedUrl?: string;
     pngUrl: string;
     thumbnailUrl: string;
     originalUrl: string;
