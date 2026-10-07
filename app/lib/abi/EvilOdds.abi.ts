@@ -55,7 +55,7 @@ export const EvilOddsABI = [
       {
         name: "_artContract",
         type: "address",
-        internalType: "contract LuckyGhoulsArt",
+        internalType: "contract EvilOddsArt",
       },
     ],
     stateMutability: "nonpayable",
@@ -63,6 +63,19 @@ export const EvilOddsABI = [
   {
     type: "receive",
     stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "MAX_PREFERRED_NUMBERS",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -168,7 +181,7 @@ export const EvilOddsABI = [
       {
         name: "",
         type: "address",
-        internalType: "contract LuckyGhoulsArt",
+        internalType: "contract EvilOddsArt",
       },
     ],
     stateMutability: "view",
@@ -475,7 +488,7 @@ export const EvilOddsABI = [
       {
         name: "",
         type: "tuple[]",
-        internalType: "struct ILuckyGhouls.PurchasedTicket[]",
+        internalType: "struct IEvilOdds.PurchasedTicket[]",
         components: [
           {
             name: "ticketId",
@@ -1611,12 +1624,6 @@ export const EvilOddsABI = [
         indexed: false,
         internalType: "uint256",
       },
-      {
-        name: "ethReceived",
-        type: "uint256",
-        indexed: false,
-        internalType: "uint256",
-      },
     ],
     anonymous: false,
   },
@@ -1644,7 +1651,17 @@ export const EvilOddsABI = [
   },
   {
     type: "error",
+    name: "DrawingLocked",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "DrawingNotSettled",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "DuplicatePreferredNumber",
     inputs: [],
   },
   {
@@ -1866,6 +1883,16 @@ export const EvilOddsABI = [
   {
     type: "error",
     name: "TicketsAlreadyPurchased",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TooFewPreferredNumbers",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TooManyPreferredNumbers",
     inputs: [],
   },
   {
