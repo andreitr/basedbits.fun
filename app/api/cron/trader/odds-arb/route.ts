@@ -1,5 +1,5 @@
 import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
-import { getGhoulsArbKeeper } from "@/app/lib/contracts/evilOddsArb";
+import { getOddsArbKeeper } from "@/app/lib/contracts/evilOddsArb";
 import {
   KEEPER_HOUR,
   KEEPER_TIME_ZONE,
@@ -31,13 +31,13 @@ import { OPENSEA_CONDUIT_ADDRESS } from "opensea-js/lib/constants";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-// Evil Odds redeem arbitrage. Every Ghoul can be burned for an equal share of the
+// Evil Odds redeem arbitrage. Every token can be burned for an equal share of the
 // treasury (getBurnPayoutPerToken). The bot keeps a WETH collection offer below that
 // share, sweeps listings under it, and burns whatever it acquires for the spread.
 //
 // Unlike BBITS there is no AMM leg: a burn turns the NFT into ETH in one transaction and
-// doesn't move the per-token payout, so the bot can bid for several Ghouls at once. The
-// payout only moves when the daily keeper (/api/cron/ghouls) buys tickets or claims
+// doesn't move the per-token payout, so the bot can bid for several Odds at once. The
+// payout only moves when the daily keeper (/api/cron/odds) buys tickets or claims
 // winnings, so the bid is repriced once a day, right after it. The ticks in between
 // burn fills, sweep, wrap the proceeds into WETH and top the offer back up at the same
 // price. Every wei above the gas reserve is kept as WETH, so profit compounds straight
@@ -56,12 +56,12 @@ const MIN_MARGIN_WEI = BigInt("10000000000000"); // 0.00001 ETH
 const GAS_BUFFER_WEI = BigInt("5000000000000"); // 0.000005 ETH — floor; see effectiveGasBuffer()
 const ESTIMATED_GAS = BigInt(300_000); // fulfil a listing + burn
 
-// Ceiling on what the bot pays for one Ghoul, whatever the redeem price reads.
+// Ceiling on what the bot pays for one token, whatever the redeem price reads.
 const MAX_SPEND_WEI = BigInt("1000000000000000"); // 0.001 ETH — ~6x redeem at launch
 
 // Native ETH kept on hand for gas — about $1 at ~$2,700/ETH, hundreds of Base
 // transactions. Everything above it is wrapped into the WETH that funds the offer, so
-// the offer is sized by the whole balance: seed more to bid on more Ghouls. Topped up by
+// the offer is sized by the whole balance: seed more to bid on more Odds. Topped up by
 // unwrapping WETH, never below what a bid needs.
 const NATIVE_GAS_RESERVE_WEI = BigInt("400000000000000"); // 0.0004 ETH
 
@@ -89,7 +89,7 @@ const REPRICE_WINDOW_END_MINUTE = 30;
 // window always finds and replaces it, and a dead cron leaves at most a day-old bid.
 const OFFER_DURATION_SECONDS = 26 * 60 * 60;
 
-type Keeper = ReturnType<typeof getGhoulsArbKeeper> & { bot: string };
+type Keeper = ReturnType<typeof getOddsArbKeeper> & { bot: string };
 
 const describe = (error: unknown) =>
   (error as { revert?: { name?: string } }).revert?.name ??
@@ -98,7 +98,7 @@ const describe = (error: unknown) =>
 
 // OpenSea keys the offer book by slug; resolved from the contract so it follows
 // EVIL_ODDS_ADDRESS. Read from the contract endpoint rather than from an NFT, which
-// finds nothing once every Ghoul has been burned. Cached for the life of the function
+// finds nothing once every token has been burned. Cached for the life of the function
 // instance.
 let cachedSlug: string | null = null;
 const resolveCollection = async (
@@ -117,19 +117,19 @@ const resolveCollection = async (
 };
 
 /**
- * Burn each Ghoul for its treasury share. Simulated first so a revert (nothing to
+ * Burn each token for its treasury share. Simulated first so a revert (nothing to
  * redeem, paused) is reported for that token and the rest still go through.
  */
 const burnAll = async (k: Keeper, ids: string[]): Promise<string[]> => {
   const done: string[] = [];
   for (const id of ids) {
     try {
-      await k.ghouls.burn.staticCall(id);
-      const tx = await k.ghouls.burn(id);
+      await k.odds.burn.staticCall(id);
+      const tx = await k.odds.burn(id);
       await tx.wait();
       done.push(`burn:${id}`);
     } catch (error) {
-      console.error(`Burn of Ghoul #${id} failed:`, error);
+      console.error(`Burn of token #${id} failed:`, error);
       done.push(`burn-failed:${id}:${describe(error)}`);
     }
   }
@@ -194,7 +194,7 @@ const ownsToken = async (
   tokenId: string,
 ): Promise<boolean | null> => {
   try {
-    const owner: string = await k.ghouls.ownerOf(tokenId);
+    const owner: string = await k.odds.ownerOf(tokenId);
     return getAddress(owner) === getAddress(k.bot);
   } catch {
     return null;
@@ -212,10 +212,10 @@ export async function GET(req: NextRequest) {
       throw new Error("OPENSEA_API_KEY is not configured");
     }
 
-    const keeper = getGhoulsArbKeeper();
+    const keeper = getOddsArbKeeper();
     const bot = await keeper.signer.getAddress();
     const k: Keeper = { ...keeper, bot };
-    const { provider, ghouls, weth } = k;
+    const { provider, odds, weth } = k;
     const client = getOpenSeaClient(keeper.signer);
     const collection = await resolveCollection(client);
     const actions: string[] = [];
@@ -247,16 +247,16 @@ export async function GET(req: NextRequest) {
       bigint,
       RestingOffer[],
     ] = await Promise.all([
-      ghouls.getBurnPayoutPerToken(),
-      ghouls.totalSupply(),
-      ghouls.paused(),
+      odds.getBurnPayoutPerToken(),
+      odds.totalSupply(),
+      odds.paused(),
       provider.getBalance(EVIL_ODDS_ADDRESS),
       effectiveGasBuffer(provider, ESTIMATED_GAS, GAS_BUFFER_WEI),
-      ghouls.balanceOf(bot),
+      odds.balanceOf(bot),
       findRestingOffers(client, collection, bot),
     ]);
 
-    // Every Ghoul has been burned: there is nothing to buy and the payout reads zero.
+    // Every token has been burned: there is nothing to buy and the payout reads zero.
     // Not a bad read, so it holds quietly instead of tripping the sanity abort. An offer
     // left over could only fill against a fresh mint at a price set for the old
     // treasury, so it is cancelled on-chain.
@@ -269,14 +269,14 @@ export async function GET(req: NextRequest) {
       return Response.json({
         ok: true,
         action: "HOLD",
-        reason: "no Ghouls in circulation",
+        reason: "no Odds in circulation",
         restingOffers: restingOffers.length,
         cancelled,
       });
     }
 
     // Guard against a corrupted price read — the one failure that can overbid real
-    // money. The payout per Ghoul can't be zero, and every Ghoul burning at it can't
+    // money. The payout per token can't be zero, and every token burning at it can't
     // pay out more ETH than the treasury holds. A paused contract can't be redeemed
     // against at all.
     const sane =
@@ -306,7 +306,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // The most the bot will pay for one Ghoul, by either route, snapped down to
+    // The most the bot will pay for one token, by either route, snapped down to
     // OpenSea's bid grid. Zero or less is unprofitable.
     const pctMargin = (redeemEthWei * MARGIN_BPS) / BigInt(10_000);
     const marginWei = pctMargin > MIN_MARGIN_WEI ? pctMargin : MIN_MARGIN_WEI;
@@ -342,17 +342,17 @@ export async function GET(req: NextRequest) {
     }
     const openOrder: RestingOffer | null = restingOffers[0] ?? null;
 
-    // Burn every Ghoul the bot holds — filled bids, or a previous run that died between
+    // Burn every token the bot holds — filled bids, or a previous run that died between
     // buying and burning. Holding doesn't block bidding: a burn doesn't move the payout,
     // and Seaport can only pull as much WETH as the bot has, so fills are bounded by the
     // float however many land.
     const held = await collectHeldNfts(
       client,
-      ghouls,
+      odds,
       EVIL_ODDS_ADDRESS,
       bot,
       heldNfts,
-      "Ghouls",
+      "Odds",
     );
     if (held.length) actions.push(...(await burnAll(k, held)));
     actions.push(...(await settle(k, maxPayWei)));
@@ -421,7 +421,7 @@ export async function GET(req: NextRequest) {
       }
 
       // Ownership is the only source of truth. If it can't be read, stop sweeping —
-      // a bought Ghoul is burned by the next tick's reconcile either way.
+      // a bought token is burned by the next tick's reconcile either way.
       const owned = await ownsToken(k, floor.tokenId);
       if (owned === null) {
         actions.push(`sweep:unconfirmed:${floor.tokenId}`);

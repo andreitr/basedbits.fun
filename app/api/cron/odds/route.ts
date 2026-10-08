@@ -10,9 +10,9 @@ import {
   zonedTime,
 } from "@/app/lib/evilodds/keeperSchedule";
 import {
-  ghoulsPublicClient,
-  readGhoulsDrawings,
-} from "@/app/lib/evilodds/readGhoulsDrawings";
+  oddsPublicClient,
+  readOddsDrawings,
+} from "@/app/lib/evilodds/readOddsDrawings";
 import { revertName } from "@/app/lib/evilodds/revertName";
 import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { NextRequest } from "next/server";
@@ -44,7 +44,7 @@ const EXPECTED_BUY_REVERTS = new Set([
   "EnforcedPause",
 ]);
 
-const ghouls = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
+const odds = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
 const jackpot = {
   abi: MegapotV2JackpotABI,
   address: MEGAPOT_V2_JACKPOT_ADDRESS,
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
   try {
     const wallet = walletFor(process.env.EXECUTER_BOT_PK as string);
     const { account } = wallet;
-    const client = ghoulsPublicClient;
+    const client = oddsPublicClient;
 
     const send = async (
       request: Parameters<typeof wallet.writeContract>[0],
@@ -103,11 +103,11 @@ export async function GET(req: NextRequest) {
     };
 
     // 1. Claim every settled drawing that still holds tickets; winnings are swapped back to ETH by the contract
-    const before = await readGhoulsDrawings(client);
+    const before = await readOddsDrawings(client);
     for (const drawing of before.claimable) {
       try {
         const { request } = await client.simulateContract({
-          ...ghouls,
+          ...odds,
           account,
           functionName: "claimWinnings",
           args: [drawing.drawingId],
@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
     // 2. Buy the current drawing's tickets, resuming partial runs
     const now = BigInt(Math.floor(Date.now() / 1000));
     for (let call = 0; call < MAX_BUY_CALLS; call++) {
-      const state = await readGhoulsDrawings(client);
+      const state = await readOddsDrawings(client);
       if (state.ticketsBought) {
         log.push(
           `Drawing #${state.currentDrawingId}: ${state.purchaseBought} tickets bought`,
@@ -146,7 +146,7 @@ export async function GET(req: NextRequest) {
 
       try {
         const { request } = await client.simulateContract({
-          ...ghouls,
+          ...odds,
           account,
           functionName: "buyTickets",
         });
@@ -190,6 +190,6 @@ export async function GET(req: NextRequest) {
     log.push(`Keeper error: ${describe(error)}`);
   }
 
-  console.log("[cron/ghouls]", log.join(" | "));
+  console.log("[cron/odds]", log.join(" | "));
   return Response.json({ log }, { status: failed ? 500 : 200 });
 }

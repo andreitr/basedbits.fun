@@ -8,7 +8,7 @@ import {
 } from "ethers";
 import { Chain, OpenSeaSDK, type OrderV2, type ProtocolData } from "opensea-js";
 
-// Shared OpenSea plumbing for the vault arbitrage bots (bbits-arb, ghouls-arb): finding
+// Shared OpenSea plumbing for the vault arbitrage bots (bbits-arb, odds-arb): finding
 // the bot's own collection offers, pricing the floor, and posting/cancelling bids.
 
 // The collection a bot trades: OpenSea's slug for the offer book, and the ERC721

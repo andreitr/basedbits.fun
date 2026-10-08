@@ -10,7 +10,7 @@ const contract = {
   chainId: base.id,
 } as const;
 
-export interface GhoulsStats {
+export interface OddsStats {
   mintPrice: bigint;
   totalMinted: bigint;
   totalSupply: bigint;
@@ -26,7 +26,7 @@ export interface GhoulsStats {
 }
 
 // Everything the /odds page shows, refreshed every 30s so the redeem value stays current
-export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
+export const useOddsStats = (options: { enabled?: boolean } = {}) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 
@@ -58,7 +58,7 @@ export const useGhoulsStats = (options: { enabled?: boolean } = {}) => {
     queryClient.invalidateQueries({ queryKey: balance.queryKey });
   };
 
-  let data: GhoulsStats | undefined;
+  let data: OddsStats | undefined;
   if (reads.data && balance.data) {
     const [
       mintPrice,

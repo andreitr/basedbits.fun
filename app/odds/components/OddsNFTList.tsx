@@ -1,10 +1,10 @@
 "use client";
 
-import { formatEth, formatUsdc } from "@/app/odds/components/GhoulsStats";
+import { formatEth, formatUsdc } from "@/app/odds/components/OddsStats";
 import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
-import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
-import { useGhoulsBurn } from "@/app/lib/hooks/evilodds/useGhoulsWrite";
-import { useRefreshGhouls } from "@/app/lib/hooks/evilodds/useRefreshGhouls";
+import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
+import { useOddsBurn } from "@/app/lib/hooks/evilodds/useOddsWrite";
+import { useRefreshOdds } from "@/app/lib/hooks/evilodds/useRefreshOdds";
 import { useGetOwnerNFTs } from "@/app/lib/hooks/useGetOwnerNFTs";
 import { AlchemyToken } from "@/app/lib/types/alchemy";
 import { truncateAddress } from "@/app/lib/utils/addressUtils";
@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 
 const tileClass = "bg-black bg-opacity-90";
 
-export const GhoulsNFTList = () => {
+export const OddsNFTList = () => {
   const { isReady, isConnected, address } = useWallet();
   const { data: list, isLoading } = useGetOwnerNFTs({
     address,
@@ -36,7 +36,7 @@ export const GhoulsNFTList = () => {
   }
 
   if (!isConnected || !address) {
-    return <div>Connect wallet to view your Ghouls 👻</div>;
+    return <div>Connect wallet to view your Odds 👻</div>;
   }
 
   if (isLoading) {
@@ -44,7 +44,7 @@ export const GhoulsNFTList = () => {
   }
 
   if (!list?.ownedNfts?.length) {
-    return <div>No Ghouls found in {truncateAddress(address)}.</div>;
+    return <div>No Odds found in {truncateAddress(address)}.</div>;
   }
 
   return (
@@ -59,10 +59,10 @@ export const GhoulsNFTList = () => {
 };
 
 const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
-  const { data: stats } = useGhoulsStats();
-  const refresh = useRefreshGhouls();
-  const { burn, isPending, isConfirming, isSuccess } = useGhoulsBurn(() => {
-    toast.success(`Ghoul #${nft.tokenId} burned and redeemed`);
+  const { data: stats } = useOddsStats();
+  const refresh = useRefreshOdds();
+  const { burn, isPending, isConfirming, isSuccess } = useOddsBurn(() => {
+    toast.success("Burned and redeemed");
     refresh();
   });
 
@@ -74,7 +74,6 @@ const NFTCard = ({ nft }: { nft: AlchemyToken }) => {
     <NFTTile className={tileClass}>
       <NFTImage src={nft.image?.originalUrl} alt={nft.name} />
       <div className="mt-2 w-full text-[#FFE29E] text-sm text-center">
-        <div className="text-white/60 text-xs pb-1">#{nft.tokenId}</div>
         <button
           className="cursor-pointer w-full hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-50"
           onClick={() => burn(BigInt(nft.tokenId))}

@@ -1,17 +1,17 @@
-import { GhoulsMint } from "@/app/odds/components/GhoulsMint";
-import { GhoulsTabs } from "@/app/odds/components/GhoulsTabs";
+import { OddsMint } from "@/app/odds/components/OddsMint";
+import { OddsTabs } from "@/app/odds/components/OddsTabs";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
-import { readGhoulsDrawings } from "@/app/lib/evilodds/readGhoulsDrawings";
+import { readOddsDrawings } from "@/app/lib/evilodds/readOddsDrawings";
 
 // Static page regenerated in the background; live stats load on the client
 export const revalidate = 60;
 
-// Unlisted test page for the Test Ghouls contract: nothing links here and it is kept out of search indexes
+// Unlisted page for the Evil Odds contract: nothing links here and it is kept out of search indexes
 export async function generateMetadata() {
-  const title = "Test Ghouls";
+  const title = "Evil Odds";
   const description =
-    "Mint Test Ghouls, track the treasury, and burn them for their share of ETH.";
+    "Mint Evil Odds, track the treasury, and burn them for their share of ETH.";
 
   return {
     title: title,
@@ -21,8 +21,8 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const drawings = await readGhoulsDrawings().catch((error) => {
-    console.error("Failed to prefetch ghouls drawings", error);
+  const drawings = await readOddsDrawings().catch((error) => {
+    console.error("Failed to prefetch Evil Odds drawings", error);
     return undefined;
   });
 
@@ -35,10 +35,10 @@ export default async function Page() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <GhoulsMint initialTopPrize={drawings?.topPrize.toString()} />
+            <OddsMint initialTopPrize={drawings?.topPrize.toString()} />
 
             <div className="mt-6 mb-12 flex flex-col gap-4 px-5 sm:px-0">
-              <GhoulsTabs />
+              <OddsTabs />
             </div>
           </div>
         </div>

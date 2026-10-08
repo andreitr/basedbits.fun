@@ -29,11 +29,11 @@
       "schedule": "2-59/5 * * * *"
     },
     {
-      "path": "/api/cron/trader/ghouls-arb",
+      "path": "/api/cron/trader/odds-arb",
       "schedule": "5,20,35,50 * * * *"
     },
     {
-      "path": "/api/cron/ghouls",
+      "path": "/api/cron/odds",
       "schedule": "5,10 17,18 * * *"
     }
   ]

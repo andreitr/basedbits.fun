@@ -11,7 +11,7 @@ interface Options {
   errorMessage: string;
 }
 
-const useGhoulsWrite = ({ onSuccess, errorMessage }: Options) => {
+const useOddsWrite = ({ onSuccess, errorMessage }: Options) => {
   const { data: hash, writeContract, isPending, reset } = useWriteContract();
   const { data: receipt, isLoading: isConfirming } =
     useWaitForTransactionReceipt({ hash });
@@ -46,8 +46,8 @@ const useGhoulsWrite = ({ onSuccess, errorMessage }: Options) => {
   };
 };
 
-export const useGhoulsMint = (onSuccess?: () => void) => {
-  const { writeContract, onError, ...status } = useGhoulsWrite({
+export const useOddsMint = (onSuccess?: () => void) => {
+  const { writeContract, onError, ...status } = useOddsWrite({
     onSuccess,
     errorMessage: "Mint failed.",
   });
@@ -68,8 +68,8 @@ export const useGhoulsMint = (onSuccess?: () => void) => {
   return { mint, ...status };
 };
 
-export const useGhoulsBurn = (onSuccess?: () => void) => {
-  const { writeContract, onError, ...status } = useGhoulsWrite({
+export const useOddsBurn = (onSuccess?: () => void) => {
+  const { writeContract, onError, ...status } = useOddsWrite({
     onSuccess,
     errorMessage: "Burn failed.",
   });

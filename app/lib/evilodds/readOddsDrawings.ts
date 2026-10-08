@@ -10,7 +10,7 @@ import { baseRpcUrl } from "@/app/lib/Web3Configs";
 import { createPublicClient, http } from "viem";
 import { base } from "viem/chains";
 
-const ghouls = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
+const odds = { abi: EvilOddsABI, address: EVIL_ODDS_ADDRESS } as const;
 const jackpot = {
   abi: MegapotV2JackpotABI,
   address: MEGAPOT_V2_JACKPOT_ADDRESS,
@@ -19,7 +19,7 @@ const jackpot = {
 const PRECISE_UNIT = BigInt(10) ** BigInt(18);
 
 // Root-viem client on the app's Base RPC; wagmi bundles its own viem copy whose client types don't line up
-export const ghoulsPublicClient = createPublicClient({
+export const oddsPublicClient = createPublicClient({
   chain: base,
   transport: http(baseRpcUrl),
   batch: { multicall: true },
@@ -32,7 +32,7 @@ export interface ClaimableDrawing {
   winningTickets: number;
 }
 
-export interface GhoulsDrawings {
+export interface OddsDrawings {
   currentDrawingId: bigint;
   // Top-tier (5 + bonusball) payout net of Megapot's referral win share, as shown on megapot.io
   topPrize: bigint;
@@ -48,16 +48,16 @@ export interface GhoulsDrawings {
 
 // Megapot drawing state plus the treasury's ticket purchases and unclaimed tickets. Shared by the /odds
 // page and the daily keeper cron.
-export const readGhoulsDrawings = async (
-  client = ghoulsPublicClient,
-): Promise<GhoulsDrawings> => {
+export const readOddsDrawings = async (
+  client = oddsPublicClient,
+): Promise<OddsDrawings> => {
   const [currentDrawingId, lastCompletedDrawingId, completedDays] =
     await client.multicall({
       allowFailure: false,
       contracts: [
         { ...jackpot, functionName: "currentDrawingId" },
-        { ...ghouls, functionName: "lastCompletedDrawingId" },
-        { ...ghouls, functionName: "completedPurchaseDays" },
+        { ...odds, functionName: "lastCompletedDrawingId" },
+        { ...odds, functionName: "completedPurchaseDays" },
       ],
     });
 
@@ -72,7 +72,7 @@ export const readGhoulsDrawings = async (
         args: [currentDrawingId],
       }),
       client.readContract({
-        ...ghouls,
+        ...odds,
         functionName: "getPurchaseProgress",
         args: [currentDrawingId],
       }),
@@ -81,7 +81,7 @@ export const readGhoulsDrawings = async (
         contracts: days.map(
           (day) =>
             ({
-              ...ghouls,
+              ...odds,
               functionName: "purchaseHistoryByDay",
               args: [day],
             }) as const,
@@ -114,7 +114,7 @@ export const readGhoulsDrawings = async (
       contracts: settled.map(
         (id) =>
           ({
-            ...ghouls,
+            ...odds,
             functionName: "getUnclaimedTicketIds",
             args: [id],
           }) as const,

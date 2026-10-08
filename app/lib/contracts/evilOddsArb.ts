@@ -15,18 +15,18 @@ const WETH_ABI = [
   "function withdraw(uint256 amount)",
 ] as const;
 
-// Dedicated wallet, deliberately NOT EXECUTER_BOT_PK (the ghouls keeper) or
+// Dedicated wallet, deliberately NOT EXECUTER_BOT_PK (the odds keeper) or
 // BBITS_ARB_BOT_PK: sharing either would collide on nonces and mix this bot's WETH float
 // with unrelated balances.
-export const getGhoulsArbKeeper = () => {
-  const pk = process.env.GHOULS_ARB_BOT_PK;
-  if (!pk) throw new Error("GHOULS_ARB_BOT_PK is not set");
+export const getOddsArbKeeper = () => {
+  const pk = process.env.ODDS_ARB_BOT_PK;
+  if (!pk) throw new Error("ODDS_ARB_BOT_PK is not set");
 
   const signer = new Wallet(pk, baseProvider);
   return {
     signer,
     provider: baseProvider,
-    ghouls: new Contract(EVIL_ODDS_ADDRESS, EvilOddsABI, signer),
+    odds: new Contract(EVIL_ODDS_ADDRESS, EvilOddsABI, signer),
     weth: new Contract(WETH_ADDRESS, WETH_ABI, signer),
   };
 };

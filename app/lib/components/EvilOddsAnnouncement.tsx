@@ -20,7 +20,7 @@ export const EvilOddsAnnouncement = () => {
         <div className="flex flex-col gap-2 w-full">
           <div className="sm:text-5xl text-4xl text-[#FEC94F]">Evil Odds</div>
           <div className="text-sm text-[#E24B4B]">
-            Minting October 13th, 11:05 AM PT · 666 Ghouls · Base
+            Minting October 13th, 11:05 AM PT · 666 Odds · Base
           </div>
           <div className="text-sm text-gray-400 pt-2">
             Mint proceeds flow into a shared treasury that chases the{" "}
@@ -31,7 +31,7 @@ export const EvilOddsAnnouncement = () => {
             >
               Megapot
             </Link>{" "}
-            jackpot daily using the collection&apos;s evil numbers. Every Ghoul
+            jackpot daily using the collection&apos;s evil numbers. Every NFT
             you hold is redeemable for a % of the treasury.
           </div>
         </div>

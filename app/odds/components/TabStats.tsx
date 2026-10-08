@@ -1,15 +1,15 @@
 "use client";
 
-import { Stat } from "@/app/odds/components/GhoulsStats";
+import { Stat } from "@/app/odds/components/OddsStats";
 import {
   formatMegapotAmount,
   TicketTable,
 } from "@/app/odds/components/TicketTable";
-import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
+import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
 import {
-  useGhoulsMegapotStats,
-  useGhoulsTickets,
-} from "@/app/lib/hooks/evilodds/useGhoulsTickets";
+  useOddsMegapotStats,
+  useOddsTickets,
+} from "@/app/lib/hooks/evilodds/useOddsTickets";
 
 const TicketHistory = () => {
   const {
@@ -19,7 +19,7 @@ const TicketHistory = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useGhoulsTickets();
+  } = useOddsTickets();
   const tickets = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (isLoading) {
@@ -48,8 +48,8 @@ const TicketHistory = () => {
 };
 
 export const TabStats = () => {
-  const { data: megapot, isError } = useGhoulsMegapotStats();
-  const { data: stats } = useGhoulsStats();
+  const { data: megapot, isError } = useOddsMegapotStats();
+  const { data: stats } = useOddsStats();
 
   return (
     <div className="flex flex-col gap-8">

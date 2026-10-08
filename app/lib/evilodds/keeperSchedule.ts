@@ -1,6 +1,6 @@
-// When the Evil Odds keeper (/api/cron/ghouls) buys the day's tickets and claims winnings. Vercel crons run
+// When the Evil Odds keeper (/api/cron/odds) buys the day's tickets and claims winnings. Vercel crons run
 // on UTC, so jobs pinned to this hour check the local clock themselves (PDT in summer, PST in winter). Shared
-// with the ghouls arb bot, whose daily reprice has to follow the keeper: that is when the redeem price moves.
+// with the odds arb bot, whose daily reprice has to follow the keeper: that is when the redeem price moves.
 export const KEEPER_TIME_ZONE = "America/Los_Angeles";
 export const KEEPER_HOUR = 10;
 

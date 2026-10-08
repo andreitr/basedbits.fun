@@ -1,16 +1,16 @@
 import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
-import { readGhoulsDrawings } from "@/app/lib/evilodds/readGhoulsDrawings";
+import { readOddsDrawings } from "@/app/lib/evilodds/readOddsDrawings";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type {
   ClaimableDrawing,
-  GhoulsDrawings,
-} from "@/app/lib/evilodds/readGhoulsDrawings";
+  OddsDrawings,
+} from "@/app/lib/evilodds/readOddsDrawings";
 
-const queryKey = ["ghoulsDrawings", EVIL_ODDS_ADDRESS];
+const queryKey = ["oddsDrawings", EVIL_ODDS_ADDRESS];
 
 // Megapot drawing state plus the treasury's ticket purchases and unclaimed tickets
-export const useGhoulsDrawings = (options: { enabled?: boolean } = {}) => {
+export const useOddsDrawings = (options: { enabled?: boolean } = {}) => {
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 
@@ -18,7 +18,7 @@ export const useGhoulsDrawings = (options: { enabled?: boolean } = {}) => {
     queryKey,
     enabled,
     refetchInterval: 30_000,
-    queryFn: () => readGhoulsDrawings(),
+    queryFn: () => readOddsDrawings(),
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey });

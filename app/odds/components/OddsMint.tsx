@@ -1,11 +1,11 @@
 "use client";
 
-import { formatEth } from "@/app/odds/components/GhoulsStats";
+import { formatEth } from "@/app/odds/components/OddsStats";
 import { Button } from "@/app/lib/components/Button";
-import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
-import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
-import { useGhoulsMint } from "@/app/lib/hooks/evilodds/useGhoulsWrite";
-import { useRefreshGhouls } from "@/app/lib/hooks/evilodds/useRefreshGhouls";
+import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
+import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
+import { useOddsMint } from "@/app/lib/hooks/evilodds/useOddsWrite";
+import { useRefreshOdds } from "@/app/lib/hooks/evilodds/useRefreshOdds";
 import { useModal } from "connectkit";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,8 +24,8 @@ interface Props {
   initialTopPrize?: string;
 }
 
-export const GhoulsMint = ({ initialTopPrize }: Props) => {
-  const { data: drawings } = useGhoulsDrawings();
+export const OddsMint = ({ initialTopPrize }: Props) => {
+  const { data: drawings } = useOddsDrawings();
   const topPrize =
     drawings?.topPrize ??
     (initialTopPrize ? BigInt(initialTopPrize) : undefined);
@@ -65,11 +65,11 @@ export const GhoulsMint = ({ initialTopPrize }: Props) => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-row items-center gap-3">
             <div className="sm:text-5xl text-4xl text-[#FEC94F]">
-              Test Ghouls
+              Evil Odds
             </div>
           </div>
           <div className="text-sm text-gray-400 pt-2">
-            Ghouls summon cursed numbers every drawing, chasing a{" "}
+            Evil Odds summon cursed numbers every drawing, chasing a{" "}
             {jackpot ? `${jackpot} ` : ""}
             <Link
               href="https://megapot.io/r/U57WDQ"
@@ -79,7 +79,7 @@ export const GhoulsMint = ({ initialTopPrize }: Props) => {
             >
               Megapot
             </Link>{" "}
-            jackpot. Burn a Ghoul to get your share of the treasury.
+            jackpot. Burn one to get your share of the treasury.
           </div>
           <div className="mt-auto pt-4 flex flex-col gap-4">
             <MintStats />
@@ -105,7 +105,7 @@ const MintStat = ({
 );
 
 const MintStats = () => {
-  const { data: stats } = useGhoulsStats();
+  const { data: stats } = useOddsStats();
 
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -127,12 +127,12 @@ const MintButton = () => {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { isReady, isConnected } = useWallet();
-  const { data: stats } = useGhoulsStats();
-  const refresh = useRefreshGhouls();
+  const { data: stats } = useOddsStats();
+  const refresh = useRefreshOdds();
   const [quantity, setQuantity] = useState(1);
 
-  const { mint, isPending, isConfirming } = useGhoulsMint(() => {
-    toast.success("Ghoul minted!");
+  const { mint, isPending, isConfirming } = useOddsMint(() => {
+    toast.success("Minted!");
     refresh();
   });
 

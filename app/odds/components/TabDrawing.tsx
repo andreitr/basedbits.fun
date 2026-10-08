@@ -1,14 +1,14 @@
 "use client";
 
-import { formatUsd, Stat } from "@/app/odds/components/GhoulsStats";
+import { formatUsd, Stat } from "@/app/odds/components/OddsStats";
 import { TicketTable } from "@/app/odds/components/TicketTable";
 import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { useGhoulsStats } from "@/app/lib/hooks/evilodds/useGhoulsStats";
-import { useGhoulsDrawings } from "@/app/lib/hooks/evilodds/useGhoulsDrawings";
-import { useGhoulsTickets } from "@/app/lib/hooks/evilodds/useGhoulsTickets";
+import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
+import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
+import { useOddsTickets } from "@/app/lib/hooks/evilodds/useOddsTickets";
 
 const DrawingTickets = ({ drawingId }: { drawingId: bigint }) => {
-  const { data, isLoading, isError } = useGhoulsTickets(drawingId);
+  const { data, isLoading, isError } = useOddsTickets(drawingId);
   const tickets = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (isLoading) {
@@ -24,8 +24,8 @@ const DrawingTickets = ({ drawingId }: { drawingId: bigint }) => {
 };
 
 export const TabDrawing = () => {
-  const { data: drawings, isError } = useGhoulsDrawings();
-  const { data: stats } = useGhoulsStats();
+  const { data: drawings, isError } = useOddsDrawings();
+  const { data: stats } = useOddsStats();
 
   if (isError) {
     return <div>Unable to load the current drawing. Try again shortly.</div>;
@@ -47,7 +47,7 @@ export const TabDrawing = () => {
         <Stat label="Tickets purchased">
           {drawings.purchaseBought.toString()}
         </Stat>
-        <Stat label="Ghouls in play">
+        <Stat label="Odds in play">
           {stats ? stats.totalSupply.toString() : "..."}
         </Stat>
       </div>

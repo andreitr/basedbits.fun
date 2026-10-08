@@ -5,8 +5,8 @@ import type {
 } from "@/app/lib/api/megapot";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-export const GHOULS_TICKETS_KEY = "ghoulsTickets";
-export const GHOULS_MEGAPOT_STATS_KEY = "ghoulsMegapotStats";
+export const ODDS_TICKETS_KEY = "oddsTickets";
+export const ODDS_MEGAPOT_STATS_KEY = "oddsMegapotStats";
 
 const getJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(url);
@@ -14,16 +14,16 @@ const getJson = async <T>(url: string): Promise<T> => {
   return (await response.json()) as T;
 };
 
-// Treasury tickets from the Megapot Data API (via /api/ghouls), for one drawing or the full history
-export const useGhoulsTickets = (round?: bigint) => {
+// Treasury tickets from the Megapot Data API (via /api/odds), for one drawing or the full history
+export const useOddsTickets = (round?: bigint) => {
   return useInfiniteQuery({
-    queryKey: [GHOULS_TICKETS_KEY, round?.toString() ?? "all"],
+    queryKey: [ODDS_TICKETS_KEY, round?.toString() ?? "all"],
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams();
       if (round !== undefined) params.set("round", round.toString());
       if (pageParam) params.set("cursor", pageParam);
       return getJson<MegapotPage<MegapotTicket>>(
-        `/api/ghouls/tickets?${params}`,
+        `/api/odds/tickets?${params}`,
       );
     },
     initialPageParam: "",
@@ -33,10 +33,10 @@ export const useGhoulsTickets = (round?: bigint) => {
   });
 };
 
-export const useGhoulsMegapotStats = () => {
+export const useOddsMegapotStats = () => {
   return useQuery({
-    queryKey: [GHOULS_MEGAPOT_STATS_KEY],
-    queryFn: () => getJson<MegapotWalletStats>("/api/ghouls/stats"),
+    queryKey: [ODDS_MEGAPOT_STATS_KEY],
+    queryFn: () => getJson<MegapotWalletStats>("/api/odds/stats"),
     refetchInterval: 60_000,
   });
 };
