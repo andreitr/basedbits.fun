@@ -1,4 +1,5 @@
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { revalidateTag } from "next/cache";
 import { isAddress } from "viem";
 
@@ -23,6 +24,7 @@ export async function GET(req: Request) {
         process.env.NEXT_PUBLIC_BB_NFT_ADDRESS,
         process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
         process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
+        EVIL_ODDS_ADDRESS,
       ].toString(),
     });
 

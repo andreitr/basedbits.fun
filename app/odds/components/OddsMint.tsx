@@ -2,6 +2,8 @@
 
 import { formatEth } from "@/app/odds/components/OddsStats";
 import { Button } from "@/app/lib/components/Button";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
+import { EVIL_ODDS_MINT_START } from "@/app/lib/contracts/evilodds";
 import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
 import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
 import { useOddsMint } from "@/app/lib/hooks/evilodds/useOddsWrite";
@@ -67,6 +69,13 @@ export const OddsMint = ({ initialTopPrize }: Props) => {
             <div className="sm:text-5xl text-4xl text-[#FEC94F]">
               Evil Odds
             </div>
+          </div>
+          <div className="text-sm text-[#E24B4B]">
+            <CountDownToDate
+              targetDate={EVIL_ODDS_MINT_START}
+              label="Mint opens in "
+              message="666 Odds · Base"
+            />
           </div>
           <div className="text-sm text-gray-400 pt-2">
             Evil Odds summon cursed numbers every drawing, chasing a{" "}
@@ -136,7 +145,12 @@ const MintButton = () => {
     refresh();
   });
 
-  // Every state renders one 50px row so the card never changes height as the wallet and stats load
+  // No mint controls at all while the contract is paused, whatever the wallet state
+  if (stats?.paused) {
+    return null;
+  }
+
+  // Every other state renders one 50px row so the card never changes height as the wallet and stats load
   if (!isReady) {
     return (
       <Button className={buttonClass} loading>
@@ -180,14 +194,6 @@ const MintButton = () => {
       </Button>
     );
   }
-  if (stats.paused) {
-    return (
-      <Button className={buttonClass} loading>
-        Minting Paused
-      </Button>
-    );
-  }
-
   const maxQuantity = Number(
     remaining < stats.maxMintPerTx ? remaining : stats.maxMintPerTx,
   );

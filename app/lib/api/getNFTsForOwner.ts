@@ -37,11 +37,17 @@ export const fetchNFTsForOwner = async ({
 // Avoid duplicate concurrent calls by wrapping the function in a cache
 const cachedFetchNFTsForOwner = cache(fetchNFTsForOwner);
 
-// Cache results on the server
+// Cache results on the server. The key must include every argument: the callback source is identical across calls, so
+// without them the profile, OG image (size 1) and hydrate lookups for one address would share a single entry
 export const getNFTsForOwner = (props: Props) =>
   unstable_cache(
     () => cachedFetchNFTsForOwner(props),
-    [`getNFTsForOwner-${props.address}`],
+    [
+      `getNFTsForOwner-${props.address}`,
+      props.contract,
+      String(props.size ?? ""),
+      props.pageKey ?? "",
+    ],
     {
       tags: [`getNFTsForOwner-${props.address}`],
       revalidate: 43_200, // 12 hours

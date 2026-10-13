@@ -7,9 +7,10 @@ import NumberFlow from "@number-flow/react";
 interface Props {
   targetDate: number; // Unix timestamp
   message: string;
+  label?: string; // Shown before the digits while counting down
 }
 
-export const CountDownToDate = ({ targetDate, message }: Props) => {
+export const CountDownToDate = ({ targetDate, message, label }: Props) => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -47,6 +48,7 @@ export const CountDownToDate = ({ targetDate, message }: Props) => {
         <div>{message}</div>
       ) : (
         <div>
+          {label}
           {hours > 0 && (
             <NumberFlow
               value={hours}

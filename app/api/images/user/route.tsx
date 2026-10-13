@@ -1,5 +1,6 @@
 import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { getUserTokenBalance } from "@/app/lib/api/getUserTokenBalance";
 import { humanizeNumber } from "@/app/lib/utils/numberUtils";
 import { loadOGImage } from "@/app/lib/utils/ogImageUtils";
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
         process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
         process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
         process.env.NEXT_PUBLIC_RAIDER_ADDRESS,
+        EVIL_ODDS_ADDRESS,
       ].toString(),
       size: 1,
     });

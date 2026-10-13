@@ -47,13 +47,17 @@ export const CheckInComponent = () => {
           <Link href="/raid" className="hover:underline font-semibold">
             Pot Raiders
           </Link>
-          , or{" "}
+          ,{" "}
           <Link
             href="https://opensea.io/collection/punkalot"
             target="_blank"
             className="hover:underline font-semibold"
           >
             Punkalot
+          </Link>
+          , or{" "}
+          <Link href="/odds" className="hover:underline font-semibold">
+            Evil Odds
           </Link>{" "}
           NFT.
         </div>

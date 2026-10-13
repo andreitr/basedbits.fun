@@ -7,7 +7,6 @@ import { readOddsDrawings } from "@/app/lib/evilodds/readOddsDrawings";
 // Static page regenerated in the background; live stats load on the client
 export const revalidate = 60;
 
-// Unlisted page for the Evil Odds contract: nothing links here and it is kept out of search indexes
 export async function generateMetadata() {
   const title = "Evil Odds";
   const description =
@@ -16,7 +15,6 @@ export async function generateMetadata() {
   return {
     title: title,
     description: description,
-    robots: { index: false, follow: false },
   };
 }
 

@@ -5,17 +5,24 @@ import { UserList } from "@/app/lib/components/client/UserList";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
-import { EvilOddsAnnouncement } from "@/app/lib/components/EvilOddsAnnouncement";
 import { getCheckins } from "@/app/lib/api/getCheckins";
+import { readOddsDrawings } from "@/app/lib/evilodds/readOddsDrawings";
+import { OddsMint } from "@/app/odds/components/OddsMint";
 
 // Static page regenerated in the background; the check-in list refreshes on the client after load
 export const revalidate = 60;
 
 export default async function Home() {
-  const checkins = await getCheckins().catch((error) => {
-    console.error("Failed to prefetch check-ins", error);
-    return undefined;
-  });
+  const [checkins, drawings] = await Promise.all([
+    getCheckins().catch((error) => {
+      console.error("Failed to prefetch check-ins", error);
+      return undefined;
+    }),
+    readOddsDrawings().catch((error) => {
+      console.error("Failed to prefetch Evil Odds drawings", error);
+      return undefined;
+    }),
+  ]);
   const checkinsFetchedAt = Date.now();
 
   return (
@@ -34,7 +41,7 @@ export default async function Home() {
               title="Evil Odds"
               description="Minting Oct 13, 11:05 AM PT"
               image={"/images/evil_odds.svg"}
-              link="/#evil-odds"
+              link="/odds"
             />
             <FeatureCard
               title="Burned Bits"
@@ -60,7 +67,7 @@ export default async function Home() {
 
       <div className="flex justify-center items-center w-full sm:px-10 pt-10 pb-3 md:mt-0">
         <div className="container max-w-screen-lg mb-8">
-          <EvilOddsAnnouncement />
+          <OddsMint initialTopPrize={drawings?.topPrize.toString()} />
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { getCheckinDB } from "@/app/lib/api/getCheckinDB";
 import { getNFTsForOwner } from "@/app/lib/api/getNFTsForOwner";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 import { getUserDB } from "@/app/lib/api/getUserDB";
 import { Header } from "@/app/lib/components/client/Header";
 import { Footer } from "@/app/lib/components/Footer";
@@ -66,6 +67,7 @@ export default async function Page(props: Props) {
       process.env.NEXT_PUBLIC_PUNKALOT_ADDRESS,
       process.env.NEXT_PUBLIC_BURNED_BITS_ADDRESS,
       process.env.NEXT_PUBLIC_RAIDER_ADDRESS,
+      EVIL_ODDS_ADDRESS,
     ].toString(),
   });
 
