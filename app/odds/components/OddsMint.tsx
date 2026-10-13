@@ -2,8 +2,6 @@
 
 import { formatEth } from "@/app/odds/components/OddsStats";
 import { Button } from "@/app/lib/components/Button";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
-import { EVIL_ODDS_MINT_START } from "@/app/lib/contracts/evilodds";
 import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
 import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
 import { useOddsMint } from "@/app/lib/hooks/evilodds/useOddsWrite";
@@ -70,13 +68,7 @@ export const OddsMint = ({ initialTopPrize }: Props) => {
               Evil Odds
             </div>
           </div>
-          <div className="text-sm text-[#E24B4B]">
-            <CountDownToDate
-              targetDate={EVIL_ODDS_MINT_START}
-              label="Mint opens in "
-              message="666 Odds · Base"
-            />
-          </div>
+          <div className="text-sm text-[#E24B4B]">666 Odds · Base</div>
           <div className="text-sm text-gray-400 pt-2">
             Evil Odds summon cursed numbers every drawing, chasing a{" "}
             {jackpot ? `${jackpot} ` : ""}

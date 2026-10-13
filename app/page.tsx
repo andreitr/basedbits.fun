@@ -1,13 +1,11 @@
 import { CheckInComponent } from "@/app/lib/components/CheckInComponent";
 import { CountDown } from "@/app/lib/components/client/CountDown";
 import { Header } from "@/app/lib/components/client/Header";
-import { MintStatus } from "@/app/lib/components/client/MintStatus";
 import { UserList } from "@/app/lib/components/client/UserList";
 import { FeatureBasePaintCard } from "@/app/lib/components/FeatureBasePaintCard";
 import { FeatureCard } from "@/app/lib/components/FeatureCard";
 import { Footer } from "@/app/lib/components/Footer";
 import { getCheckins } from "@/app/lib/api/getCheckins";
-import { EVIL_ODDS_MINT_START } from "@/app/lib/contracts/evilodds";
 import { readOddsDrawings } from "@/app/lib/evilodds/readOddsDrawings";
 import { OddsMint } from "@/app/odds/components/OddsMint";
 
@@ -41,7 +39,7 @@ export default async function Home() {
           <div className="flex md:flex-row flex-col md:py-2 py-4 justify-between items-center w-full gap-4">
             <FeatureCard
               title="Evil Odds"
-              description={<MintStatus startTime={EVIL_ODDS_MINT_START} />}
+              description="Minting..."
               image={"/images/evil_odds.svg"}
               link="/odds"
             />
