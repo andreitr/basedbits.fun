@@ -68,7 +68,6 @@ export const OddsMint = ({ initialTopPrize }: Props) => {
               Evil Odds
             </div>
           </div>
-          <div className="text-sm text-[#E24B4B]">666 Odds · Base</div>
           <div className="text-sm text-gray-400 pt-2">
             Evil Odds summon cursed numbers every drawing, chasing a{" "}
             {jackpot ? `${jackpot} ` : ""}
