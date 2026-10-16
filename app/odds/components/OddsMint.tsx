@@ -2,6 +2,7 @@
 
 import { formatEth } from "@/app/odds/components/OddsStats";
 import { Button } from "@/app/lib/components/Button";
+import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
 import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
 import { useOddsMint } from "@/app/lib/hooks/evilodds/useOddsWrite";
@@ -106,17 +107,28 @@ const MintStat = ({
 
 const MintStats = () => {
   const { data: stats } = useOddsStats();
+  const { data: drawings } = useOddsDrawings();
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <MintStat label="Megapot Drawing in">
+        {drawings ? (
+          <CountDownToDate
+            targetDate={Number(drawings.drawingTime)}
+            message="Drawing now"
+          />
+        ) : (
+          "..."
+        )}
+      </MintStat>
       <MintStat label="Treasury">
         {stats ? formatEth(stats.treasuryEth, 5) : "..."}
       </MintStat>
       <MintStat label="Minted">
         {stats ? `${stats.totalMinted}/${stats.maxSupply}` : "..."}
       </MintStat>
-      <MintStat label="Mint price">
-        {stats ? formatEth(stats.mintPrice) : "..."}
+      <MintStat label="Redeem value">
+        {stats ? formatEth(stats.redeemEth) : "..."}
       </MintStat>
     </div>
   );
