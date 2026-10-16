@@ -111,7 +111,7 @@ const MintStats = () => {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <MintStat label="Megapot Drawing in">
+      <MintStat label="Next drawing">
         {drawings ? (
           <CountDownToDate
             targetDate={Number(drawings.drawingTime)}
@@ -121,14 +121,14 @@ const MintStats = () => {
           "..."
         )}
       </MintStat>
+      <MintStat label="Tickets in round">
+        {drawings ? drawings.purchaseBought.toString() : "..."}
+      </MintStat>
       <MintStat label="Treasury">
         {stats ? formatEth(stats.treasuryEth, 5) : "..."}
       </MintStat>
       <MintStat label="Minted">
         {stats ? `${stats.totalMinted}/${stats.maxSupply}` : "..."}
-      </MintStat>
-      <MintStat label="Redeem value">
-        {stats ? formatEth(stats.redeemEth) : "..."}
       </MintStat>
     </div>
   );
