@@ -136,6 +136,15 @@ export const Footer = () => {
               BBITS Liquidity Pool
             </Link>
           </div>
+          <div>
+            <Link
+              className="hover:underline text-sm"
+              href="https://dexscreener.com/base/0x553C1f87C2EF99CcA23b8A7fFaA629C8c2D27666"
+              target="_blank"
+            >
+              BBITS on DexScreener
+            </Link>
+          </div>
         </div>
 
         <div>
