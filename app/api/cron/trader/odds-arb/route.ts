@@ -545,9 +545,10 @@ export async function GET(req: NextRequest) {
             });
           }
         } else {
-          // A seller may already hold a fulfilment signature for the old offer. Wait it
+          // A seller may already hold a fulfilment signature for the old offer, or
+          // OpenSea refused the off-chain cancel because the order is too new. Wait it
           // out rather than stack a second offer on top; the next tick re-evaluates.
-          actions.push("reprice:deferred-vended-signature");
+          actions.push("reprice:deferred-offchain-cancel-refused");
           return Response.json({ ...result, executed: `${action}_DEFERRED` });
         }
       }

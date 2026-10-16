@@ -237,9 +237,10 @@ export async function GET(req: NextRequest) {
     // A tx from a previous run that never mined (e.g. yesterday's swap) still holds the
     // next nonce. Minting now would queue behind it and stall exactly the same way, so
     // skip and say so; clearing it is a manual replace/cancel from the bot wallet.
-    const [nonceLatest, noncePending] = await Promise.all([
+    const [nonceLatest, noncePending, balance] = await Promise.all([
       provider.getTransactionCount(recipient, "latest"),
       provider.getTransactionCount(recipient, "pending"),
+      provider.getBalance(recipient),
     ]);
     console.log(
       `Nonce check for ${recipient}: latest ${nonceLatest}, pending ${noncePending}`,
@@ -259,12 +260,29 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Today's mint budget is expected to arrive from earlier OpenSea sales. When it
+    // hasn't, the mint can't be paid for, so skip it here instead of letting gas
+    // estimation fail with an opaque CALL_EXCEPTION.
+    const mintCost = BigInt(MINT_PRICE_WEI) * BigInt(MINT_COUNT);
+    const requiredWei = mintCost + GAS_RESERVE_WEI;
+    if (balance < requiredWei) {
+      console.warn(
+        `Skipping mint: ${recipient} holds ${formatEther(balance)} ETH, needs ${formatEther(requiredWei)} ETH for ${MINT_COUNT} mints plus gas`,
+      );
+      return Response.json({
+        ok: false,
+        skipped: "insufficient_funds",
+        bot: recipient,
+        balanceWei: balance.toString(),
+        requiredWei: requiredWei.toString(),
+      });
+    }
+
     const rewardsContract = new Contract(
       BASEPAINT_REWARDS_ADDRESS,
       BasePaintRewardsAbi,
       signer,
     );
-    const mintCost = BigInt(MINT_PRICE_WEI) * BigInt(MINT_COUNT);
 
     const tx: ContractTransactionResponse = await rewardsContract.mintLatest(
       recipient,

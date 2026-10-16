@@ -306,7 +306,8 @@ export const collectHeldNfts = async (
  * Gasless cancel via OpenSea's SignedZone. Returns whether the order is now certainly
  * unfillable. The zone cannot revoke a fulfilment signature it has already handed to
  * a seller; the API reports how long such a signature stays valid, and until then the
- * old order can still fill.
+ * old order can still fill. OpenSea also refuses an off-chain cancel for an order
+ * created moments ago; that order is still live too, so callers see `false`.
  */
 export const offchainCancel = async (
   client: OpenSeaSDK,
@@ -315,13 +316,25 @@ export const offchainCancel = async (
   // No hash means no cancel was even attempted: the signed Seaport order is still
   // usable from its protocol data. Report it live so callers escalate on-chain.
   if (!order.orderHash) return false;
-  const response = await client.offchainCancelOrder(
-    order.protocolAddress,
-    order.orderHash,
-    Chain.Base,
-    undefined,
-    true, // derive the offerer signature from the bot's signer
-  );
+  let response: Awaited<ReturnType<OpenSeaSDK["offchainCancelOrder"]>>;
+  try {
+    response = await client.offchainCancelOrder(
+      order.protocolAddress,
+      order.orderHash,
+      Chain.Base,
+      undefined,
+      true, // derive the offerer signature from the bot's signer
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/must be cancelled onchain/i.test(message)) {
+      console.log(
+        `Order ${order.orderHash} is too new for off-chain cancel — treating as live`,
+      );
+      return false;
+    }
+    throw error;
+  }
   const validUntil = response?.last_signature_issued_valid_until;
   if (!validUntil) return true;
   // Accept either an ISO timestamp or unix seconds. Anything unparseable is treated

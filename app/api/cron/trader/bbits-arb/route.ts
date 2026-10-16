@@ -784,10 +784,11 @@ export async function GET(req: NextRequest) {
         }
         const dead = await offchainCancel(client, openOrder);
         if (!dead) {
-          // A seller may already hold a fulfilment signature for the old offer, so
-          // posting the replacement now could let both fill. Wait it out: the old
-          // order expires within the hour and the next tick re-evaluates.
-          actions.push("reprice:deferred-vended-signature");
+          // A seller may already hold a fulfilment signature for the old offer, or
+          // OpenSea refused the off-chain cancel because the order is too new; either
+          // way it is still live, so posting the replacement now could let both fill.
+          // Wait it out: the next tick re-evaluates.
+          actions.push("reprice:deferred-offchain-cancel-refused");
           return Response.json({ ...result, executed: "REPRICE_DEFERRED" });
         }
         await postOffer(
