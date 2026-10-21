@@ -1,6 +1,7 @@
 import Link from "next/link";
 import fire from "@/app/lib/icons/fire.svg";
 import Image from "next/image";
+import { EVIL_ODDS_ADDRESS } from "@/app/lib/contracts/evilodds";
 
 export const Footer = () => {
   return (
@@ -170,10 +171,10 @@ export const Footer = () => {
           <div>
             <Link
               className="hover:underline text-sm"
-              href={`https://basescan.org/address/${process.env.NEXT_PUBLIC_RAIDER_ADDRESS}`}
+              href={`https://basescan.org/address/${EVIL_ODDS_ADDRESS}`}
               target="_blank"
             >
-              Pot Raiders Contract
+              Evil Odds Contract
             </Link>
           </div>
         </div>
