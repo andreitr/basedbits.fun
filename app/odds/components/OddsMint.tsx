@@ -1,24 +1,9 @@
 "use client";
 
-import { formatEth } from "@/app/odds/components/OddsStats";
-import { Button } from "@/app/lib/components/Button";
-import { CountDownToDate } from "@/app/lib/components/client/CountDownToDate";
 import { useOddsDrawings } from "@/app/lib/hooks/evilodds/useOddsDrawings";
-import { useOddsStats } from "@/app/lib/hooks/evilodds/useOddsStats";
-import { useOddsMint } from "@/app/lib/hooks/evilodds/useOddsWrite";
-import { useRefreshOdds } from "@/app/lib/hooks/evilodds/useRefreshOdds";
-import { useModal } from "connectkit";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import toast from "react-hot-toast";
 import { formatUnits } from "viem";
-import { useWallet } from "@/app/lib/Web3Provider";
-import { useChainId, useSwitchChain } from "wagmi";
-import { base } from "wagmi/chains";
-
-const buttonClass =
-  "bg-[#FEC94F]/10 text-white/80 hover:text-white font-regular w-full";
 
 interface Props {
   // Server-read jackpot (USDC base units) so the sentence below renders complete and doesn't reflow once data loads
@@ -82,162 +67,26 @@ export const OddsMint = ({ initialTopPrize }: Props) => {
             </Link>{" "}
             jackpot. Burn one to get your share of the treasury.
           </div>
-          <div className="mt-auto pt-4 flex flex-col gap-4">
-            <MintStats />
-            <MintButton />
+          <div className="mt-auto pt-4">
+            <div className="border border-[#FEC94F]/30 rounded-lg p-4 text-base sm:text-lg text-white">
+              <Link
+                href="https://megapot.io/blog/thank-you-for-playing"
+                className="underline hover:text-[#FEC94F]"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Megapot is shutting down
+              </Link>
+              , and Evil Odds can&apos;t work without it. Thank you for
+              playing! Please{" "}
+              <Link href="/odds" className="underline hover:text-[#FEC94F]">
+                burn your NFTs
+              </Link>{" "}
+              to redeem their remaining value.
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const MintStat = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <div className="flex flex-col gap-1">
-    <div className="uppercase text-xs text-gray-400">{label}</div>
-    <div className="text-base sm:text-xl">{children}</div>
-  </div>
-);
-
-const MintStats = () => {
-  const { data: stats } = useOddsStats();
-  const { data: drawings } = useOddsDrawings();
-
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <MintStat label="Next drawing">
-        {drawings ? (
-          <CountDownToDate
-            targetDate={Number(drawings.drawingTime)}
-            message="Drawing now"
-          />
-        ) : (
-          "..."
-        )}
-      </MintStat>
-      <MintStat label="Tickets in round">
-        {drawings ? drawings.purchaseBought.toString() : "..."}
-      </MintStat>
-      <MintStat label="Treasury">
-        {stats ? formatEth(stats.treasuryEth, 5) : "..."}
-      </MintStat>
-      <MintStat label="Minted">
-        {stats ? `${stats.totalMinted}/${stats.maxSupply}` : "..."}
-      </MintStat>
-    </div>
-  );
-};
-
-const MintButton = () => {
-  const { setOpen } = useModal();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
-  const { isReady, isConnected } = useWallet();
-  const { data: stats } = useOddsStats();
-  const refresh = useRefreshOdds();
-  const [quantity, setQuantity] = useState(1);
-
-  const { mint, isPending, isConfirming } = useOddsMint(() => {
-    toast.success("Minted!");
-    refresh();
-  });
-
-  // No mint controls at all while the contract is paused, whatever the wallet state
-  if (stats?.paused) {
-    return null;
-  }
-
-  // Every other state renders one 50px row so the card never changes height as the wallet and stats load
-  if (!isReady) {
-    return (
-      <Button className={buttonClass} loading>
-        Loading...
-      </Button>
-    );
-  }
-
-  if (!isConnected) {
-    return (
-      <Button className={buttonClass} onClick={() => setOpen(true)}>
-        Connect to Mint
-      </Button>
-    );
-  }
-
-  if (chainId !== base.id) {
-    return (
-      <Button
-        className={buttonClass}
-        onClick={() => switchChain({ chainId: base.id })}
-      >
-        Switch to Base
-      </Button>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <Button className={buttonClass} loading>
-        Loading...
-      </Button>
-    );
-  }
-
-  const remaining = stats.maxSupply - stats.totalMinted;
-  if (remaining <= BigInt(0)) {
-    return (
-      <Button className={buttonClass} loading>
-        Sold Out
-      </Button>
-    );
-  }
-  const maxQuantity = Number(
-    remaining < stats.maxMintPerTx ? remaining : stats.maxMintPerTx,
-  );
-  const busy = isPending || isConfirming;
-  const cost = formatUnits(stats.mintPrice * BigInt(quantity), 18);
-  const label = isPending
-    ? "Confirming..."
-    : isConfirming
-      ? "Minting..."
-      : `Mint ${quantity} for ${Number(cost).toFixed(6)}Ξ`;
-
-  return (
-    <div className="flex flex-row gap-3 sm:gap-4 items-center w-full">
-      <div className="flex shrink-0 items-center border border-[#FEC94F]/30 rounded-lg h-[50px] justify-center">
-        <button
-          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
-          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-          disabled={busy || quantity <= 1}
-        >
-          -
-        </button>
-        <div className="px-2 w-8 text-center text-white">{quantity}</div>
-        <button
-          className="px-3 py-1 text-xl text-white/80 hover:text-white disabled:text-white/30"
-          onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
-          disabled={busy || quantity >= maxQuantity}
-        >
-          +
-        </button>
-      </div>
-      <Button
-        className={
-          busy
-            ? "bg-[#FEC94F]/10 font-regular flex-1 min-w-0 max-sm:px-2 max-sm:text-base animate-pulse cursor-wait"
-            : "bg-[#FEC94F]/10 font-regular flex-1 min-w-0 max-sm:px-2 max-sm:text-base"
-        }
-        onClick={() => mint(Math.min(quantity, maxQuantity), stats.mintPrice)}
-        loading={busy}
-      >
-        {label}
-      </Button>
     </div>
   );
 };
